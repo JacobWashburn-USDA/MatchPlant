@@ -11,7 +11,9 @@ Repository for the development of tools and packages for easily matching geo coo
 
 \*ODM can still be run without a gcp file; however, the authors recommend collecting this data and using it to improve the accuracy of the targeted objects on the othomosaic image.
 
-Figure: A diagram of arranging the folders and data for ODM
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/Directory%20figure.png)
+
+Figure 1: A diagram of arranging the folders and data for ODM
 
 3. Run ODM software to create orthophoto (othomosaic images) and other files
      1. Open Docker software
