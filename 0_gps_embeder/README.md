@@ -2,7 +2,7 @@
 
 A Python utility for processing drone imagery and embedding GPS coordinates by matching image timestamps with event data. This tool handles UTM (Universal Transverse Mercator) to WGS84 coordinate conversion and EXIF metadata manipulation.
 
-**Features**
+#### **Features**
 
 - Timestamp Matching: Automatically matches drone images with GPS coordinates based on timestamp data
 - Coordinate Conversion: Converts UTM coordinates to WGS84 (latitude/longitude) format
@@ -11,7 +11,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
 - Batch Processing: Handles multiple images in a single operation
 - Progress Tracking: Includes progress monitoring for large batches of images
 
-**Processing Pipeline**
+#### **Processing Pipeline**
 
 - **Setup**: Initializes the tool and sets UTM zone parameters
 - **Input Processing**: Loads and validates image files and event data
@@ -19,7 +19,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
 - **Coordinate Processing**: Converts UTM coordinates to GPS format
 - **Output Generation**: Generates detailed reports and embeds GPS data in images
 
-**Requirements**
+#### **Requirements**
 
 - Python 3.x
 - Dependencies:
@@ -28,7 +28,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
   - pyproj: For coordinate system transformations
   - Other standard Python libraries (csv, os, shutil, datetime)
 
-**Input Requirements**
+#### **Input Requirements**
 
 - **User Inputs**
   - UTM Zone Information:
@@ -54,7 +54,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
       - Z (Altitude)
       - File must be placed in the same folder as images
 
-**Outputs**
+#### **Outputs**
 
 - Program automatically creates:
   - “events_with_matches.csv”: Contains matching results
@@ -62,11 +62,11 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
   - “images_with_gps” folder: Contains processed images
     - Copy of original images with embedded GPS coordinates
 
-**Interactive Usage**
+#### **Interactive Usage**
 
 - Run the code
 - Follow the interactive prompts:
-  - Enter UTM zone number (1-60): 47
+  - Enter UTM zone number (1-60): 15
   - Enter hemisphere (N/S): N
   - Enter the path to your images folder: /path/to/your/drone/images
 - The code will:
@@ -76,6 +76,6 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
   - Create GPS-tagged copies of images
   - Generate a matching report
 
-**Note**
+#### **Note**
 
 This tool is particularly useful for drone imagery processing workflows where GPS data needs to be embedded post-flight or when working with systems that record position data separately from image capture.
