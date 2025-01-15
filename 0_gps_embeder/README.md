@@ -40,6 +40,12 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
       - Drone images (.jpg/.jpeg)
       - events.txt file with coordinate data
 - **File Requirements**
+  project
+  |-- images/
+      |--image_1.jpg
+      |--image_2.jpg
+  |-- events.txt
+
   - Image Files:
     - Format: JPG/JPEG
     - Must contain EXIF timestamp data
@@ -52,6 +58,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
       - X (UTM Easting)
       - Y (UTM Northing)
       - Z (Altitude)
+      ![Example of events.txt](/Users/ws/Documents/GitHub/Ortho_to_image/0_gps_embeder/images/img_events_txt.png)
       - File must be placed in the same folder as images
 
 ### **Outputs**
