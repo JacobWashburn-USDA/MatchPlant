@@ -1,4 +1,4 @@
-**GPS Embedding Tool for Drone Imagery**
+## **GPS Embedding Tool for Drone Imagery**
 
 A Python utility for processing drone imagery and embedding GPS coordinates by matching image timestamps with event data. This tool handles UTM (Universal Transverse Mercator) to WGS84 coordinate conversion and EXIF metadata manipulation.
 
@@ -31,36 +31,36 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
 **Input Requirements**
 
 - **User Inputs**
-- UTM Zone Information:
-- Zone number (1-60)
-- Hemisphere (N/S)
-- Example: Zone 15N for Columbia, MO United States
-- Folder Path:
-- Base folder containing:
-  - Drone images (.jpg/.jpeg)
-  - events.txt file with coordinate data
+  - UTM Zone Information:
+    - Zone number (1-60)
+    - Hemisphere (N/S)
+    - Example: Zone 15N for Columbia, MO United States
+  - Folder Path:
+    - Base folder containing:
+      - Drone images (.jpg/.jpeg)
+      - events.txt file with coordinate data
 - **File Requirements**
-- Image Files:
-- Format: JPG/JPEG
-- Must contain EXIF timestamp data
-- Should be named in a way that maintains chronological order
-- Events File (events.txt):
-- Must be named exactly “events.txt”
-- Tab-delimited format
-- Required columns:
-  - Timestamp (in seconds)
-  - X (UTM Easting)
-  - Y (UTM Northing)
-  - Z (Altitude)
-- File must be placed in the same folder as images
+  - Image Files:
+    - Format: JPG/JPEG
+    - Must contain EXIF timestamp data
+    - Should be named in a way that maintains chronological order
+  - Events File (events.txt):
+    - Must be named exactly “events.txt”
+    - Tab-delimited format
+    - Required columns:
+      - Timestamp (in seconds)
+      - X (UTM Easting)
+      - Y (UTM Northing)
+      - Z (Altitude)
+      - File must be placed in the same folder as images
 
 **Outputs**
 
 - Program automatically creates:
-- “events_with_matches.csv”: Contains matching results
-  - CSV file with matched events and timing analysis
-- “images_with_gps” folder: Contains processed images
-  - Copy of original images with embedded GPS coordinates
+  - “events_with_matches.csv”: Contains matching results
+    - CSV file with matched events and timing analysis
+  - “images_with_gps” folder: Contains processed images
+    - Copy of original images with embedded GPS coordinates
 
 **Interactive Usage**
 
