@@ -58,7 +58,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
       - X (UTM Easting)
       - Y (UTM Northing)
       - Z (Altitude)
-      ![Example of events.txt](0_gps_embeder/images/img_events_txt.png)
+      ![Example of events.txt](https://raw.githubusercontent.com/JacobWashburn-USDA/Ortho_to_image/main/0_gps_embeder/images/img_events_txt.png)
       - File must be placed in the same folder as images
 
 ### **Outputs**
