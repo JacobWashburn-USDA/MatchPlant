@@ -1,3 +1,11 @@
+"""
+Script Name: gcp_finder_win
+Purpose: To find drone images containing a ground control point (GCP) for Mac OS
+Author: Worasit Sangjan
+Date Created: 24 January 2025
+Version: 1.0
+"""
+
 import os
 import cv2
 import glob
