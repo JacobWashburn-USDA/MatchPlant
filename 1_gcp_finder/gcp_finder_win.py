@@ -1,6 +1,6 @@
 """
 Script Name: gcp_finder_win
-Purpose: To find drone inmages containing a ground control point (gcp) for Window OS
+Purpose: To find drone images containing a ground control point (GCP) for Window OS
 Author: Worasit Sangjan
 Date Created: 16 January 2025
 Version: 1.0
