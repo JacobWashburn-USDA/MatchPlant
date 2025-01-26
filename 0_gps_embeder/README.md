@@ -7,6 +7,7 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
+cd Ortho_to_image/0_gps_embeder
 ```
 
 2. Install dependencies:
