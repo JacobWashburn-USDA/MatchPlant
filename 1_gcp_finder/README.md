@@ -68,14 +68,19 @@ python gcp_finder_mac.py
 
 2. GCP File (CSV format):
    - Required columns:
-     - id: GCP identifier
      - X: Longitude/Easting
      - Y: Latitude/Northing
      - Z: Elevation
+     - id: GCP identifier
     
-![image]()
+GCP File format:
+```
+X,Y,Z,id
+-123.456,45.789,100.5,1
+-123.457,45.790,102.3,2
+```
 
-Figure 1. Example of GCP file
+Figure 1. Example of GCP file format
 
 ## **Outputs**
 
