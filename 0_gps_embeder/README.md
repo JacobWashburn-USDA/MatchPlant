@@ -2,6 +2,9 @@
 
 A Python utility for processing drone imagery and embedding GPS coordinates by matching image timestamps with event data. This tool handles UTM (Universal Transverse Mercator) to WGS84 coordinate conversion and EXIF metadata manipulation.
 
+### **Note**
+This tool is handy for drone imagery processing workflows where GPS data must be embedded post-flight or when working with systems that record position data separately from image capture.
+
 ## Quick Start
 
 1. Clone the repository:
@@ -139,7 +142,3 @@ matcher.embed_gps_to_images('input_folder', 'images_with_gps')
 ## **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-     
-## **Note**
-
-This tool is handy for drone imagery processing workflows where GPS data must be embedded post-flight or when working with systems that record position data separately from image capture.
