@@ -85,6 +85,20 @@ Figure 1. Example of GCP file
    - Includes coordinate transformations
    - Headers specify coordinate system
 
+GCP list format:
+```
+WGS84 UTM [zone][hemisphere]
+[UTM_X] [UTM_Y] [Elevation] [ImageX] [ImageY] [Filename] [GCP_ID]
+```
+
+The program creates `gcp_list.txt` in your input image folder with this format:
+```
+input_image_folder/
+├── your_images.jpg
+├── gcp_list.txt        # Generated GCP file
+```
+
+
 ## **Usage Instructions**
 
 1. Launch Application:
@@ -136,7 +150,3 @@ Figure 1. Example of GCP file
 ## **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Notes
-
-This tool is handy for drone imagery processing workflows where the ot
