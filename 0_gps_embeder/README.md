@@ -84,9 +84,9 @@ your_input_folder/
     └── your_images.jpg       # Copies of images with GPS data
 ```
 
-## Usage Examples
+## **Usage Examples**
 
-### Interactive Usage
+### **Interactive Usage**
 
 1. Run the script:
    ```bash
@@ -100,7 +100,7 @@ your_input_folder/
    Enter the path to your images folder: /path/to/your/drone/images
    ```
 
-### Programmatic Usage
+### **Programmatic Usage**
 
 ```python
 from gps_embed import TimestampMatcher
@@ -121,7 +121,7 @@ matcher.save_matched_events('events.txt', 'events_with_matches.csv')
 matcher.embed_gps_to_images('input_folder', 'images_with_gps')
 ```
 
-## Common Issues and Solutions
+## **Common Issues and Solutions**
 
 1. **No EXIF Data**:
    - Ensure images are not copies or screenshots
@@ -136,7 +136,7 @@ matcher.embed_gps_to_images('input_folder', 'images_with_gps')
    - Confirm the correct UTM zone for your location
    - Verify coordinate format in events.txt
      
-## License
+## **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
      
