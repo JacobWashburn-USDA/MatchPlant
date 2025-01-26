@@ -80,8 +80,6 @@ X,Y,Z,id
 -123.457,45.790,102.3,2
 ```
 
-Figure 1. Example of GCP file format
-
 ## **Outputs**
 
 1. gcp_list.txt:
