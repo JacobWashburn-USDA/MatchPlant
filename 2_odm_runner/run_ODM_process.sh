@@ -1,3 +1,6 @@
+# Developed: Worasit Sangjan
+# Date: 19 January 2025
+
 #!/bin/bash
 
 # Set project paths (update these to match your directory structure)
