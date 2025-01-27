@@ -1,16 +1,16 @@
 # **Minimum Image Finder**
 
-A Python utility for finding the minimum set of drone images required to cover a target area while maintaining specified overlap requirements. This tool provides an interactive interface for optimizing image selection and reducing processing time in drone imagery workflows.
+A Python utility for creating optimal drone image datasets for object detection models. This tool helps reduce dataset redundancy by selecting the minimum number of images needed to cover a target area, making the object detection training more efficient.
 
 ### **Note**
-This tool is particularly useful for drone imagery processing workflows where you need to minimize the number of images while ensuring adequate coverage, especially when using photogrammetry software like OpenDroneMap, Pix4D, or Agisoft Metashape.
+This tool is handy for deep learning workflows where you must create efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of your area of interest, making the object detection training more efficient and reducing computational requirements.
 
 ## Quick Start
 
 ### 1. Clone the repository:
 ```bash
 git clone https://github.com/YourUsername/MinimumImageFinder.git
-cd MinimumImageFinder
+cd Ortho_to_image/3_min_img_finder
 ```
 
 ### 2. Install dependencies:
@@ -39,13 +39,11 @@ python min_img_finder_mac.py
 
 ## **Features**
 
-- Interactive GUI: User-friendly interface for image optimization
-- Smart Selection: Automatically identifies optimal image sequences
-- Coverage Analysis: Visual representation of covered and uncovered areas
-- Overlap Control: Customizable horizontal and vertical overlap requirements
-- Result Management: Export selected images and detailed reports
-- Progress Tracking: Visual display of selected image sequences
-- Flight Line Analysis: Automatic detection and optimization of flight lines
+- Dataset Optimization: Minimize redundancy in your training data
+- Coverage Guarantee: Ensure all areas are represented in the dataset
+- Smart Selection: Automatically identify unique viewpoints
+- Overlap Control: Customize image overlap to balance redundancy and coverage
+- Result Management: Export optimized dataset with coverage visualization
 
 ## **Requirements**
 
@@ -62,39 +60,39 @@ python min_img_finder_mac.py
 
 ### Configuration Setup
 1. Path Configuration:
-   - Orthophoto path (.tif)
-   - Orthorectified image folder
-   - Undistorted image folder
+   - Orthophoto path (.tif) - for reference and coverage verification
+   - Orthorectified image folder - for spatial analysis
+   - Undistorted image folder - contains original images for the dataset
 
 2. Optimization Parameters:
-   - Flight line width (%)
-   - Horizontal minimum/maximum overlap (%)
-   - Vertical minimum/maximum overlap (%)
-   - Uncovered area threshold (%)
+   - Flight line width (%) - controls spacing between selected images
+   - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
+   - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
+   - Uncovered area threshold (%) - sets acceptable coverage gaps
 
 ### **Required Files**
 1. Orthophoto:
    - Format: GeoTIFF (.tif)
-   - Must contain proper georeferencing
+   - Used as a reference for coverage analysis
 
 2. Image Folders:
    - Orthorectified images (GeoTIFF format)
-   - Undistorted original images
+   - Original undistorted images for the final dataset
 
 ## **Outputs**
 
-1. Selected Images:
-   - Timestamped folder containing selected undistorted images
-   - CSV file with sequence information
-   - Coverage plot showing selected images and uncovered areas
+1. Optimized Dataset:
+   - Selected images with minimal redundancy
+   - Coverage report (CSV)
+   - Visual coverage map
 
 Output structure:
 ```
 output_folder/
-├── selected_undistorted_images_YYYYMMDD_HHMMSS/
+├── selected_undistorted_images_YYYYMMDD_HHMMSS/  # Your optimized dataset
 │   └── selected_images...
-├── selected_images_list_YYYYMMDD_HHMMSS.csv
-└── coverage_plot_YYYYMMDD_HHMMSS.png
+├── selected_images_list_YYYYMMDD_HHMMSS.csv      # Selection metadata
+└── coverage_plot_YYYYMMDD_HHMMSS.png             # Coverage visualization
 ```
 
 ## **Usage Instructions**
@@ -105,60 +103,41 @@ output_folder/
    ```
 
 2. Initial Setup:
-   - Select orthophoto file (.tif)
-   - Choose orthorectified image folder
-   - Select undistorted image folder
-   - Set optimization parameters
+   - Select your reference orthophoto
+   - Choose your input image folders
+   - Configure optimization parameters based on your needs
   
-3. Optimization Process:
+3. Dataset Creation:
    - Click "Start Finding" to begin optimization
-   - Review coverage visualization
-   - Save results if satisfied
+   - Review coverage to ensure all areas of interest are included
+   - Save your optimized dataset
 
-## **Interactive Controls**
+## **Optimization Strategy**
 
-The tool provides two main windows:
-
-1. Configuration Window:
-   - File/folder selection via browse buttons
-   - Parameter input fields
-   - Start button to begin optimization
-
-2. Results Window:
-   - Coverage visualization
-   - Save results button
-   - Coverage statistics display
+The tool optimizes your dataset by:
+1. Analyzing flight lines to maintain systematic coverage
+2. Eliminating redundant, overlapping images
+3. Ensuring representation of all unique viewpoints
+4. Maintaining minimum required overlap for complete coverage
+5. Selecting images that maximize area coverage while minimizing count
 
 ## **Common Issues and Solutions**
 
-1. File Loading Issues:
-   - Verify file paths and permissions
-   - Check image format compatibility
-   - Ensure proper georeferencing in orthophoto
+1. Missing Coverage:
+   - Decrease the flight line width
+   - Increase overlap parameters
+   - Lower the uncovered area threshold
 
-2. Optimization Problems:
-   - Adjust overlap parameters
-   - Check flight line width settings
-   - Verify uncovered area threshold
+2. Too Many Images:
+   - Increase flight line width
+   - Decrease maximum overlap
+   - Increase uncovered area threshold
 
-3. Memory Errors:
-   - Reduce image resolution if necessary
-   - Process smaller areas separately
-   - Close other memory-intensive applications
+3. Processing Issues:
+   - Ensure consistent image georeferencing
+   - Verify image format compatibility
+   - Check available system memory
 
 ## **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## **Acknowledgments**
-
-- Developed by Worasit Sangjan
-- Contributors welcome
-
-## **Contributing**
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
