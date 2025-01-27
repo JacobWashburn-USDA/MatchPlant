@@ -4,43 +4,53 @@ Scripts to automate OpenDroneMap (ODM) processing for both Windows (PowerShell) 
 
 ## Prerequisites
 
-- [Docker](https://www.docker.com/get-started) installed and running
-- For Windows: PowerShell
-- For Linux/Unix: Bash shell
-- OpenDroneMap Docker image (will be pulled automatically if not present)
+- OpenDroneMap installed using Docker: Installation guide [here](https://github.com/OpenDroneMap/ODM)
+- For Windows system: PowerShell
+- For Linux/Unix system: Bash shell
+  
+## Important: Working Directory
 
-## Directory Structure
+**The scripts must be run from the directory containing your drone images!**
 
-Your project folder should look like this:
+Example directory structure:
 ```
-project_folder/
-├── images/              # Place your drone images here
-│   └── gcp_list.txt    # Optional: GCP file if you have ground control points
-├── run_ODM_process.ps1 # Windows PowerShell script
-└── run_ODM_process.sh  # Linux/Unix shell script
+your_drone_project/         # This is where your images are
+├── images/                 # Your drone images
+│   ├── IMG_0001.JPG
+│   ├── IMG_0002.JPG
+│   └── gcp_list.txt        # Optional: GCP file if you have ground control points
+├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
 ```
+gcp_list.txt can be created by "1_gcp_finder" step [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/1_gcp_finder)
 
 ## Usage
 
 ### For Windows Users
 
-1. Place your drone images in the `images` folder
-2. If using ground control points, place your `gcp_list.txt` in the `images` folder
-3. Open PowerShell in your project directory
+1. Copy `run_ODM_process.ps1` to your image directory
+2. Place your `gcp_list.txt` in the `images` folder
+3. Navigate to your image directory:
+```PowerShell
+cd path\to\your\drone_project
+```
 4. Run the script:
-```powershell
+```PowerShell
 .\run_ODM_process.ps1
 ```
 
 ### For Linux/Unix Users
 
-1. Place your drone images in the `images` folder
-2. If using ground control points, place your `gcp_list.txt` in the `images` folder
-3. Make the script executable:
+1. Copy `run_ODM_process.ps1` to your image directory
+2. Place your `gcp_list.txt` in the `images` folder
+3. Navigate to your image directory:
+```bash
+cd path/to/your/drone_project
+```
+4. Make the script executable:
 ```bash
 chmod +x run_ODM_process.sh
 ```
-4. Run the script:
+5. Run the script:
 ```bash
 ./run_ODM_process.sh
 ```
@@ -63,27 +73,23 @@ The scripts use these default parameters:
 
 ## Error Handling
 
-- The scripts will check for the presence of GCP file and notify you
-- Docker commands are executed with error checking
+- The scripts will check for the presence of the GCP file and notify you
+- Docker commands are executed with error-checking
 - Progress messages are displayed during processing
 
 ## Common Issues
 
-1. **Docker not running**
-   - Ensure Docker daemon is running before executing the scripts
+1. **Wrong Working Directory**
+   - Make sure you're running the script from the directory containing your images
+   - The script uses the current directory path for all operations
+
+2. **Docker not running**
+   - Ensure the Docker daemon is running before executing the scripts
    
-2. **Permission Issues**
-   - Windows: Ensure PowerShell has necessary permissions
-   - Linux: Make sure script is executable (`chmod +x`)
+3. **Permission Issues**
+   - Windows: Ensure PowerShell has the necessary permissions
+   - Linux: Make sure the script is executable (`chmod +x`)
 
-3. **Path Issues**
+4. **Path Issues**
    - Avoid spaces in folder and file names
-   - Use the scripts from the project root directory
-
-## Contributing
-
-Feel free to submit issues and enhancement requests!
-
-## License
-
-[Add your chosen license here]
+   - Use the scripts from the directory containing your images
