@@ -1,0 +1,29 @@
+# Core image processing and numerical computations
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# Data handling
+pandas>=2.0.0
+
+# GUI and visualization
+matplotlib>=3.7.0
+python-tk>=8.6  # For macOS system dialogs
+PyObjC>=9.0.1  # Required for macOS native dialogs
+PyObjC-core>=9.0.1  # Core components for macOS
+
+# Geospatial processing
+pyproj>=3.6.0
+
+# System and utilities
+python-dateutil>=2.8.2  # Required by pandas
+setuptools>=65.5.1  # Required for various package operations
+wheel>=0.38.4  # Required for building packages
+
+# Image handling extras
+opencv-python-headless>=4.8.0  # For servers or headless operations
+imagecodecs>=2023.1.23  # For advanced image format support
+
+# Mac-specific additional requirements
+subprocess.run>=0.0.8  # For macOS system commands
+appscript>=1.2.0  # For better macOS integration
