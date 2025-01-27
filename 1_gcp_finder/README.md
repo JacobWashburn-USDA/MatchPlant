@@ -7,18 +7,25 @@ This tool is handy for drone imagery processing workflows where the orthomosaic 
 
 ## Quick Start
 
-1. Clone the repository:
+### 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
 cd Ortho_to_image/1_gcp_finder
 ```
 
-2. Install dependencies:
+### 2. Install dependencies:
+
+For Windows:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements_win.txt
 ```
 
-3. Run the script:
+For macOS:
+```bash
+pip install -r requirements_mac.txt
+```
+
+### 3. Run the script:
 
 For Windows:
 ```bash
