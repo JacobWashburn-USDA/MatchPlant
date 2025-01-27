@@ -1,0 +1,28 @@
+# ODM output directories
+odm_*/
+opensfm/
+pmvs/
+imgs/
+img_list.txt
+
+# Image files
+*.jpg
+*.jpeg
+*.png
+*.tif
+*.tiff
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Docker
+.docker/
