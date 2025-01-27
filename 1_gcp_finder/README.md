@@ -7,18 +7,25 @@ This tool is handy for drone imagery processing workflows where the orthomosaic 
 
 ## Quick Start
 
-1. Clone the repository:
+### 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
 cd Ortho_to_image/1_gcp_finder
 ```
 
-2. Install dependencies:
+### 2. Install dependencies:
+
+For Windows:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements_win.txt
 ```
 
-3. Run the script:
+For macOS:
+```bash
+pip install -r requirements_mac.txt
+```
+
+### 3. Run the script:
 
 For Windows:
 ```bash
@@ -101,7 +108,6 @@ input_image_folder/
 ├── gcp_list.txt        # Generated GCP file
 ```
 
-
 ## **Usage Instructions**
 
 1. Launch Application:
@@ -112,8 +118,12 @@ input_image_folder/
 2. Initial Setup:
    - Select an image folder
    - Choose GCP data file
-   - Enter camera sensor dimensions
-   - Set distance threshold
+   - Enter camera sensor dimensions: Check sensor dimension [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
+   - Set distance threshold (default = 10 m)
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/initial_window.jpg?raw=true)
+
+Figure 1. Example of ininitial_setup_window
 
 3. GCP Marking:
    - Select GCP ID from the radio buttons
@@ -121,6 +131,10 @@ input_image_folder/
    - Right-click to mark the GCP location
    - Press 'S' to save points
    - Press 'D' to delete last point
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/GCP_marking_window.jpg?raw=true)
+
+Figure 2. Example of gcp_marking_window
 
 ## **Interactive Controls**
 
