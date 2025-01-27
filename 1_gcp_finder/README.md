@@ -7,18 +7,25 @@ This tool is handy for drone imagery processing workflows where the orthomosaic 
 
 ## Quick Start
 
-1. Clone the repository:
+### 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
 cd Ortho_to_image/1_gcp_finder
 ```
 
-2. Install dependencies:
+### 2. Install dependencies:
+
+For Windows:
 ```bash
-pip install -r requirements.txt
+pip install -r requirements_win.txt
 ```
 
-3. Run the script:
+For macOS:
+```bash
+pip install -r requirements_mac.txt
+```
+
+### 3. Run the script:
 
 For Windows:
 ```bash
@@ -111,7 +118,7 @@ input_image_folder/
 2. Initial Setup:
    - Select an image folder
    - Choose GCP data file
-   - Enter camera sensor dimensions
+   - Enter camera sensor dimensions: Check sensor dimension [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
    - Set distance threshold (default = 10 m)
   
 ![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/initial_window.jpg?raw=true)
