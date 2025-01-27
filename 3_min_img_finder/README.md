@@ -63,7 +63,7 @@ python min_img_finder_mac.py
    - Orthophoto path (.tif) - for reference and coverage verification
    - Orthorectified image folder - for spatial analysis
    - Undistorted image folder - contains original images for the dataset
-
+   
 2. Optimization Parameters:
    - Flight line width (%) - controls spacing between selected images
    - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
@@ -78,6 +78,21 @@ python min_img_finder_mac.py
 2. Image Folders:
    - Orthorectified images (GeoTIFF format)
    - Original undistorted images for the final dataset
+
+Input structure: 
+
+Remark: All input is from the "2_odm_runner" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/2_odm_runner)
+```
+project_root/
+├── images/                     
+├── odm_dem/                   
+├── odm_orthophoto/
+│   └── odm_orthophoto.tif    # Orthophoto image
+├── opensfm/                   
+│   └── undistorted/         
+│       └── images/           # Undistorted image folder
+└── orthorectified/           # Orthorectified image folder
+```
 
 ## **Outputs**
 
@@ -106,11 +121,19 @@ output_folder/
    - Select your reference orthophoto
    - Choose your input image folders
    - Configure optimization parameters based on your needs
-  
-3. Dataset Creation:
    - Click "Start Finding" to begin optimization
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/images/img_1.png?raw=true)
+
+Figure 1. Example of ininitial_setup_window
+     
+3. Dataset Creation:
    - Review coverage to ensure all areas of interest are included
    - Save your optimized dataset
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/images/img_2.png?raw=true)
+
+Figure 2. Example of min_img_window
 
 ## **Optimization Strategy**
 
