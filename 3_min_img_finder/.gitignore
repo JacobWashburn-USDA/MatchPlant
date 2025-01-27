@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+.env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific outputs
+selected_undistorted_images_*/
+selected_images_list_*.csv
+coverage_plot_*.png
+
+# Image files
+*.tif
+*.TIF
+*.jpg
+*.JPG
+
+# Generated data
+orthorectified/
+undistorted/
+
+# Matplotlib
+.matplotlib/
+
+# Mac specific
+.DS_Store
+._*
+
+# Windows specific
+Thumbs.db
+Desktop.ini
