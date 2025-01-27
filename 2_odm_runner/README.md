@@ -2,6 +2,18 @@
 
 Scripts to automate OpenDroneMap (ODM) processing for both Windows (PowerShell) and Linux/Unix (Bash) environments.
 
+## Important Note for Deep Learning - Object Detection
+
+The ODM is particularly valuable for preparing drone imagery for object detection model training. The ODM software:
+- Generates undistorted images, removing lens distortion that could affect model accuracy
+- Helps create higher-quality training datasets for computer vision tasks
+
+**Key Benefits:**
+- Reduced noise in training data by removing camera lens distortion
+- More consistent object appearance across images
+- Better model generalization due to standardized image geometry
+- Improved accuracy in object size and position predictions
+
 ## Prerequisites
 
 - OpenDroneMap installed using Docker: Installation guide [here](https://github.com/OpenDroneMap/ODM)
