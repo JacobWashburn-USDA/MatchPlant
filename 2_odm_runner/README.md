@@ -2,7 +2,7 @@
 
 Scripts to automate OpenDroneMap (ODM) processing for both Windows (PowerShell) and Linux/Unix (Bash) environments.
 
-## Important Note for Deep Learning - Object Detection
+## Note for Deep Learning - Object Detection
 
 The ODM is particularly valuable for preparing drone imagery for object detection model training. The ODM software:
 - Generates undistorted images, removing lens distortion that could affect model accuracy
