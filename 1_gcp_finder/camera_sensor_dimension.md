@@ -20,7 +20,7 @@
 | Sony      | -             | A7R III       | 35.9       | 24          | 42.4           | 4.52           |
 
 
-SOurce: [Wikipedia](https://en.wikipedia.org/wiki/Image_sensor_format)
+Source: [Wikipedia](https://en.wikipedia.org/wiki/Image_sensor_format)
 
 Source: [DJZ Photo Blog](https://www.djzphoto.com/blog/2018/12/5/dji-drone-quick-specs-amp-comparison-page)
 
