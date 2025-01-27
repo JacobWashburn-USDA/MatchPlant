@@ -1,3 +1,6 @@
+# Developed: Worasit Sangjan
+# Date: 19 January 2025
+
 # Set project paths (update these to match your directory structure)
 $ProjectFolder = Get-Location
 $ImagesFolder = Join-Path $ProjectFolder "images"
