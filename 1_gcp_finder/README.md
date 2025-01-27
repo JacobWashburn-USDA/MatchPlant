@@ -118,7 +118,7 @@ input_image_folder/
 2. Initial Setup:
    - Select an image folder
    - Choose GCP data file
-   - Enter camera sensor dimensions
+   - Enter camera sensor dimensions: Check sensor dimension [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
    - Set distance threshold (default = 10 m)
   
 ![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/initial_window.jpg?raw=true)
