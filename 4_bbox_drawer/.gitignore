@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+.env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific outputs
+mask_box/         # Directory for masked images
+img_box/          # Directory for annotated images
+*_annotations.json  # COCO format annotations
+*_annotations.txt   # YOLO format annotations
+classes.txt         # YOLO classes file
+
+# Matplotlib cache
+.matplotlib/
+
+# Mac specific
+.DS_Store
+._*
+
+# Windows specific
+Thumbs.db
+Desktop.ini
