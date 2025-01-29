@@ -2,6 +2,18 @@
 
 Scripts to automate OpenDroneMap (ODM) processing for both Windows (PowerShell) and Linux/Unix (Bash) environments.
 
+## Note for Deep Learning - Object Detection
+
+The ODM is particularly valuable for preparing drone imagery for object detection model training. The ODM software:
+- Generates undistorted images, removing lens distortion that could affect model accuracy
+- Helps create higher-quality training datasets for computer vision tasks
+
+**Key Benefits:**
+- Reduced noise in training data by removing camera lens distortion
+- More consistent object appearance across images
+- Better model generalization due to standardized image geometry
+- Improved accuracy in object size and position predictions
+
 ## Prerequisites
 
 - OpenDroneMap installed using Docker: Installation guide [here](https://github.com/OpenDroneMap/ODM)
@@ -21,7 +33,7 @@ your_drone_project/         # This is where your images are
 │   └── gcp_list.txt        # Optional: GCP file if you have ground control points
 ├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
 ```
-gcp_list.txt can be created by "1_gcp_finder" step [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/1_gcp_finder)
+gcp_list.txt can be created by "1_gcp_finder" process [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/1_gcp_finder)
 
 ## Usage
 
@@ -67,7 +79,7 @@ The script will create several output directories:
 ## Script Parameters
 
 The scripts use these default parameters:
-- Orthophoto resolution: 0.5
+- Orthophoto resolution: 0.5 cm
 - DSM generation enabled
 - Uses GCP if `gcp_list.txt` is present in the images folder
 

@@ -112,7 +112,7 @@ input_image_folder/
 
 1. Launch Application:
    ```python
-   python gcp_finder_win.py
+   python gcp_finder_win.py   # or gcp_finder_mac.py for macOS
    ```
 
 2. Initial Setup:

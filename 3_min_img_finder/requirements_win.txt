@@ -1,0 +1,13 @@
+# Core numerical computations and data handling
+numpy>=1.24.0
+pandas>=2.0.0
+rasterio>=1.3.0
+shapely>=2.0.0
+
+# GUI and visualization
+matplotlib>=3.7.0
+tk>=0.1.0  # For Windows file dialogs
+tkinter>=0.1.0  # Usually comes with Python installation
+
+# System and utilities
+python-dateutil>=2.8.2
