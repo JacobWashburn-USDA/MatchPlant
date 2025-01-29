@@ -1,3 +1,13 @@
+"""
+Script Name: bbox_drawer_win
+Purpose: A tool for drawing bounding boxes on images with multi-category support, 
+         designed for image annotation tasks with COCO/YOLO format output.
+         Implemented for Mac OS.
+Authors: Worasit Sangjan
+Date Created: 28 January 2025
+Version: 1.0
+"""
+
 import cv2
 import os
 import json
