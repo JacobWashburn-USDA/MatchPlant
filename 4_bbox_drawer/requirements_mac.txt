@@ -1,0 +1,9 @@
+# Core image processing and data handling
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# GUI and visualization
+matplotlib>=3.7.0
+
+# System integration
+subprocess.run>=0.0.8  # For macOS system commands
