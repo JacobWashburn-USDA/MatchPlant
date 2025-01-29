@@ -1,16 +1,16 @@
 # **Bounding Box Annotation Tool**
 
-A Python utility for creating annotated image datasets for object detection models. This tool provides an interactive interface for drawing bounding boxes around objects of interest, supporting both COCO and YOLO annotation formats, with implementations for both Windows and macOS platforms.
+This Python utility creates annotated image datasets for object detection models. It provides an interactive interface for drawing bounding boxes around objects of interest and supports COCO and YOLO annotation formats with Windows and macOS platform implementations.
 
 ### **Note**
-This tool is essential for deep learning workflows where you need to create annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
+This tool is essential for deep learning workflows that require creating annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
 
 ## Quick Start
 
 ### 1. Clone the repository:
 ```bash
 git clone https://github.com/YourUsername/BoundingBoxAnnotator.git
-cd BoundingBoxAnnotator
+cd Ortho_to_image/4_bbox_drawer
 ```
 
 ### 2. Install dependencies:
@@ -76,6 +76,8 @@ python bbox_drawer_mac.py
   - TIF/TIFF
 
 Input structure:
+
+Remark: The image input folder is from the output folder (selected_undistorted_images) in "3_min_img_finder" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder)
 ```
 project_root/
 ├── images/                     # Your input image folder
@@ -89,7 +91,7 @@ project_root/
 1. Annotation Results:
    - Annotated images with bounding boxes
    - Masked images for each annotation
-   - Annotation files in chosen format
+   - Annotation files in the chosen format
 
 Output structure:
 ```
@@ -116,13 +118,21 @@ project_root/
    - Choose annotation format (COCO/YOLO)
    - Define categories
    - Click "Start Drawing" to begin annotation
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/images/img1.jpg?raw=true)
+
+Figure 1. Example of ininitial_setup_window
 
 3. Drawing Boxes:
    - Right-click and drag to draw boxes
    - Use number keys (1-5) to switch categories
-   - Press 'D' to delete last box
-   - Press 'Enter' to move to next image
+   - Press 'D' to delete the last box
+   - Press 'Enter' to move to the next image
    - Press 'ESC' to exit
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/images/img2.jpg?raw=true)
+
+Figure 2. Example of bbox_drawer_window
 
 ## **Annotation Strategy**
 
@@ -131,14 +141,14 @@ The tool supports efficient annotation by:
 2. Enabling quick category switching
 3. Supporting multiple annotation formats
 4. Automating mask generation
-5. Maintaining organized output structure
+5. Maintaining an organized output structure
 
 ## **Common Issues and Solutions**
 
 1. Drawing Issues:
    - Use right-click for drawing
    - Ensure proper window focus
-   - Check mouse cursor position
+   - Check the mouse cursor position
 
 2. Category Management:
    - Use number keys for switching
