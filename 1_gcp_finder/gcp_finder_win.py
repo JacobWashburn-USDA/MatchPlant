@@ -2,8 +2,8 @@
 Script Name: gcp_finder_win
 Purpose: To find drone images containing a ground control point (GCP) for Window OS
 Author: Worasit Sangjan
-Date Created: 16 January 2025
-Version: 1.0
+Date Created: 2 February 2025
+Version: 1.1
 """
 
 import os
@@ -51,7 +51,7 @@ class InitialWindow:
     def setup_window(self):
         """Setup the initial configuration window"""
         self.ax = self.fig.add_subplot(111)
-        self.ax.set_position([0.15, 0.2, 0.7, 0.7])
+        self.ax.set_position([0.1, 0.1, 0.8, 0.8])
         self.ax.set_xticks([])
         self.ax.set_yticks([])
         
@@ -61,10 +61,10 @@ class InitialWindow:
             spine.set_linewidth(1.0)
         
          # Main title
-        self.ax.text(0.5, 1.05, 'GCP Finder',
-                    ha='center', va='center',
-                    fontsize=20, fontweight='bold',
-                    transform=self.ax.transAxes)
+        self.ax.text(0.5, 1.05, 'GCP Finder', 
+                     ha='center', va='center',
+                     fontsize=20, fontweight='bold',
+                     transform=self.ax.transAxes)
 
         self._setup_path_section()
         self._setup_camera_section()
@@ -79,84 +79,85 @@ class InitialWindow:
             spine.set_visible(False)
 
     def _setup_path_section(self):
-        """Setup the path configuration section"""
+        """Setup the path configuration section with fixed positioning"""
         # Section title
         self.ax.text(0.5, 0.925, "Path Configuration",
-                    ha='center', va='center',
-                    fontsize=12, fontweight='bold',
-                    transform=self.ax.transAxes)
+                     ha='center', va='center',
+                     fontsize=14, fontweight='bold',
+                     transform=self.ax.transAxes)
 
-        # Image selection
-        self.ax.text(0.14, 0.85, "Image Folder:",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
+        # Image Folder
+        self.ax.text(0.265, 0.85, "Image Folder:",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
-        img_box = self.fig.add_axes([0.325, 0.78, 0.35, 0.03])
+        img_box = self.fig.add_axes([0.325, 0.765, 0.35, 0.03])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.685, 0.78, 0.08, 0.03])
+        img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
         self.img_button = Button(img_button_ax, 'Browse')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
-        # GCP file selection
-        self.ax.text(0.15, 0.78, "GCP File:",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
+        # GCP File
+        self.ax.text(0.265, 0.78, "GCP File:",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
-        gcp_box = self.fig.add_axes([0.325, 0.73, 0.35, 0.03])
+        gcp_box = self.fig.add_axes([0.325, 0.71, 0.35, 0.03])
         self.gcp_input = TextBox(gcp_box, '', initial='')
         
-        gcp_button_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
+        gcp_button_ax = self.fig.add_axes([0.685, 0.71, 0.08, 0.03])
         self.gcp_button = Button(gcp_button_ax, 'Browse')
         self.gcp_button.on_clicked(lambda x: self.browse_file('gcp'))
 
     def _setup_camera_section(self):
-        """Setup the camera configuration section"""
-        # Section title       
-        self.ax.text(0.5, 0.57, "Camera Sensor Configuration",
-                    ha='center', va='center',
-                    fontsize=12, fontweight='bold',
-                    transform=self.ax.transAxes)
+        """Setup the camera configuration section with fixed positioning"""
+        # Section title
+        self.ax.text(0.5, 0.63, "Camera Sensor Configuration",
+                     ha='center', va='center',
+                     fontsize=14, fontweight='bold',
+                     transform=self.ax.transAxes)
         
         # Explanatory text
-        self.ax.text(0.5, 0.53, "Enter the camera sensor dimensions (in millimeters)",
-                    ha='center', va='center',
-                    fontsize=10, style='italic',
-                    transform=self.ax.transAxes)
+        self.ax.text(0.5, 0.59, "Enter the camera sensor dimensions (in millimeters)",
+                     ha='center', va='center',
+                     fontsize=10, style='italic',
+                     transform=self.ax.transAxes)
         
-        # Width and height inputs
-        self.ax.text(0.14, 0.47, "Width (mm):",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
-        width_box = self.fig.add_axes([0.32, 0.515, 0.15, 0.03])
+        # Width input
+        self.ax.text(0.265, 0.515, "Width (mm):",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
+        width_box = self.fig.add_axes([0.325, 0.5, 0.15, 0.03])
         self.width_input = TextBox(width_box, '', initial='')
 
-        self.ax.text(0.52, 0.47, "Height (mm):",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
-        height_box = self.fig.add_axes([0.59, 0.515, 0.15, 0.03])
+        # Height input
+        self.ax.text(0.595, 0.515, "Height (mm):",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
+        height_box = self.fig.add_axes([0.59, 0.5, 0.15, 0.03])
         self.height_input = TextBox(height_box, '', initial='')
 
     def _setup_threshold_section(self):
-        """Setup the threshold configuration section"""
+        """Setup the threshold configuration section with fixed positioning"""
         # Section title
-        self.ax.text(0.5, 0.25, "Distance Threshold Configuration",
-                    ha='center', va='center',
-                    fontsize=12, fontweight='bold',
-                    transform=self.ax.transAxes)
+        self.ax.text(0.5, 0.365, "Distance Threshold Configuration",
+                     ha='center', va='center',
+                     fontsize=14, fontweight='bold',
+                     transform=self.ax.transAxes)
 
         # Explanatory text
-        self.ax.text(0.5, 0.21,
-                    "Set the maximum distance (in meters) for searching images near GCP points",
-                    ha='center', va='center',
-                    fontsize=10, style='italic',
-                    transform=self.ax.transAxes)
+        self.ax.text(0.5, 0.335,
+                     "Set the maximum distance (in meters) for searching images near GCP points",
+                     ha='center', va='center',
+                     fontsize=10, style='italic',
+                     transform=self.ax.transAxes)
         
         # Threshold input
-        self.ax.text(0.13, 0.15, "Threshold (m):",
-                    ha='left', va='center',
+        self.ax.text(0.265, 0.27, "Threshold (m):",
+                    ha='right', va='center',
                     transform=self.ax.transAxes)
-        threshold_box = self.fig.add_axes([0.32, 0.29, 0.15, 0.03])
+        threshold_box = self.fig.add_axes([0.325, 0.30, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
 
     def browse_file(self, type_):
@@ -180,25 +181,25 @@ class InitialWindow:
 
     def _setup_start_button(self):
         """Setup the start button"""
-        button_ax = self.fig.add_axes([0.35, 0.1, 0.35, 0.07])
-        self.button = Button(button_ax, 'Click to Start GCP Search',
+        button_ax = self.fig.add_axes([0.325, 0.15, 0.35, 0.07])
+        self.button = Button(button_ax, 'Click to Start Finding',
                            color='#90EE90',
                            hovercolor='#7CCD7C')
         self.button.on_clicked(self.validate_and_start)
-        self.button.label.set_fontsize(11)            
+        self.button.label.set_fontsize(12)            
 
     def validate_and_start(self, event):
         """Validate all inputs and start the application"""
         # Validate paths
         paths = {
-            'GCP file': self.gcp_input.text.strip(),
-            'image folder': self.img_input.text.strip()
+            'image folder': self.gcp_input.text.strip(),
+            'GCP file': self.img_input.text.strip()
         }
         
         # Check paths exist
         for name, path in paths.items():
             if not path:
-                self.show_error_message(f"Please select a {name}")
+                self.show_error_message(f"Please select the {name}")
                 return
             if not os.path.exists(path):
                 self.show_error_message(f"{name} does not exist")
@@ -265,19 +266,8 @@ class InitialWindow:
         
         self.error_text = self.error_ax.text(0.5, 0.5, message, color='red',
                                              ha='center', va='center',
-                                             fontsize=10, wrap=True)
+                                             fontsize=14, wrap=True)
         self.fig.canvas.draw_idle()
-
-        timer = self.fig.canvas.new_timer(interval=3000)
-        timer.add_callback(self.clear_error_message)
-        timer.start()
-
-    def clear_error_message(self):
-        """Clear the error message"""
-        if self.error_text:
-            self.error_text.remove()
-            self.error_text = None
-            self.fig.canvas.draw_idle()
 
     def show(self):
         """Display the window and cleanup resources"""
