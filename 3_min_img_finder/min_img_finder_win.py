@@ -3,8 +3,8 @@ Script Name: min_img_finder_win
 Purpose: To find the minimum set of drone images needed to cover a target area while 
          maintaining specified overlap requirements for Windon OS
 Author: Worasit Sangjan
-Date Created: 27 January 2025
-Version: 1.0
+Date Created: 31 January 2025
+Version: 1.1
 """
 
 import os
@@ -40,7 +40,7 @@ class InitialWindow:
     def setup_window(self):
         """Setup the initial configuration window"""
         self.ax = self.fig.add_subplot(111)
-        self.ax.set_position([0.15, 0.2, 0.7, 0.7])
+        self.ax.set_position([0.1, 0.1, 0.8, 0.8])
         self.ax.set_xticks([])
         self.ax.set_yticks([])
         
@@ -68,28 +68,29 @@ class InitialWindow:
 
     def _setup_path_section(self):
         """Setup the path configuration section"""
-        # Section title
-        self.ax.text(0.5, 0.925, "Path Configuration",
-                    ha='center', va='center',
-                    fontsize=12, fontweight='bold',
-                    transform=self.ax.transAxes)
 
-        # Orthophoto selection
-        self.ax.text(0.145, 0.85, "Orthophoto:",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
+        # Section title
+        self.ax.text(0.5, 0.945, "Path Configuration",
+                     ha='center', va='center',
+                     fontsize=14, fontweight='bold',
+                     transform=self.ax.transAxes)
+
+        # Orthophoto
+        self.ax.text(0.265, 0.875, "Orthophoto:",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
-        ortho_box = self.fig.add_axes([0.325, 0.78, 0.35, 0.03])
+        ortho_box = self.fig.add_axes([0.325, 0.785, 0.35, 0.03])
         self.ortho_input = TextBox(ortho_box, '', initial='')
         
-        ortho_button_ax = self.fig.add_axes([0.685, 0.78, 0.08, 0.03])
+        ortho_button_ax = self.fig.add_axes([0.685, 0.785, 0.08, 0.03])
         self.ortho_button = Button(ortho_button_ax, 'Browse')
         self.ortho_button.on_clicked(lambda x: self.browse_file('ortho'))
 
-        # Orthorectified folder selection
-        self.ax.text(0.03, 0.78, "Orthorectified Image Folder:",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
+        # Orthorectified Images
+        self.ax.text(0.265, 0.805, "Orthorectified Image Folder:",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
         rect_box = self.fig.add_axes([0.325, 0.73, 0.35, 0.03])
         self.img_input = TextBox(rect_box, '', initial='')
@@ -98,75 +99,46 @@ class InitialWindow:
         self.img_button = Button(rect_button_ax, 'Browse')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
-        # Undistorted folder selection
-        self.ax.text(0.045, 0.71, "Undistorted Image Folder:",
-                    ha='left', va='center',
-                    transform=self.ax.transAxes)
+        # Undistorted Images
+        self.ax.text(0.265, 0.735, "Undistorted Image Folder:",
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
-        undist_box = self.fig.add_axes([0.325, 0.68, 0.35, 0.03])
+        undist_box = self.fig.add_axes([0.325, 0.675, 0.35, 0.03])
         self.undist_input = TextBox(undist_box, '', initial='')
         
-        undist_button_ax = self.fig.add_axes([0.685, 0.68, 0.08, 0.03])
+        undist_button_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
         self.undist_button = Button(undist_button_ax, 'Browse')
         self.undist_button.on_clicked(lambda x: self.browse_file('undist'))
+
 
     def _setup_parameters_section(self):
         """Setup the optimization parameters section"""
         # Section title
-        self.ax.text(0.5, 0.57, "Optimization Parameters",
-                    ha='center', va='center',
-                    fontsize=12, fontweight='bold',
-                    transform=self.ax.transAxes)
-
-        # Common settings
-        input_width = 0.15
-        box_height = 0.03
-        label_x = 0.35
-        input_x = 0.425
+        self.ax.text(0.5, 0.625, "Optimization Parameters",
+                     ha='center', va='center',
+                     fontsize=14, fontweight='bold',
+                     transform=self.ax.transAxes)
 
         self.param_inputs = {}
+        parameters = [
+            ("Flight Line Width (%):", "15", 0.545, 0.52),
+            ("Horizontal Min Overlap (%):", "1", 0.475, 0.465),
+            ("Horizontal Max Overlap (%):", "15", 0.405, 0.410),
+            ("Vertical Min Overlap (%):", "1", 0.335, 0.355),
+            ("Vertical Max Overlap (%):", "15", 0.27, 0.30),
+            ("Uncovered Threshold (%):", "10", 0.20, 0.245)
+        ]
 
-        # Flight Line Width
-        self.ax.text(label_x, 0.48, "Flight Line Width (%):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
-        input_box = self.fig.add_axes([input_x, 0.525, input_width, box_height])
-        self.param_inputs["Flight Line Width (%):"] = TextBox(input_box, '', initial="15")
-
-        # Horizontal Min Overlap
-        self.ax.text(label_x, 0.41, "Horizontal Min Overlap (%):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
-        input_box = self.fig.add_axes([input_x, 0.475, input_width, box_height])
-        self.param_inputs["Horizontal Min Overlap (%):"] = TextBox(input_box, '', initial="1")
-
-        # Horizontal Max Overlap
-        self.ax.text(label_x, 0.34, "Horizontal Max Overlap (%):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
-        input_box = self.fig.add_axes([input_x, 0.425, input_width, box_height])
-        self.param_inputs["Horizontal Max Overlap (%):"] = TextBox(input_box, '', initial="15")
-
-        # Vertical Min Overlap
-        self.ax.text(label_x, 0.27, "Vertical Min Overlap (%):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
-        input_box = self.fig.add_axes([input_x, 0.375, input_width, box_height])
-        self.param_inputs["Vertical Min Overlap (%):"] = TextBox(input_box, '', initial="1")
-
-        # Vertical Max Overlap
-        self.ax.text(label_x, 0.20, "Vertical Max Overlap (%):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
-        input_box = self.fig.add_axes([input_x, 0.325, input_width, box_height])
-        self.param_inputs["Vertical Max Overlap (%):"] = TextBox(input_box, '', initial="15")
-
-        # Uncovered Threshold
-        self.ax.text(label_x, 0.13, "Uncovered Threshold (%):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
-        input_box = self.fig.add_axes([input_x, 0.275, input_width, box_height])
-        self.param_inputs["Uncovered Threshold (%):"] = TextBox(input_box, '', initial="10")
+        for label, default, y_pos_text, y_pos_box in parameters:
+            # Add label
+            self.ax.text(0.375, y_pos_text, label,
+                         ha='right', va='center',
+                         transform=self.ax.transAxes)
+            
+            # Add input box
+            input_box = self.fig.add_axes([0.415, y_pos_box, 0.15 , 0.03])
+            self.param_inputs[label] = TextBox(input_box, '', initial=default)
         
     def browse_file(self, type_):
         """Handle file and folder selection using tkinter"""
@@ -194,12 +166,12 @@ class InitialWindow:
 
     def _setup_start_button(self):
         """Setup the start button"""
-        button_ax = self.fig.add_axes([0.35, 0.1, 0.35, 0.07])
+        button_ax = self.fig.add_axes([0.325, 0.125, 0.35, 0.07])
         self.button = Button(button_ax, 'Click to Start Finding',
-                            color='#90EE90',
-                            hovercolor='#7CCD7C')
+                             color='#90EE90',
+                             hovercolor='#7CCD7C')
         self.button.on_clicked(self.validate_and_start)
-        self.button.label.set_fontsize(11)    
+        self.button.label.set_fontsize(12)    
 
     def validate_and_start(self, event):
         """Validate all inputs and start the optimization"""
@@ -259,20 +231,9 @@ class InitialWindow:
             self.error_text.remove()
         
         self.error_text = self.error_ax.text(0.5, 0.5, message, color='red',
-                                           ha='center', va='center',
-                                           fontsize=10, wrap=True)
+                                             ha='center', va='center',
+                                             fontsize=14, wrap=True)
         self.fig.canvas.draw_idle()
-
-        timer = self.fig.canvas.new_timer(interval=3000)
-        timer.add_callback(self.clear_error_message)
-        timer.start()
-
-    def clear_error_message(self):
-        """Clear the error message"""
-        if self.error_text:
-            self.error_text.remove()
-            self.error_text = None
-            self.fig.canvas.draw_idle()
 
     def show(self):
         """Display the window"""
