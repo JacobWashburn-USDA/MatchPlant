@@ -79,7 +79,7 @@ class InitialWindow:
             spine.set_visible(False)
 
     def _setup_path_section(self):
-        """Setup the path configuration section with fixed positioning"""
+        """Setup the path configuration section"""
         # Section title
         self.ax.text(0.5, 0.925, "Path Configuration",
                      ha='center', va='center',
@@ -111,7 +111,7 @@ class InitialWindow:
         self.gcp_button.on_clicked(lambda x: self.browse_file('gcp'))
 
     def _setup_camera_section(self):
-        """Setup the camera configuration section with fixed positioning"""
+        """Setup the camera configuration section"""
         # Section title
         self.ax.text(0.5, 0.63, "Camera Sensor Configuration",
                      ha='center', va='center',
