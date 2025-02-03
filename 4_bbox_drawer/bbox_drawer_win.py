@@ -60,9 +60,9 @@ class InitialWindow:
         
         # Main title
         self.ax.text(0.5, 1.065, 'Boundary Box Drawing Tool',
-                    ha='center', va='center',
-                    fontsize=20, fontweight='bold',
-                    transform=self.ax.transAxes)
+                     ha='center', va='center',
+                     fontsize=20, fontweight='bold',
+                     transform=self.ax.transAxes)
 
         # Setup components
         self._setup_path_section()
@@ -74,22 +74,22 @@ class InitialWindow:
         """Setup the path configuration section"""
         # Header
         self.ax.text(0.5, 0.93, "Image Directory Selection",
-                    ha='center', va='center',
-                    fontsize=14, fontweight='bold',
-                    transform=self.ax.transAxes)
+                     ha='center', va='center',
+                     fontsize=14, fontweight='bold',
+                     transform=self.ax.transAxes)
         
         # Description
         self.ax.text(0.5, 0.875, 
-                    """Select the folder containing your selected images
-                    *Output folders will be created at the same location  of selected image folder""",
-                    ha='center', va='center',
-                    fontsize=10, style='italic',
-                    transform=self.ax.transAxes)
+                     """Select the folder containing your selected images
+                     *Output folders will be created at the same location  of selected image folder""",
+                     ha='center', va='center',
+                     fontsize=10, style='italic',
+                     transform=self.ax.transAxes)
         
         # Image directory
         self.ax.text(0.24, 0.80, "Image Folder:",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
         # Directory input and button
         dir_box = self.fig.add_axes([0.325, 0.745, 0.35, 0.03])
@@ -113,8 +113,8 @@ class InitialWindow:
         """Setup format selection"""
         # Format selection label
         self.ax.text(0.24, 0.72, "Output Format:",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
         # Create radio buttons for format selection
         format_ax = self.fig.add_axes([0.325, 0.665, 0.1, 0.06])
@@ -133,8 +133,8 @@ class InitialWindow:
         """Setup section for selecting number of categories using figure coordinates"""
         # Label 
         self.ax.text(0.24, 0.615, "Number of Categories (1-5):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         
         # Position input box and update button
         cat_count_box = self.fig.add_axes([0.325, 0.615, 0.1, 0.03])
@@ -206,12 +206,12 @@ class InitialWindow:
 
     def _setup_start_button(self):
         """Setup the start button"""
-        button_ax = self.fig.add_axes([0.35, 0.24, 0.3, 0.07])
+        button_ax = self.fig.add_axes([0.325, 0.24, 0.35, 0.07])
         self.button = Button(button_ax, 'Click to Start Drawing',
-                           color='#90EE90',
-                           hovercolor='#7CCD7C')
+                             color='#90EE90',
+                             hovercolor='#7CCD7C')
         self.button.on_clicked(self.validate_and_start)
-        self.button.label.set_fontsize(11)
+        self.button.label.set_fontsize(12)
 
     def validate_and_start(self, event):
         """Validate inputs and start the application"""
@@ -253,7 +253,7 @@ class InitialWindow:
         
         self.error_text = self.error_ax.text(0.5, 0.5, message, color='red',
                                            ha='center', va='center',
-                                           fontsize=10, wrap=True)
+                                           fontsize=14, wrap=True)
         self.fig.canvas.draw_idle()
 
     def show(self):
