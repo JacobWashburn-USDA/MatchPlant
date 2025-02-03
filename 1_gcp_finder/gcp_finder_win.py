@@ -155,8 +155,8 @@ class InitialWindow:
         
         # Threshold input
         self.ax.text(0.265, 0.27, "Threshold (m):",
-                    ha='right', va='center',
-                    transform=self.ax.transAxes)
+                     ha='right', va='center',
+                     transform=self.ax.transAxes)
         threshold_box = self.fig.add_axes([0.325, 0.30, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
 
@@ -183,8 +183,8 @@ class InitialWindow:
         """Setup the start button"""
         button_ax = self.fig.add_axes([0.325, 0.15, 0.35, 0.07])
         self.button = Button(button_ax, 'Click to Start Finding',
-                           color='#90EE90',
-                           hovercolor='#7CCD7C')
+                             color='#90EE90',
+                             hovercolor='#7CCD7C')
         self.button.on_clicked(self.validate_and_start)
         self.button.label.set_fontsize(12)            
 
