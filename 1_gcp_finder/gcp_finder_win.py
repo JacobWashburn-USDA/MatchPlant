@@ -86,7 +86,7 @@ class InitialWindow:
                      fontsize=14, fontweight='bold',
                      transform=self.ax.transAxes)
 
-        # Image Folder
+        # Image folder
         self.ax.text(0.265, 0.85, "Image Folder:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
@@ -98,7 +98,7 @@ class InitialWindow:
         self.img_button = Button(img_button_ax, 'Browse')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
-        # GCP File
+        # GCP file
         self.ax.text(0.265, 0.78, "GCP File:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
@@ -147,17 +147,17 @@ class InitialWindow:
                      transform=self.ax.transAxes)
 
         # Explanatory text
-        self.ax.text(0.5, 0.335,
+        self.ax.text(0.5, 0.325,
                      "Set the maximum distance (in meters) for searching images near GCP points",
                      ha='center', va='center',
                      fontsize=10, style='italic',
                      transform=self.ax.transAxes)
         
         # Threshold input
-        self.ax.text(0.265, 0.27, "Threshold (m):",
+        self.ax.text(0.265, 0.25, "Threshold (m):",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        threshold_box = self.fig.add_axes([0.325, 0.30, 0.15, 0.03])
+        threshold_box = self.fig.add_axes([0.325, 0.285, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
 
     def browse_file(self, type_):
@@ -181,7 +181,7 @@ class InitialWindow:
 
     def _setup_start_button(self):
         """Setup the start button"""
-        button_ax = self.fig.add_axes([0.325, 0.15, 0.35, 0.07])
+        button_ax = self.fig.add_axes([0.325, 0.125, 0.35, 0.07])
         self.button = Button(button_ax, 'Click to Start Finding',
                              color='#90EE90',
                              hovercolor='#7CCD7C')
