@@ -30,13 +30,13 @@ def maximize_window(fig):
 class InitialWindow:
     """Initial configuration window for image annotation settings"""
     def __init__(self):
-        # Create figure with a reasonable default size
+        # Create figure size
         self.fig = plt.figure(figsize=(14, 8))
         maximize_window(self.fig)
         
-        # Create main axes with fixed relative position and size
+        # Create main axes' position and size
         self.ax = self.fig.add_subplot(111)
-        # This sets the axes to take up most of the figure space
+        # Set the axes of the figure space
         self.ax.set_position([0.1, 0.1, 0.8, 0.8])
         self.ax.set_xticks([])
         self.ax.set_yticks([])
@@ -46,7 +46,7 @@ class InitialWindow:
             spine.set_visible(True)
             spine.set_linewidth(1.0)
         
-        # Create error message axes with fixed position relative to figure
+        # Create error message axes position
         self.error_ax = self.fig.add_axes([0.1, 0.02, 0.8, 0.06])
         self.error_ax.set_xticks([])
         self.error_ax.set_yticks([])
@@ -58,7 +58,7 @@ class InitialWindow:
 
     def setup_window(self):
         """Setup the initial configuration window"""
-        # Main title with fixed relative position
+        # Main title 
         self.ax.text(0.5, 1.05, 'Image Annotation Configuration',
                      ha='center', va='center',
                      fontsize=20, fontweight='bold',
@@ -78,39 +78,39 @@ class InitialWindow:
                      fontsize=14, fontweight='bold',
                      transform=self.ax.transAxes)
         
-        # Image directory
-        self.ax.text(0.225, 0.875, "Image Directory:", 
+        # Image folder
+        self.ax.text(0.225, 0.875, "Image Folder:", 
                      ha='right', va='center',
                      transform=self.ax.transAxes)
         
-        img_box = self.fig.add_axes([0.3, 0.78, 0.4, 0.04])
+        img_box = self.fig.add_axes([0.3, 0.78, 0.4, 0.035])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.72, 0.78, 0.1, 0.04])
+        img_button_ax = self.fig.add_axes([0.72, 0.78, 0.1, 0.035])
         self.img_button = Button(img_button_ax, 'Browse')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
-        # Annotation directory
-        self.ax.text(0.225, 0.795, "Annotation Directory:",
+        # Annotation folder
+        self.ax.text(0.225, 0.795, "Annotation Folder:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
         
-        ann_box = self.fig.add_axes([0.3, 0.715, 0.4, 0.04])
+        ann_box = self.fig.add_axes([0.3, 0.715, 0.4, 0.035])
         self.ann_input = TextBox(ann_box, '', initial='')
         
-        ann_button_ax = self.fig.add_axes([0.72, 0.715, 0.1, 0.04])
+        ann_button_ax = self.fig.add_axes([0.72, 0.715, 0.1, 0.035])
         self.ann_button = Button(ann_button_ax, 'Browse')
         self.ann_button.on_clicked(lambda x: self.browse_file('ann'))
 
-        # Output directory
-        self.ax.text(0.225, 0.705, "Output Directory:", 
+        # Output folder
+        self.ax.text(0.225, 0.705, "Output Folder:", 
                      ha='right', va='center',
                      transform=self.ax.transAxes)
         
-        out_box = self.fig.add_axes([0.3, 0.645, 0.4, 0.04])
+        out_box = self.fig.add_axes([0.3, 0.645, 0.4, 0.035])
         self.out_input = TextBox(out_box, '', initial='')
         
-        out_button_ax = self.fig.add_axes([0.72, 0.645, 0.1, 0.04])
+        out_button_ax = self.fig.add_axes([0.72, 0.645, 0.1, 0.035])
         self.out_button = Button(out_button_ax, 'Browse')
         self.out_button.on_clicked(lambda x: self.browse_file('out'))
 
@@ -126,21 +126,21 @@ class InitialWindow:
         self.ax.text(0.225, 0.545, "Train Split:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        train_box = self.fig.add_axes([0.3, 0.515, 0.2, 0.04])
+        train_box = self.fig.add_axes([0.3, 0.515, 0.2, 0.035])
         self.train_split = TextBox(train_box, '', initial='0.7')
 
         # Validation split
         self.ax.text(0.225, 0.47, "Validation Split:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        val_box = self.fig.add_axes([0.3, 0.455, 0.2, 0.04])
+        val_box = self.fig.add_axes([0.3, 0.455, 0.2, 0.035])
         self.val_split = TextBox(val_box, '', initial='0.15')
 
         # Test split
         self.ax.text(0.225, 0.395, "Test Split:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        test_box = self.fig.add_axes([0.3, 0.395, 0.2, 0.04])
+        test_box = self.fig.add_axes([0.3, 0.395, 0.2, 0.035])
         self.test_split = TextBox(test_box, '', initial='0.15')
 
     def _setup_tile_section(self):
@@ -156,14 +156,14 @@ class InitialWindow:
         self.ax.text(0.225, 0.237, "Target Tile Size:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        target_box = self.fig.add_axes([0.3, 0.27, 0.2, 0.04])
+        target_box = self.fig.add_axes([0.3, 0.27, 0.2, 0.035])
         self.target_size = TextBox(target_box, '', initial='1024')
 
         # Overlap pixels
         self.ax.text(0.225, 0.16, "Overlap Pixels:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        overlap_box = self.fig.add_axes([0.3, 0.205, 0.2, 0.04])
+        overlap_box = self.fig.add_axes([0.3, 0.205, 0.2, 0.035])
         self.overlap = TextBox(overlap_box, '', initial='100')
 
         # Right side controls
@@ -171,14 +171,14 @@ class InitialWindow:
         self.ax.text(0.66, 0.237, "Minimum IoU:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        iou_box = self.fig.add_axes([0.65, 0.27, 0.2, 0.04])
+        iou_box = self.fig.add_axes([0.65, 0.27, 0.2, 0.035])
         self.min_iou = TextBox(iou_box, '', initial='0.3')
 
         # Minimum size
         self.ax.text(0.66, 0.16, "Minimum Size:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
-        size_box = self.fig.add_axes([0.65, 0.205, 0.2, 0.04])
+        size_box = self.fig.add_axes([0.65, 0.205, 0.2, 0.035])
         self.min_size = TextBox(size_box, '', initial='10')
 
     def browse_file(self, type_):
