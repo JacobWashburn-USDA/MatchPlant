@@ -213,7 +213,7 @@ class InitialWindow:
                            color='#90EE90',
                            hovercolor='#7CCD7C')
         self.button.on_clicked(self.validate_and_start)
-        self.button.label.set_fontsize(11)
+        self.button.label.set_fontsize(12)
 
     def validate_and_start(self, event):
         """Validate inputs and start the application"""
@@ -255,7 +255,7 @@ class InitialWindow:
         
         self.error_text = self.error_ax.text(0.5, 0.5, message, color='red',
                                            ha='center', va='center',
-                                           fontsize=10, wrap=True)
+                                           fontsize=14, wrap=True)
         self.fig.canvas.draw_idle()
 
     def show(self):
