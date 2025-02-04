@@ -3,23 +3,24 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
-dist/
-build/
-*.egg-info/
-
 # Virtual Environment
 venv/
 env/
 .env/
 
-# IDE
+# IDE settings
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Project specific outputs
+# Project input directories (from ODM)
+images/
+odm_*/
+opensfm/
+orthorectified/
+
+# Project output files
 selected_undistorted_images_*/
 selected_images_list_*.csv
 coverage_plot_*.png
@@ -30,17 +31,11 @@ coverage_plot_*.png
 *.jpg
 *.JPG
 
-# Generated data
-orthorectified/
-undistorted/
-
-# Matplotlib
-.matplotlib/
-
-# Mac specific
+# OS specific
+# Mac
 .DS_Store
 ._*
 
-# Windows specific
+# Windows
 Thumbs.db
 Desktop.ini
