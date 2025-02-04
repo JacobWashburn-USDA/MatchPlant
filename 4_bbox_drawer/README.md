@@ -1,6 +1,6 @@
 # **Bounding Box Annotation Tool**
 
-This Python utility creates annotated image datasets for object detection models. It provides an interactive interface for drawing bounding boxes around objects of interest and supports COCO and YOLO annotation formats with Windows and macOS platform implementations.
+This Python utility creates annotated image datasets for object detection models. It provides an interactive interface for drawing bounding boxes around objects of interest and supports COCO (.json file) and YOLO (.txt file) annotation formats with Windows and macOS platform implementations.
 
 ### **Note**
 This tool is essential for deep learning workflows that require creating annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
@@ -9,7 +9,7 @@ This tool is essential for deep learning workflows that require creating annotat
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/YourUsername/BoundingBoxAnnotator.git
+git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
 cd Ortho_to_image/4_bbox_drawer
 ```
 
@@ -58,26 +58,16 @@ python bbox_drawer_mac.py
 
 ## **Input Requirements**
 
-### Configuration Setup
-1. Initial Configuration:
-   - Image directory selection
-   - Annotation format selection (COCO/YOLO)
-   - Category definition (1-5 categories)
-   
-2. Annotation Parameters:
-   - Category names
-   - Output format preferences
-   - File naming conventions
-
 ### **Required Files**
-- Image folder containing supported formats:
-  - JPG/JPEG
-  - PNG
-  - TIF/TIFF
+- Image folder path:
+  - Supported formats:
+    - JPG/JPEG
+    - PNG
+    - TIF/TIFF
 
 Input structure:
 
-Remark: The image input folder is from the output folder (selected_undistorted_images) in "3_min_img_finder" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder)
+Remark: The images for the input folder are from the output folder (selected_undistorted_images) in "3_min_img_finder" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder)
 ```
 project_root/
 ├── images/                     # Your input image folder
@@ -85,6 +75,16 @@ project_root/
 │   ├── image2.jpg
 │   └── ...
 ```
+
+### Configuration Setup
+1. Initial Configuration:
+   - Annotation format selection (COCO/YOLO)
+     - COCO - JSON file format
+     - YOLO - TXT file format
+
+2. Annotation Parameters:
+   - Category definition (1-5 categories, default = 1) 
+   - Category names (default = maize)
 
 ## **Outputs**
 
@@ -100,7 +100,7 @@ project_root/
 │   ├── image1_1.jpg
 │   ├── image1_1.json/txt
 │   └── ...
-└── img_box/                    # Images with visualized annotations
+└── img_box/                    # Images with visualized annotations and annotations
     ├── image1.jpg
     ├── image1_annotations.json/txt
     └── ...
@@ -117,9 +117,9 @@ project_root/
    - Select your image folder
    - Choose annotation format (COCO/YOLO)
    - Define categories
-   - Click "Start Drawing" to begin annotation
+   - Click "Click to Start Drawing" to begin annotation
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/images/img1.jpg?raw=true)
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/images/img_1.png?raw=true)
 
 Figure 1. Example of ininitial_setup_window
 
@@ -130,7 +130,7 @@ Figure 1. Example of ininitial_setup_window
    - Press 'Enter' to move to the next image
    - Press 'ESC' to exit
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/images/img2.jpg?raw=true)
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/images/img_2.png?raw=true)
 
 Figure 2. Example of bbox_drawer_window
 
@@ -162,4 +162,4 @@ The tool supports efficient annotation by:
 
 ## **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
