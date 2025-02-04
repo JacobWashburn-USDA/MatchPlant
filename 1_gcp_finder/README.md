@@ -121,7 +121,7 @@ input_image_folder/
    - Enter camera sensor dimensions: Check sensor dimension [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
    - Set distance threshold (default = 10 m)
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/initial_window.jpg?raw=true)
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/img_1.png?raw=true)
 
 Figure 1. Example of ininitial_setup_window
 
