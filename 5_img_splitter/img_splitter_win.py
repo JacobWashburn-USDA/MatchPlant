@@ -52,7 +52,8 @@ class InitialWindow:
         self.error_ax.set_yticks([])
         for spine in self.error_ax.spines.values():
             spine.set_visible(False)
-        
+
+        self.ready_to_process = False
         self.error_text = None
         self.setup_window()
 
@@ -259,7 +260,7 @@ class InitialWindow:
             'tile_config': tile_config
         }
         
-        plt.close(self.fig)
+        self.ready_to_process = True
 
     def show_error_message(self, message):
         """Display error message in the window"""
@@ -273,7 +274,9 @@ class InitialWindow:
         self.fig.canvas.draw_idle()
 
     def get_config(self):
-        plt.show()
+        plt.show(block=False)
+        while plt.fignum_exists(self.fig.number) and not self.ready_to_process:
+            plt.pause(0.1)
         return getattr(self, 'config', None)
 
 def initialize_config():
@@ -595,6 +598,7 @@ class ResultsWindow:
                                  color='#90EE90',
                                  hovercolor='#7CCD7C')
         self.close_button.on_clicked(self._close_window)
+        self.close_button.label.set_fontsize(12)  
 
     def display_results(self, results):
         """Display processing results"""
@@ -640,8 +644,11 @@ class ResultsWindow:
 
 if __name__ == "__main__":
     # Get configuration from initial window
-    config = initialize_config()
+    initial_window = InitialWindow()
+    config = initial_window.get_config()
+    
     if config is None:
+        plt.close(initial_window.fig)
         exit(1)
     
     # Create path objects
@@ -675,5 +682,10 @@ if __name__ == "__main__":
     # Show results window
     results_window = ResultsWindow()
     results_window.display_results(results)
+    
+    # Close initial window only after showing results
+    plt.close(initial_window.fig)
+    
+    # Show results window
     results_window.show()
         
