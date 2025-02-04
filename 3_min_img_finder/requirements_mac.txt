@@ -6,10 +6,3 @@ shapely>=2.0.0
 
 # GUI and visualization
 matplotlib>=3.7.0
-
-# System and utilities
-python-dateutil>=2.8.2
-
-# Mac-specific
-subprocess.run>=0.0.8  # For macOS system commands
-appscript>=1.2.0  # For macOS native dialogs
