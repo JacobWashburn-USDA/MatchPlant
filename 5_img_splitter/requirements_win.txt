@@ -1,0 +1,7 @@
+# Core image processing and data handling
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# GUI and visualization
+matplotlib>=3.7.0
+tk>=0.1.0  # For Windows file dialogs
