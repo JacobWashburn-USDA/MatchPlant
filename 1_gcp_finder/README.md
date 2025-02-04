@@ -3,7 +3,7 @@
 A Python utility for identifying and marking Ground Control Points (GCPs) in drone imagery. This tool provides an interactive interface for matching GCP coordinates with their corresponding locations in drone-captured images.
 
 ### **Note**
-This tool is handy for drone imagery processing workflows where the orthomosaic software needs the GCP file to increase the precision of orthomosaic image, for example when using OpenDroneMap open-source software.
+This tool is handy for drone imagery processing workflows where the orthomosaic software needs the GCP file to increase the precision of the orthomosaic image, for example, when using OpenDroneMap open-source software.
 
 ## Quick Start
 
@@ -176,4 +176,4 @@ Figure 2. Example of gcp_marking_window
 
 ## **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
