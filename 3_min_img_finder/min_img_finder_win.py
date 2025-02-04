@@ -68,7 +68,6 @@ class InitialWindow:
 
     def _setup_path_section(self):
         """Setup the path configuration section"""
-
         # Section title
         self.ax.text(0.5, 0.945, "Path Configuration",
                      ha='center', va='center',
