@@ -69,7 +69,7 @@ python min_img_finder_mac.py
 
 ### Configuration Setup
    
-1. Optimization Parameters:
+1. Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/configuration_parameters_guide.md)
    - Flight line width (%) - controls spacing between selected images
    - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
    - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
@@ -117,7 +117,7 @@ output_folder/
    - Select your reference orthophoto
    - Choose your input image folders
    - Configure optimization parameters based on your needs
-   - Click "Start Finding" to begin optimization
+   - Click "Click to Start Finding" to begin optimization
   
 ![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/images/img_1.png?raw=true)
 
