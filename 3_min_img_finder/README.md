@@ -75,7 +75,7 @@ python min_img_finder_mac.py
    - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
    - Uncovered area threshold (%) - sets acceptable coverage gaps
 
-Input structure: 
+## **Input structure**
 
 Remark: All input is from the "2_odm_runner" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/2_odm_runner)
 ```
