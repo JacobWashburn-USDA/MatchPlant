@@ -21,14 +21,14 @@ env/
 
 # Project specific outputs
 data/                # Directory containing train/val/test splits
-data/train/         # Training set images
-data/val/           # Validation set images
-data/test/          # Test set images
-annotations/        # COCO format annotations directory
-*.tif              # Supported image formats
+data/train/          # Training set images
+data/val/            # Validation set images
+data/test/           # Test set images
+annotations/         # COCO format annotations directory
+*.tif                # Supported image formats
 *.jpg
 *.png
-*_annotations.json  # COCO annotation files
+*_annotations.json   # COCO annotation files
 
 # Matplotlib cache
 .matplotlib/
