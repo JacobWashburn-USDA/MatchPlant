@@ -1,15 +1,15 @@
 # **Minimum Image Finder**
 
-A Python utility for creating optimal drone image datasets for object detection models. This tool helps reduce dataset redundancy by selecting the minimum number of images needed to cover a target area, making the object detection training more efficient.
+This is a Python utility for creating optimal drone image datasets for object detection models. It helps reduce dataset redundancy by selecting the minimum number of images needed to cover a target area, making object detection training more efficient.
 
 ### **Note**
-This tool is handy for deep learning workflows where you must create efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of your area of interest, making the object detection training more efficient and reducing computational requirements.
+This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
 
 ## Quick Start
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/YourUsername/MinimumImageFinder.git
+git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
 cd Ortho_to_image/3_min_img_finder
 ```
 
@@ -58,26 +58,22 @@ python min_img_finder_mac.py
 
 ## **Input Requirements**
 
+### **Required Files**
+1. Orthophoto path:
+   - Format: GeoTIFF (.tif)
+   - Used as a reference for coverage analysis
+
+2. Image Folders path:
+   - Orthorectified images (GeoTIFF format) - for spatial analysis
+   - Original undistorted images for the final dataset
+
 ### Configuration Setup
-1. Path Configuration:
-   - Orthophoto path (.tif) - for reference and coverage verification
-   - Orthorectified image folder - for spatial analysis
-   - Undistorted image folder - contains original images for the dataset
    
-2. Optimization Parameters:
+1. Optimization Parameters:
    - Flight line width (%) - controls spacing between selected images
    - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
    - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
    - Uncovered area threshold (%) - sets acceptable coverage gaps
-
-### **Required Files**
-1. Orthophoto:
-   - Format: GeoTIFF (.tif)
-   - Used as a reference for coverage analysis
-
-2. Image Folders:
-   - Orthorectified images (GeoTIFF format)
-   - Original undistorted images for the final dataset
 
 Input structure: 
 
@@ -163,4 +159,4 @@ The tool optimizes your dataset by:
 
 ## **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
