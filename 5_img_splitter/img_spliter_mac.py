@@ -604,6 +604,7 @@ class ResultsWindow:
                                  color='#90EE90',
                                  hovercolor='#7CCD7C')
         self.close_button.on_clicked(self._close_window)
+        self.close_button.label.set_fontsize(12)  
 
     def display_results(self, results):
         """Display processing results"""
