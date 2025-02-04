@@ -47,12 +47,12 @@ cd path\to\your\drone_project
 ```
 4. Run the script:
 ```PowerShell
-.\run_ODM_process.ps1
+.\run_ODM_process.ps1 
 ```
 
 ### For Linux/Unix Users
 
-1. Copy `run_ODM_process.ps1` to your image directory
+1. Copy `run_ODM_process.sh` to your image directory
 2. Place your `gcp_list.txt` in the `images` folder
 3. Navigate to your image directory:
 ```bash
@@ -92,7 +92,7 @@ The scripts use these default parameters:
 ## Common Issues
 
 1. **Wrong Working Directory**
-   - Make sure you're running the script from the directory containing your images
+   - Make sure you are running the script from the directory containing your images
    - The script uses the current directory path for all operations
 
 2. **Docker not running**
