@@ -78,7 +78,7 @@ project_root/
 
 ### Configuration Setup
 1. Initial Configuration:
-   - Annotation format selection (COCO/YOLO)
+   - Annotation format selection (COCO/YOLO): For more details, please click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/4_bbox_drawer/annotation_format.md)
      - COCO - JSON file format
      - YOLO - TXT file format
 
