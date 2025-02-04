@@ -61,12 +61,6 @@ python gcp_finder_mac.py
 
 ## **Input Requirements**
 
-### Configuration Setup
-1. Sensor Dimensions:
-   - Camera sensor width (mm)
-   - Camera sensor height (mm)
-   - Distance threshold (meters)
-
 ### **Required Files**
 1. Image Files:
    - Format: JPG/JPEG/TIF/TIFF
@@ -86,6 +80,21 @@ X,Y,Z,id
 -123.456,45.789,100.5,1
 -123.457,45.790,102.3,2
 ```
+
+### Configuration Setup
+1. Sensor Dimensions: For the information, please click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
+   - Camera sensor width (millimeter)
+   - Camera sensor height (millimeter)
+     
+2. Distance Threshold Configuration (meter, default = 10 m):
+   - The distance threshold determines how far (in meters) from a GCP the software will search for relevant images
+   - A larger threshold (e.g., 20m) will find more potential images but may include ones where the GCP is less visible
+   - A smaller threshold (e.g., 5m) will be more selective, showing only images taken closer to the GCP
+   - Choose based on your flight pattern:
+      - For flights with dense coverage, use smaller values (5-10m)
+      - For sparser coverage or higher altitude flights, use larger values (15-20m)
+      - Maximum allowed value is 50m
+   - The threshold helps filter out images where the GCP would be too distant or poorly visible
 
 ## **Outputs**
 
@@ -118,8 +127,9 @@ input_image_folder/
 2. Initial Setup:
    - Select an image folder
    - Choose GCP data file
-   - Enter camera sensor dimensions: Check sensor dimension [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
-   - Set distance threshold (default = 10 m)
+   - Enter camera sensor dimensions: Check sensor dimension 
+   - Set distance threshold 
+   - Click "Click to Start Finding" to begin
   
 ![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/img_1.png?raw=true)
 
