@@ -60,7 +60,7 @@ python bbox_drawer_mac.py
 
 ### **Required Files**
 - Image folder path:
-  - [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder) The image input folder is created by "3_min_img_finder" method - the "selected_undistorted_images" folder
+  - Click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder) / The image input folder is created by "3_min_img_finder" method - the "selected_undistorted_images" folder
   - Supported formats:
     - JPG/JPEG
     - PNG
