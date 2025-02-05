@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
+# Distribution/packaging
 dist/
 build/
 *.egg-info/
@@ -19,19 +19,18 @@ env/
 *.swp
 *.swo
 
-# Project specific outputs
-data/                # Directory containing train/val/test splits
-data/train/          # Training set images
-data/val/            # Validation set images
-data/test/           # Test set images
-annotations/         # COCO format annotations directory
-*.tif                # Supported image formats
-*.jpg
-*.png
-*_annotations.json   # COCO annotation files
+# Project output directories
+data/                   # Main data directory
+data/*/                 # All data subdirectories (train/val/test)
+annotations/            # COCO format annotations
 
-# Matplotlib cache
-.matplotlib/
+# Project output files
+*_annotations.json      # Generated annotation files
+*.tif                   # Processed images
+*.jpg
+
+# Matplotlib
+.matplotlib/            # Matplotlib cache
 
 # Mac specific
 .DS_Store
@@ -40,3 +39,7 @@ annotations/         # COCO format annotations directory
 # Windows specific
 Thumbs.db
 Desktop.ini
+
+# Temporary files
+*~
+*.bak
