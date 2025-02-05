@@ -1,4 +1,4 @@
-# **Minimum Image Finder**
+# **Minimum Image Finder Tool**
 
 This is a Python utility for creating optimal drone image datasets for object detection models. It helps reduce dataset redundancy by selecting the minimum number of images needed to cover a target area, making object detection training more efficient.
 
