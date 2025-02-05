@@ -93,9 +93,9 @@ project_root/
 ## **Outputs**
 
 1. Optimized Dataset:
-   - Selected images with minimal redundancy
-   - Coverage report (CSV)
-   - Visual coverage map
+   - Selected_undistorted_images folder - Minimum number of images
+   - Selected_images_list file - Coverage report (csv)
+   - Coverage_plot image - Visual coverage map (png)
 
 Output structure:
 ```
