@@ -89,10 +89,14 @@ project_root/
 
 ## **Outputs**
 
-1. Annotation Results:
-   - Annotated images with bounding boxes
-   - Masked images for each annotation
-   - Annotation files in the chosen format
+### Annotation Results:
+1. mask_box folder
+    - Masked images for each annotation
+    - Annotation files of each masked in the chosen format
+
+2. img_box folder
+    - Images with annotation
+    - Annotation files of each image in the chosen format
 
 Output structure:
 ```
