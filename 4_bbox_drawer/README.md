@@ -84,8 +84,8 @@ project_root/
      - YOLO - TXT file format
 
 2. Annotation Parameters:
-   - Category definition (1-5 categories, default = 1) 
-   - Category names (default = maize)
+   - Category definition (1-5 categories, default: 1) 
+   - Category names (default: maize)
 
 ## **Outputs**
 
