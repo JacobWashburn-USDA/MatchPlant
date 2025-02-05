@@ -1,4 +1,4 @@
-# **GCP (Ground Control Point) Finder**
+# **GCP (Ground Control Point) Finder Tool**
 
 A Python utility for identifying and marking Ground Control Points (GCPs) in drone imagery. This tool provides an interactive interface for matching GCP coordinates with their corresponding locations in drone-captured images.
 
