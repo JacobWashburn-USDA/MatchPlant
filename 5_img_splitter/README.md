@@ -61,11 +61,13 @@ python img_splitter_mac.py
 
 ### **Required Files**
 1. Image folder path
+  - Click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder) / The image input folder is created by "3_min_img_finder" method - the "selected_undistorted_images" folder
   - supported formats:
     - TIF/TIFF
     - JPG/JPEG
     - PNG
-2. Annotation folder path 
+2. Annotation folder path
+  - Click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/4_bbox_drawer) / The annotation input folder is created by "4_bbox_drawer" method - the "img_box" folder
   - Annotation file - COCO format in JSON files
 
 Input structure:
