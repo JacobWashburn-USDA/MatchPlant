@@ -28,6 +28,7 @@ annotations/            # COCO format annotations
 *_annotations.json      # Generated annotation files
 *.tif                   # Processed images
 *.jpg
+*.png
 
 # Matplotlib
 .matplotlib/            # Matplotlib cache
