@@ -1,8 +1,18 @@
+"""
+Script Name: train.py
+Purpose: Trains and evaluates a Faster R-CNN model for maize object detection using PyTorch, 
+        with COCO format dataset handling and evaluation metrics
+Authors: Worasit Sangjan and Piyush Pandey
+Date: 6 February 2025 
+Version: 1.1
+"""
+
 import os, platform, multiprocessing, psutil
 import torch, torchvision
 import torch.utils.data
 from PIL import Image
 import json
+from config_loader import ConfigLoader 
 from pathlib import Path
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights
@@ -17,23 +27,22 @@ NUM_EPOCHS = 150
 BATCH_SIZE = 1
 NUM_CLASSES = 2  # Background + maize
 
-def configure_device_and_resources():
+def configure_device_and_resources(resource_config):
     system = platform.system()
-    device = torch.device("cuda" if torch.cuda.is_available() else 
-             "mps" if system == "Darwin" and torch.backends.mps.is_available() else 
-             "cpu")
+    if resource_config.device == "auto":
+        device = torch.device("cuda" if torch.cuda.is_available() else 
+                 "mps" if system == "Darwin" and torch.backends.mps.is_available() else 
+                 "cpu")
+    else:
+        device = torch.device(resource_config.device)
     
     if system == "Darwin":
         os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
         os.environ['TORCH_SHM_DISABLE'] = '1'
-        num_workers = 0  # Reduced workers for MacOS stability
+        num_workers = 0
     else:
         total_ram_gb = psutil.virtual_memory().total / (1024**3)
         num_workers = min(int(total_ram_gb // 16), multiprocessing.cpu_count())
-    
-    print(f"Running on: {system}")
-    print(f"Using device: {device}")
-    print(f"Workers: {num_workers}")
     
     return device, num_workers
 
@@ -138,35 +147,33 @@ def get_transform(train):
         return DetectionTransformTrain()
     return DetectionTransform() 
 
-def build_model(num_classes):
-    # Custom anchor generator
+def build_model(model_config):
     anchor_generator = AnchorGenerator(
-        sizes=((32, 64, 96, 128),),
-        aspect_ratios=((0.5, 1.0, 2.0),)
+        sizes=model_config.anchor_sizes,
+        aspect_ratios=model_config.anchor_ratios
     )
 
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn_v2(
         weights=FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT,
-        box_detections_per_img=100,
-        min_size=980,
-        max_size=1240,
-        box_score_thresh=0.05,
-        box_nms_thresh=0.5,
+        box_detections_per_img=model_config.detections_per_img,
+        min_size=model_config.min_size,
+        max_size=model_config.max_size,
+        box_score_thresh=model_config.score_thresh,
+        box_nms_thresh=model_config.nms_thresh,
         rpn_pre_nms_top_n_train=2000,
         rpn_post_nms_top_n_train=500,
         rpn_fg_iou_thresh=0.7,
         rpn_bg_iou_thresh=0.3,
         rpn_post_nms_top_n_test=500,
-        anchor_generator=anchor_generator  # Pass as a named argument
+        anchor_generator=anchor_generator
     )
     
     in_features = model.roi_heads.box_predictor.cls_score.in_features
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, model_config.num_classes)
     
-    # Explicitly set evaluation parameters
-    model.roi_heads.score_thresh = 0.05
-    model.roi_heads.nms_thresh = 0.5
-    model.roi_heads.detections_per_img = 200
+    model.roi_heads.score_thresh = model_config.score_thresh
+    model.roi_heads.nms_thresh = model_config.nms_thresh
+    model.roi_heads.detections_per_img = model_config.detections_per_img
     
     return model
 
@@ -306,16 +313,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
     return total_loss / len(data_loader)
 
 def evaluate(model, data_loader, device, epoch=None, train_loss=None):
-    """
-    Evaluate the model on the validation dataset and save detailed results.
-    
-    Args:
-        model: The model to evaluate
-        data_loader: DataLoader for validation dataset
-        device: Device to run evaluation on
-        epoch: Current epoch number (optional)
-        train_loss: Training loss from current epoch (optional)
-    """
+    """Evaluate the model on the validation dataset and save detailed results."""
     import datetime
     from pathlib import Path
     
@@ -438,84 +436,94 @@ def evaluate(model, data_loader, device, epoch=None, train_loss=None):
     return stats
 
 def main():
-    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:32'
+    # Load configuration
+    config_loader = ConfigLoader()
+    model_config, training_config, data_config, resource_config = config_loader.create_configs(
+        config_loader.load_config('config.yaml')
+    )
+    
+    # Configure environment
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = resource_config.memory_config
     torch.backends.cudnn.benchmark = True
-    torch.cuda.empty_cache()  # Clear cache before training
+    torch.cuda.empty_cache()
 
-    #os.environ['MallocStackLogging'] = '0'
-    device, num_workers = configure_device_and_resources()
+    device, num_workers = configure_device_and_resources(resource_config)
+    if data_config.num_workers is not None:
+        num_workers = data_config.num_workers
+
     data_root = Path('.')
     
-    # Create datasets
+    # Create datasets with config parameters
     dataset = MaizeDatasetCOCO(
-        data_root / 'data/train', 
-        data_root / 'annotations/train.json',
+        Path(data_config.train_dir), 
+        Path(data_config.train_annotations),
         transforms=get_transform(train=True)
     )
     
     dataset_val = MaizeDatasetCOCO(
-        data_root / 'data/val',
-        data_root / 'annotations/val.json',
+        Path(data_config.val_dir),
+        Path(data_config.val_annotations),
         transforms=get_transform(train=False)
     )
     
-    # Create data loaders
+    # Create data loaders with config parameters
     data_loader = DataLoader(
         dataset, 
-        batch_size=BATCH_SIZE,
+        batch_size=training_config.batch_size,
         shuffle=True,
-        num_workers=0,
+        num_workers=num_workers,
         collate_fn=collate_fn,
-        pin_memory=False,          # Add this
-        persistent_workers=False    # Add this
+        pin_memory=resource_config.pin_memory,
+        persistent_workers=resource_config.persistent_workers
     )
     
     data_loader_val = DataLoader(
         dataset_val,
-        batch_size=BATCH_SIZE,
+        batch_size=training_config.batch_size,
         shuffle=False,
-        num_workers=0,
+        num_workers=num_workers,
         collate_fn=collate_fn,
-        pin_memory=False,          # Add this
-        persistent_workers=False    # Add this
+        pin_memory=resource_config.pin_memory,
+        persistent_workers=resource_config.persistent_workers
     )
     
-    # Initialize model and optimizer
-    model = build_model(NUM_CLASSES)
+    # Initialize model and optimizer with config parameters
+    model = build_model(model_config)
     model.to(device)
+    
     for module in model.backbone.modules():
         if hasattr(module, 'gradient_checkpointing'):
             module.gradient_checkpointing = True
 
     optimizer = torch.optim.SGD(
         [p for p in model.parameters() if p.requires_grad],
-        lr=0.05,
-        momentum=0.9,
-        weight_decay=0.0005
+        lr=training_config.learning_rate,
+        momentum=training_config.momentum,
+        weight_decay=training_config.weight_decay
     )
     
     lr_scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=10,
-        gamma=0.1
+        step_size=training_config.lr_step_size,
+        gamma=training_config.lr_gamma
     )
     
-    # Setup checkpointing
-    checkpoint_dir = Path('./checkpoints')
+    # Setup checkpointing with config parameters
+    checkpoint_dir = Path(training_config.checkpoint_dir)
     checkpoint_dir.mkdir(exist_ok=True)
 
     # Training loop
     try:
         best_map = 0.0
-        for epoch in range(NUM_EPOCHS):
-            print(f"\nEpoch {epoch}/{NUM_EPOCHS}")
+        for epoch in range(training_config.epochs):
+            print(f"\nEpoch {epoch}/{training_config.epochs}")
             print("-" * 20)
             
             train_loss = train_one_epoch(model, optimizer, data_loader, device, epoch)
             print(f"Train Loss: {train_loss:.4f}")
 
             val_stats = evaluate(model, data_loader_val, device, epoch=epoch, train_loss=train_loss)
-            val_map = val_stats[1]  # mAP @IoU=0.50:0.95
+            val_map = val_stats[1]
             print(f"Validation mAP: {val_map:.4f}")
             
             lr_scheduler.step()
@@ -530,7 +538,7 @@ def main():
                     'best_map': best_map,
                 }, checkpoint_dir / 'best_model.pt')
             
-            if epoch % 5 == 0:
+            if epoch % training_config.save_freq == 0:
                 torch.save({
                     'epoch': epoch,
                     'model_state_dict': model.state_dict(),
