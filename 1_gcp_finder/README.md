@@ -1,4 +1,4 @@
-# **GCP (Ground Control Point) Finder**
+# **GCP (Ground Control Point) Finder Tool**
 
 A Python utility for identifying and marking Ground Control Points (GCPs) in drone imagery. This tool provides an interactive interface for matching GCP coordinates with their corresponding locations in drone-captured images.
 
@@ -104,13 +104,13 @@ X,Y,Z,id
    - Includes coordinate transformations
    - Headers specify coordinate system
 
-GCP list format:
+`gcp_list.txt` format:
 ```
 WGS84 UTM [zone][hemisphere]
 [UTM_X] [UTM_Y] [Elevation] [ImageX] [ImageY] [Filename] [GCP_ID]
 ```
 
-The program creates `gcp_list.txt` in your input image folder with this format:
+The program creates `gcp_list.txt` in your input image folder:
 ```
 input_image_folder/
 ├── your_images.jpg

@@ -1,9 +1,9 @@
 # **Image Splitter Tool**
 
-This Python utility splits large images and their corresponding COCO format annotations into smaller tiles for training object detection models. It provides a graphical interface for configuring splitting parameters and supports both Windows and macOS platforms.
+This Python utility splits large images and their corresponding COCO format annotations into smaller tiles for training object detection models. It provides a graphical interface for configuring splitting parameters and supports Windows and macOS platforms.
 
 ### **Note**
-This tool is essential for preparing large-scale imagery datasets for deep learning model training. It handles the complexities of splitting both images and their annotations while maintaining proper object relationships and coordinates. The tool is particularly useful for satellite imagery, aerial photography, and other large-format images.
+This tool is essential for preparing large-scale imagery datasets for deep-learning model training. It handles the complexities of splitting images and their annotations while maintaining proper object relationships and coordinates. The tool is handy for aerial photography and other large-format images.
 
 ## Quick Start
 
@@ -59,23 +59,45 @@ python img_splitter_mac.py
 
 ## **Input Requirements**
 
-### Configuration Setup
-1. Path Configuration:
-   - Image directory selection
-   - Annotation directory selection
-   - Output directory selection
-   
-2. Dataset Split Configuration:
-   - Train split ratio
-   - Validation split ratio
-   - Test split ratio
+### **Required Files**
+1. Image folder path
+  - Click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder) / The image input folder is created by "3_min_img_finder" method - the "selected_undistorted_images" folder
+  - supported formats:
+    - TIF/TIFF
+    - JPG/JPEG
+    - PNG
+2. Annotation folder path
+  - Click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/4_bbox_drawer) / The annotation input folder is created by "4_bbox_drawer" method - the "img_box" folder
+  - Annotation file - COCO format in JSON files
 
-3. Tile Configuration:
+Input structure:
+```
+project_root/
+├── images/                     # Your input image folder
+│   ├── image1.tif
+│   ├── image2.tif
+│   └── ...
+└── annotations/               # Your input annotation folder
+    ├── image1_annotations.json
+    ├── image2_annotations.json
+    └── ...
+```
+3. Output folder path
+  
+### Configuration Setup
+1. Dataset Split Configuration:
+   - Train split ratio (default: 0.7)
+   - Validation split ratio (default: 0.15)
+   - Test split ratio (default: 0.15)
+   
+   *Dataset split ratios must sum to 1.0 (100% of the data)
+
+2. Tile Configuration:
    - Target tile size (default: 1024 pixels)
       - The desired dimension for output tiles
       - Larger images are divided into a grid of this approximate size
       - If an image is smaller than the target size, it remains unchanged
-      - Recommended range: 512-2048 pixels depending on your model's requirements
+      - Recommended range: 512-2048 pixels, depending on your model's requirements
    
    - Overlap pixels (default: 100 pixels)
       - Number of pixels that adjacent tiles overlap
@@ -94,27 +116,7 @@ python img_splitter_mac.py
       - Minimum size (width or height) required for split objects
       - Prevents tiny object fragments from being included
       - Objects smaller than this are filtered out after splitting
-      - Recommended range: 5-20 pixels depending on your model's requirements
-
-### **Required Files**
-- Image folder containing supported formats:
-  - TIF/TIFF
-  - JPG/JPEG
-  - PNG
-- Annotation folder with COCO format JSON files
-
-Input structure:
-```
-project_root/
-├── images/                     # Your input image folder
-│   ├── image1.tif
-│   ├── image2.tif
-│   └── ...
-└── annotations/               # Your input annotation folder
-    ├── image1_annotations.json
-    ├── image2_annotations.json
-    └── ...
-```
+      - Recommended range: 5-20 pixels, depending on your model's requirements
 
 ## **Outputs**
 
@@ -150,17 +152,24 @@ output_dir/
    ```
 
 2. Initial Setup:
-   - Select input image folder
-   - Select input annotation folder
+   - Select an input image folder
+   - Select an input annotation folder
    - Choose output directory
    - Configure split ratios
    - Set tile parameters
-   - Click "Start Processing" to begin
+   - Click "Click to Start Processing" to begin
+     
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/5_img_splitter/images/img1.png?raw=true)
 
-3. Process Monitoring:
+Figure 1. Example of ininitial_setup_window
+
+3. Processing Result:
    - Wait for processing to complete
    - Review results summary
-   - Check output directories
+  
+![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/5_img_splitter/images/img2.png?raw=true)
+
+Figure 2. Example of processing_result_window
 
 ## **Processing Strategy**
 
@@ -190,4 +199,4 @@ The tool processes images and annotations by:
 
 ## **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.

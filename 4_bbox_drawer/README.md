@@ -60,6 +60,7 @@ python bbox_drawer_mac.py
 
 ### **Required Files**
 - Image folder path:
+  - Click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder) / The image input folder is created by "3_min_img_finder" method - the "selected_undistorted_images" folder
   - Supported formats:
     - JPG/JPEG
     - PNG
@@ -67,7 +68,7 @@ python bbox_drawer_mac.py
 
 Input structure:
 
-Remark: The images for the input folder are from the output folder (selected_undistorted_images) in "3_min_img_finder" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/3_min_img_finder)
+
 ```
 project_root/
 ├── images/                     # Your input image folder
@@ -83,15 +84,19 @@ project_root/
      - YOLO - TXT file format
 
 2. Annotation Parameters:
-   - Category definition (1-5 categories, default = 1) 
-   - Category names (default = maize)
+   - Category definition (1-5 categories, default: 1) 
+   - Category names (default: maize)
 
 ## **Outputs**
 
-1. Annotation Results:
-   - Annotated images with bounding boxes
-   - Masked images for each annotation
-   - Annotation files in the chosen format
+### Annotation Results:
+1. mask_box folder
+    - Masked images for each annotation
+    - Annotation files of each masked in the chosen format
+
+2. img_box folder
+    - Images with annotation
+    - Annotation files of each image in the chosen format
 
 Output structure:
 ```
