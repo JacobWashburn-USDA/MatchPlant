@@ -1,0 +1,35 @@
+model:
+  num_classes: 2
+  anchor_sizes: [[32, 64, 96, 128]]
+  anchor_ratios: [[0.5, 1.0, 2.0]]
+  min_size: 980
+  max_size: 1240
+  score_thresh: 0.05
+  nms_thresh: 0.5
+  detections_per_img: 100
+  backbone: "resnet50_fpn_v2"
+
+training:
+  epochs: 150
+  batch_size: 1
+  learning_rate: 0.05
+  momentum: 0.9
+  weight_decay: 0.0005
+  lr_step_size: 10
+  lr_gamma: 0.1
+  checkpoint_dir: "checkpoints"
+  save_freq: 5
+
+data:
+  train_dir: "data/train"
+  val_dir: "data/val"
+  train_annotations: "annotations/train.json"
+  val_annotations: "annotations/val.json"
+  augmentations: ["horizontal_flip"]
+  num_workers: null  # Auto-configure based on system
+
+resources:
+  device: "auto"
+  memory_config: "max_split_size_mb:32"
+  pin_memory: false
+  persistent_workers: false
