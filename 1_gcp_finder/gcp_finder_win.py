@@ -192,8 +192,8 @@ class InitialWindow:
         """Validate all inputs and start the application"""
         # Validate paths
         paths = {
-            'image folder': self.gcp_input.text.strip(),
-            'GCP file': self.img_input.text.strip()
+            'image folder': self.img_input.text.strip(),
+            'GCP file': self.gcp_input.text.strip()
         }
         
         # Check paths exist
@@ -506,6 +506,8 @@ class ImageFinder:
         for pattern in patterns:
             pattern_path = os.path.join(img_folder, pattern)
             img_files.extend(glob.glob(pattern_path))
+            # Remove duplicates while preserving order
+            img_files = list(dict.fromkeys(img_files))
         
         if not img_files:
             print("No images found in folder")
