@@ -1,0 +1,21 @@
+# Deep Learning Framework
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Data Handling and Image Processing
+Pillow>=9.0.0          # Image loading and processing
+numpy>=1.24.0          # Required by torchvision and data processing
+opencv-python>=4.8.0   # Image processing capabilities
+pycocotools>=2.0.6     # COCO dataset handling and evaluation
+
+# Progress Tracking and Visualization
+tqdm>=4.65.0           # Progress bars
+matplotlib>=3.7.0      # Visualization of results
+
+# Configuration and System
+PyYAML>=6.0           # Configuration file handling
+psutil>=5.9.0         # System resource monitoring
+
+# Optional but recommended for development
+ipython>=8.0.0        # Better development environment
+jupyter>=1.0.0        # Notebook support for development
