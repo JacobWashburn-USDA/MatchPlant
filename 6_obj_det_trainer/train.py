@@ -3,8 +3,8 @@ Script Name: train.py
 Purpose: Trains and evaluates a Faster R-CNN model for maize object detection using PyTorch, 
         with COCO format dataset handling and evaluation metrics
 Authors: Worasit Sangjan and Piyush Pandey
-Date: 6 February 2025 
-Version: 1.1
+Date: 11 February 2025 
+Version: 1.3
 """
 
 import os, platform, multiprocessing, psutil
@@ -12,6 +12,7 @@ import torch, torchvision
 import torch.utils.data
 from PIL import Image
 import json
+import datetime
 from config_loader import ConfigLoader 
 from pathlib import Path
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -22,27 +23,23 @@ from torch.utils.data import DataLoader
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
-# Constants
-NUM_EPOCHS = 150
-BATCH_SIZE = 1
-NUM_CLASSES = 2  # Background + maize
-
-def configure_device_and_resources(resource_config):
+def configure_device_and_resources():
     system = platform.system()
-    if resource_config.device == "auto":
-        device = torch.device("cuda" if torch.cuda.is_available() else 
-                 "mps" if system == "Darwin" and torch.backends.mps.is_available() else 
-                 "cpu")
-    else:
-        device = torch.device(resource_config.device)
+    device = torch.device("cuda" if torch.cuda.is_available() else 
+             "mps" if system == "Darwin" and torch.backends.mps.is_available() else 
+             "cpu")
     
     if system == "Darwin":
         os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
         os.environ['TORCH_SHM_DISABLE'] = '1'
-        num_workers = 0
+        num_workers = 0  # Reduced workers for MacOS stability
     else:
         total_ram_gb = psutil.virtual_memory().total / (1024**3)
         num_workers = min(int(total_ram_gb // 16), multiprocessing.cpu_count())
+    
+    print(f"Running on: {system}")
+    print(f"Using device: {device}")
+    print(f"Workers: {num_workers}")
     
     return device, num_workers
 
@@ -126,28 +123,41 @@ class DetectionTransform:
         return image, target
 
 class DetectionTransformTrain(DetectionTransform):
+    def __init__(self, aug_config):
+        self.aug_config = aug_config
+        
     def __call__(self, image, target):
         if not isinstance(target, dict) or 'boxes' not in target:
             raise ValueError("Target must be a dict with 'boxes' key")
 
-        # Convert to tensor first    
         image = T.functional.to_tensor(image)
-        # Apply horizontal flip with 50% probability
+        
+        # Color jittering using config values
         if torch.rand(1) < 0.5:
+            color_jitter = T.ColorJitter(
+                brightness=self.aug_config.brightness,
+                contrast=self.aug_config.contrast,
+                saturation=self.aug_config.saturation
+            )
+            image = color_jitter(image)
+        
+        # Random horizontal flip using config probability
+        if torch.rand(1) < self.aug_config.horizontal_flip_prob:
             image = T.functional.hflip(image)
             if len(target["boxes"]):
                 bbox = target["boxes"]
-                bbox[:, [0, 2]] = image.shape[-1] - bbox[:, [2, 0]] 
+                bbox[:, [0, 2]] = image.shape[-1] - bbox[:, [2, 0]]
                 target["boxes"] = bbox
-                
+        
         return image, target
 
-def get_transform(train):
+def get_transform(train, aug_config=None):
     if train:
-        return DetectionTransformTrain()
-    return DetectionTransform() 
+        return DetectionTransformTrain(aug_config)
+    return DetectionTransform()
 
 def build_model(model_config):
+    # Custom anchor generator using config values
     anchor_generator = AnchorGenerator(
         sizes=model_config.anchor_sizes,
         aspect_ratios=model_config.anchor_ratios
@@ -155,25 +165,25 @@ def build_model(model_config):
 
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn_v2(
         weights=FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT,
-        box_detections_per_img=model_config.detections_per_img,
+        box_detections_per_img=model_config.box_detections_per_img,
         min_size=model_config.min_size,
         max_size=model_config.max_size,
-        box_score_thresh=model_config.score_thresh,
-        box_nms_thresh=model_config.nms_thresh,
-        rpn_pre_nms_top_n_train=2000,
-        rpn_post_nms_top_n_train=500,
-        rpn_fg_iou_thresh=0.7,
-        rpn_bg_iou_thresh=0.3,
-        rpn_post_nms_top_n_test=500,
+        box_score_thresh=model_config.box_score_thresh,
+        box_nms_thresh=model_config.box_nms_thresh,
+        rpn_pre_nms_top_n_train=model_config.rpn_pre_nms_top_n_train,
+        rpn_post_nms_top_n_train=model_config.rpn_post_nms_top_n_train,
+        rpn_fg_iou_thresh=model_config.rpn_fg_iou_thresh,
+        rpn_bg_iou_thresh=model_config.rpn_bg_iou_thresh,
+        rpn_post_nms_top_n_test=model_config.rpn_post_nms_top_n_test,
+        box_fg_iou_thresh=model_config.box_fg_iou_thresh,
+        box_bg_iou_thresh=model_config.box_bg_iou_thresh,
+        box_batch_size_per_image=model_config.box_batch_size_per_image,
+        box_positive_fraction=model_config.box_positive_fraction,
         anchor_generator=anchor_generator
     )
     
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, model_config.num_classes)
-    
-    model.roi_heads.score_thresh = model_config.score_thresh
-    model.roi_heads.nms_thresh = model_config.nms_thresh
-    model.roi_heads.detections_per_img = model_config.detections_per_img
     
     return model
 
@@ -314,9 +324,6 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch):
 
 def evaluate(model, data_loader, device, epoch=None, train_loss=None):
     """Evaluate the model on the validation dataset and save detailed results."""
-    import datetime
-    from pathlib import Path
-    
     model.eval()
     model.roi_heads.score_thresh = 0.05
     evaluator = COCOEvaluator(data_loader.dataset.coco, ["bbox"])
@@ -420,18 +427,18 @@ def evaluate(model, data_loader, device, epoch=None, train_loss=None):
             'epoch': epoch,
             'timestamp': timestamp,
             'train_loss': train_loss,
-            'mAP_50': stats[1],        # AP at IoU=0.50
-            'mAP_75': stats[2],        # AP at IoU=0.75
-            'mAP_small': stats[3],     # AP for small objects
-            'mAP_medium': stats[4],    # AP for medium objects
-            'mAP_large': stats[5],     # AP for large objects
+            'mAP_50': stats[1],      
+            'mAP_75': stats[2],      
+            'mAP_small': stats[3],     
+            'mAP_medium': stats[4],    
+            'mAP_large': stats[5],     
             'processed_images': len(processed_ids)
         }
         
-        summary_file = results_dir / 'training_summary.jsonl'
+        summary_file = results_dir / 'validation_summary.jsonl'
         with open(summary_file, 'a') as f:
             f.write(json.dumps(summary) + '\n')
-        print(f"Training summary updated in: training_summary.jsonl")
+        print(f"Validation summary updated in: validation_summary.jsonl")
     
     return stats
 
@@ -444,20 +451,18 @@ def main():
     
     # Configure environment
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = resource_config.memory_config
-    torch.backends.cudnn.benchmark = True
+    torch.backends.cudnn.benchmark = resource_config.cuda_benchmark
     torch.cuda.empty_cache()
 
-    device, num_workers = configure_device_and_resources(resource_config)
+    device, num_workers = configure_device_and_resources()
     if data_config.num_workers is not None:
         num_workers = data_config.num_workers
-
-    data_root = Path('.')
     
-    # Create datasets with config parameters
+    # Create datasets using config paths
     dataset = MaizeDatasetCOCO(
-        Path(data_config.train_dir), 
+        Path(data_config.train_dir),
         Path(data_config.train_annotations),
-        transforms=get_transform(train=True)
+        transforms=get_transform(train=True, aug_config=training_config.augmentation)
     )
     
     dataset_val = MaizeDatasetCOCO(
@@ -466,53 +471,53 @@ def main():
         transforms=get_transform(train=False)
     )
     
-    # Create data loaders with config parameters
+    # Create data loaders using config settings
     data_loader = DataLoader(
-        dataset, 
+        dataset,
         batch_size=training_config.batch_size,
         shuffle=True,
-        num_workers=num_workers,
+        num_workers=data_config.num_workers,
         collate_fn=collate_fn,
-        pin_memory=resource_config.pin_memory,
-        persistent_workers=resource_config.persistent_workers
+        pin_memory=data_config.pin_memory,
+        persistent_workers=data_config.persistent_workers
     )
     
     data_loader_val = DataLoader(
         dataset_val,
         batch_size=training_config.batch_size,
         shuffle=False,
-        num_workers=num_workers,
+        num_workers=data_config.num_workers,
         collate_fn=collate_fn,
-        pin_memory=resource_config.pin_memory,
-        persistent_workers=resource_config.persistent_workers
+        pin_memory=data_config.pin_memory,
+        persistent_workers=data_config.persistent_workers
     )
     
-    # Initialize model and optimizer with config parameters
+    # Initialize model using config
     model = build_model(model_config)
     model.to(device)
     
-    for module in model.backbone.modules():
-        if hasattr(module, 'gradient_checkpointing'):
-            module.gradient_checkpointing = True
-
+    # Optimizer using config settings
     optimizer = torch.optim.SGD(
-        [p for p in model.parameters() if p.requires_grad],
-        lr=training_config.learning_rate,
-        momentum=training_config.momentum,
-        weight_decay=training_config.weight_decay
+        [
+            {'params': model.backbone.parameters(), 'lr': training_config.optimizer.backbone_lr},
+            {'params': model.rpn.parameters(), 'lr': training_config.optimizer.rpn_lr},
+            {'params': model.roi_heads.parameters(), 'lr': training_config.optimizer.roi_heads_lr}
+        ],
+        momentum=training_config.optimizer.momentum,
+        weight_decay=training_config.optimizer.weight_decay
     )
     
     lr_scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=training_config.lr_step_size,
-        gamma=training_config.lr_gamma
+        step_size=training_config.optimizer.lr_step_size,
+        gamma=training_config.optimizer.lr_gamma
     )
     
-    # Setup checkpointing with config parameters
+    # Setup checkpointing using config
     checkpoint_dir = Path(training_config.checkpoint_dir)
     checkpoint_dir.mkdir(exist_ok=True)
 
-    # Training loop
+    # Training loop using config epochs and save frequency
     try:
         best_map = 0.0
         for epoch in range(training_config.epochs):
@@ -528,7 +533,6 @@ def main():
             
             lr_scheduler.step()
             
-            # Save checkpoint
             if val_map > best_map:
                 best_map = val_map
                 torch.save({
