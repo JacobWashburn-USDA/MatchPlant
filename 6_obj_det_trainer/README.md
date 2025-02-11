@@ -13,13 +13,30 @@ git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
 cd Ortho_to_image/6_obj_det_trainer
 ```
 
-### 2. Install dependencies:
+### 2. Download required utility files:
+Download the following utility files from PyTorch's reference/detection repository and place them in your project directory:
+```bash
+# Using wget (or download manually from the URLs below)
+wget https://raw.githubusercontent.com/pytorch/vision/main/references/detection/coco_eval.py
+wget https://raw.githubusercontent.com/pytorch/vision/main/references/detection/coco_utils.py
+wget https://raw.githubusercontent.com/pytorch/vision/main/references/detection/engine.py
+wget https://raw.githubusercontent.com/pytorch/vision/main/references/detection/transforms.py
+wget https://raw.githubusercontent.com/pytorch/vision/main/references/detection/utils.py
+```
+
+These files are essential for training and contain helper functions for:
+- COCO dataset evaluation (coco_eval.py, coco_utils.py)
+- Training engine and utilities (engine.py)
+- Data transformations and augmentation (transforms.py)
+- General utilities (utils.py)
+
+### 3. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure and run:
+### 4. Configure and run:
 
 ```bash
 # Edit config.yaml to match your dataset and requirements
@@ -55,7 +72,7 @@ python train.py
   - COCO format annotations (.json)
   - Organized in train/validation splits
 
-1. Configuration File (config.yaml)
+2. Configuration File (config.yaml)
 
 Edit `config.yaml` to match your dataset and requirements:
 
@@ -85,6 +102,11 @@ project_root/
 ├── train.py              # Main training script
 ├── config.yaml           # Configuration file
 ├── config_loader.py      # Configuration loader
+├── coco_eval.py          # COCO evaluation utilities
+├── coco_utils.py         # COCO dataset utilities
+├── engine.py             # Training engine
+├── transforms.py         # Data transformation utilities
+├── utils.py              # General utilities
 ├── data/
 │   ├── train/            # Training images
 │   │   ├── image1.jpg
