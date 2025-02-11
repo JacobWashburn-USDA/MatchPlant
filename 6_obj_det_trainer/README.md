@@ -68,33 +68,33 @@ python train.py
 
 ### **Required Files**
 1. Training Dataset: This is the output from "5_img_splitter" [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter)
-  - Images in standard formats (JPG, PNG, TIFF)
-  - COCO format annotations (.json)
-  - Organized in train/validation splits
+    - Images in standard formats (JPG, PNG, TIFF)
+    - COCO format annotations (.json)
+    - Organized in train/validation splits
 
 2. Configuration File (config.yaml)
 
-Edit `config.yaml` to match your dataset and requirements:
+    Edit `config.yaml` to match your dataset and requirements:
 
-  - Model Configuration:
-      - Number of classes
-      - Anchor sizes and ratios
-      - Detection thresholds
-      - RPN and ROI parameters
+    - Model Configuration:
+       - Number of classes
+       - Anchor sizes and ratios
+       - Detection thresholds
+       - RPN and ROI parameters
 
-  - Training Configuration:
+    - Training Configuration:
       - Learning rates
       - Batch size
       - Number of epochs
       - Checkpoint frequency
       - Data augmentation parameters
 
-  - Resource Configuration:
+    - Resource Configuration:
       - CUDA settings
       - Memory management
       - Number of workers
-      - 
-  - Data: train and val location
+  
+    - Data: train and validation data location
 
 Input structure:
 ```
@@ -121,9 +121,10 @@ project_root/
 
 ## **Outputs**
 
-1. Training and Vlidation Progress:
+1. Training and Validation Progress:
 
-- Real-time metric 
+Real-time metric 
+
 ```
 Epoch: [0][10/500]
 boxes: 6
@@ -133,7 +134,8 @@ loss_classifier: 0.4567
 loss_box_reg: 0.3456
 ```
 
-- Validation results:
+Validation results
+    
 ```
 Evaluation Summary:
 AP @ IoU=0.50:0.95: 0.456
@@ -142,12 +144,12 @@ AP @ IoU=0.75: 0.567
 ```
 
 2. Saving Results:
-- Checkpoints are saved in `./checkpoints/`
-  - `best_model.pt`: Best performing model
-  - `model_epoch_N.pt`: Regular checkpoints
-  - `emergency_save.pt`: Save on training interruption
+    - Checkpoints are saved in `./checkpoints/`
+      - `best_model.pt`: Best performing model
+      - `model_epoch_N.pt`: Regular checkpoints
+      - `emergency_save.pt`: Save on training interruption
 
-- Validation results are saved in `./validation_results/`
+    - Validation results are saved in `./validation_results/`
 
 Output structure:
 ```
@@ -182,50 +184,50 @@ project_root/
 ## Hardware Requirements
 
 Minimum:
-- 8GB RAM
-- CUDA-capable GPU with 4GB VRAM (or Apple Silicon for MPS)
-- 20GB disk space
+  - 8GB RAM
+  - CUDA-capable GPU with 4GB VRAM (or Apple Silicon for MPS)
+  - 20GB disk space
 
 Recommended:
-- 16GB RAM
-- CUDA-capable GPU with 8GB+ VRAM
-- 50GB+ disk space
+  - 16GB RAM
+  - CUDA-capable GPU with 8GB+ VRAM
+  - 50GB+ disk space
 
-## Performance Tips
+## Optimization Strategies
 
 1. Memory Management:
-- Adjust batch size based on available GPU memory
-- Use `memory_config` in config.yaml
-- Enable gradient checkpointing for large models
+    - Adjust batch size based on available GPU memory
+    - Use `memory_config` in config.yaml
+    - Enable gradient checkpointing for large models
 
 2. Training Speed:
-- Use CUDA if available
-- Adjust number of workers based on CPU cores
-- Enable mixed precision training
+    - Use CUDA if available
+    - Adjust the number of workers based on CPU cores
+    - Enable mixed precision training for faster computation
 
 3. Model Performance:
-- Adjust anchor sizes based on your objects
-- Fine-tune IoU thresholds
-- Configure appropriate augmentations
+    - Customize anchor sizes to match object dimensions
+    - Fine-tune IoU thresholds for improved detection accuracy
+    - Apply appropriate data augmentations for better generalization
 
 
 ## Common Issues and Solutions
 
 1. Out of Memory (OOM):
-- Reduce batch size
-- Decrease image dimensions
-- Enable gradient checkpointing
+    - Reduce batch size
+    - Decrease image dimensions
+    - Enable gradient checkpointing
 
 2. Slow Training:
-- Check GPU utilization
-- Increase num_workers if CPU bottlenecked
-- Enable mixed precision training
+    - Check GPU utilization
+    - Increase num_workers if CPU bottlenecked
+    - Enable mixed precision training
 
 3. Poor Convergence:
-- Verify dataset annotations
-- Adjust learning rates
-- Check anchor sizes match your objects
-- Ensure proper class balance
+    - Verify dataset annotations
+    - Adjust learning rates
+    - Check anchor sizes match your objects
+    - Ensure proper class balance
 
 ## License
 
