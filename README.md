@@ -1,37 +1,132 @@
-# Ortho_to_image
-Repository for the development of tools and packages for easily matching geo coordinates between orthophotos (orthomosaics) and the images they are derived from, and extracting data from linked orthos and images based on user provided bounding polygons. 
+# MatchPlant
 
-**Overall process**
+An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection and Data Extraction
 
-1. Install ODM software using a Docker in the computer/laptop
-2. Prepare a raw dataset (images from drone)
-    1. Create a ground control point list file: gcp_list.txt*
-    2. Exicute Python code
-    3. Combine the gcp_list.txt and the raw dataset and place both files in the same folder
+## Authors
 
-\*ODM can still be run without a gcp file; however, the authors recommend collecting this data and using it to improve the accuracy of the targeted objects on the othomosaic image.
+- Worasit Sangjan
+- Piyush Pandey
+- Norman B. Best
+- Jacob D. Washburn
 
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/Directory%20figure.png)
+*USDA-ARS, Plant Genetics Research Unit, Columbia, MO, United States*
 
-Figure 1: A diagram of arranging the folders and data for ODM
+## Overview
 
-3. Run ODM software to create orthophoto (othomosaic images) and other files
-     1. Open Docker software
-     2. Open Windows PowerShell software
-          1. The working directory on Windows PowerShell must be the project folder that contains the images folder
-          2. Type or copy the command and paste on the Windows PowerShell to run ODM:
-             docker run -ti --rm -v "$(pwd)/images:/code/images" -v "$(pwd)/odm_orthophoto:/code/odm_orthophoto" -v "$(pwd)/odm_texturing:/code/odm_texturing" -v "$(pwd)/opensfm:/code/opensfm" -v "$(pwd)/odm_dem:/code/odm_dem" -v "$(pwd)/odm_meshing:/code/odm_meshing" -v "$(pwd)/odm_filterpoints:/code/odm_filterpoints" -v "$(pwd)/odm_report:/code/odm_report" -v "$(pwd)/odm_georeferencing:/code/odm_georeferencing" opendronemap/odm --dem-resolution=0.5 --orthophoto-resolution=0.5 –dsm --gcp images/gcp_list.txt
+MatchPlant is an open-source pipeline designed for automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for UAV imagery preparation with automated deep learning methods and data extraction capabilities. In this case, the pipeline is used for individual maize detection, by leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
 
-\*In case there is no “gcp_list.txt”, please exclude the “--gcp images/gcp_list.txt” sentence in the command above.
+## Key Features
 
-4. Create a file that lists the image name to use in the orthorectification process: img_list.txt
-    1. Open Windows PowerShell software
-    2. The working directory on Windows PowerShell must be the project folder that contains the images folder
-    3. Type or copy the command and paste on the Windows PowerShell
-        1. Get-ChildItem -Path $pwd/opensfm/undistorted/images -Name | Out-file img_list.txt -Encoding ascii
-5. Run ODM software to create orthorectified images from the orthorectification process
-    1. Open Docker software
-    2. Open Windows PowerShell software
-    3. Type or copy the command and paste on the Windows PowerShell to run ODM
-        1. docker run -ti –rm -v path_to_the_work_folder:/datasets --entrypoint /code/contrib/orthorectify/run.sh opendronemap/odm /datasets/project --image-list img_list.txt
-6. From the process above, orthophoto and orthorectified images are used to find the optimal image coverage using Python code – find_optimal_coverage_image.jpynb
+- **Modular Design**: Flexible framework adaptable to various agricultural applications
+- **Automated Object Detection**: Uses Faster R-CNN for reliable individual plant detection
+- **High-Precision Processing**: Trains on high-resolution undistorted UAV images to avoid orthophoto artifacts
+- **Geospatial Transformation**: Accurately projects detected plant coordinates onto orthophotos
+- **User-Friendly Tools**: User-friendly GUI tools for data preparation and manual annotation
+- **Data Extraction & Analysis**: Enables spatial analysis and phenotypic trait extraction
+
+## Repository Structure
+
+This repository is organized into the following branches, each containing specific components of the pipeline:
+
+1. **Data Preprocessing**: Prepare and optimize UAV imagery
+   - GPS data embedding tool
+   - GCP file creation tool
+   - Orthophoto generation using OpenDroneMap
+
+2. **Data Preparation**: Label and organize training, validation, and testing data
+   - Optimal UAV image dataset creation tool
+   - Interactive labeling tool
+   - Data tiling and splitting tool
+
+3. **Model Development**: Train and test detection models, including the transfer learning model
+   - Faster R-CNN training and validation
+   - Model testing
+   - Transfer learning utility
+
+4. **Utilization**: Project location and creat a layer to getobject features
+   - Detection projection tool
+   - Shapefile generation tool
+
+Each branch contains its own detailed README with specific installation instructions and usage guidelines.
+
+## Pipeline Workflow
+
+![Pipeline Diagram](media/image1.png)
+
+Figure 1: Diagram of the MathPlant-the modular open-source pipeline
+
+## Getting Started
+
+To begin using MatchPlant:
+
+1. Choose the appropriate branch for your task
+2. Follow the branch-specific installation instructions
+3. Refer to the branch README for detailed usage guidelines
+
+## Usage
+
+[Usage instructions to be added]
+
+## Requirements
+
+- Python 3.8+
+- OpenDroneMap (ODM)
+- Additional requirements listed in branch-specific documentationly
+
+## Download Dataset
+
+To use the MatchPlant pipeline with our prepared dataset:
+
+**Download from Zenodo**
+   ```bash
+   # Using wget
+   wget [ZENODO_DOWNLOAD_LINK]
+   
+   # Using curl
+   curl -O [ZENODO_DOWNLOAD_LINK]
+   ```
+
+The dataset contains:
+- UAV images: UAV-captured plant images
+- Annotation file: COCO format bounding boxes
+- Pre-trained model: Faster R-CNN model [To use transfet learning module]
+
+For detailed usage instructions, start with  `Data tiling and splitting` branch README.
+
+## Citation
+
+If you use MatchPlant in your research, please cite:
+
+```bibtex
+@article{sangjan2025matchplant,
+  title={MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection and Data Extraction},
+  author={Sangjan, Worasit and Pandey, Piyush and Best, Norman B and Washburn, Jacob D},
+  year={2025}
+}
+```
+
+For the dataset, please cite:
+
+```bibtex
+@dataset{[DATASET_CITATION_HERE],
+  title={MatchPlant Dataset: UAV-Based Plant Detection Training Data},
+  author={Sangjan, Worasit and Pandey, Piyush and Best, Norman B and Washburn, Jacob D},
+  year={2025},
+  publisher={Zenodo},
+  doi={[YOUR_DOI_HERE]}
+}
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For questions and collaboration opportunities, please contact:
+
+**Jacob Washburn** | Email: jacob.washburn@usda.gov
+
+## Acknowledgments
+
+This research was supported in part by an appointment to the Agricultural Research Service (ARS) Research Participation Program administered by the Oak Ridge Institute for Science and Education (ORISE) through an interagency agreement between the U.S. Department of Energy (DOE) and the U.S. Department of Agriculture (USDA). ORISE is managed by ORAU under DOE contract number DE-SC0014664. Funding was provided by the United States Department of Agriculture, Agricultural Research Service, and SCINet Postdoctoral Fellows Program. All opinions expressed in this publication are the author’s and do not necessarily reflect the policies and views of USDA, DOE, or ORAU/ORISE.
