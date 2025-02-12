@@ -141,4 +141,4 @@ matcher.embed_gps_to_images('input_folder', 'images_with_gps')
      
 ## **License**
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
