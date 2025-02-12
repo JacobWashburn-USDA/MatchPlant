@@ -94,7 +94,7 @@ project_root/
 
 1. Optimized Dataset:
    - Selected_undistorted_images folder - Minimum number of images
-   - Selected_images_list file - Coverage report (csv)
+   - Selected_images_list file - Coverage report (.csv)
    - Coverage_plot image - Visual coverage map (png)
 
 Output structure:
@@ -159,4 +159,4 @@ The tool optimizes your dataset by:
 
 ## **License**
 
-This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
+This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/LICENSE) file.
