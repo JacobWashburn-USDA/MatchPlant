@@ -13,7 +13,7 @@ An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection
 
 ## Overview
 
-MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep learning methods and data extraction capabilities. In this case, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
+MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. In this case, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
 
 ## Key Features
 
@@ -105,7 +105,7 @@ For the dataset, please cite:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
 
 ## Contact
 
