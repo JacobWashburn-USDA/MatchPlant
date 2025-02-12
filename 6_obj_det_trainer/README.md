@@ -67,7 +67,7 @@ python train.py
 ## **Input Requirements**
 
 ### **Required Files**
-1. Training Dataset: This is the output from "5_img_splitter" [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter)
+1. Training Dataset: This is the output from [5_img_splitterhere](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter)
     - Images in standard formats (JPG, PNG, TIFF)
     - COCO format annotations (.json)
     - Organized in train/validation splits
