@@ -1,35 +1,60 @@
+# Configuration file for object detection training
+
 model:
-  num_classes: 2
-  anchor_sizes: [[32, 64, 96, 128]]
-  anchor_ratios: [[0.5, 1.0, 2.0]]
-  min_size: 980
-  max_size: 1240
-  score_thresh: 0.05
-  nms_thresh: 0.5
-  detections_per_img: 100
-  backbone: "resnet50_fpn_v2"
+  num_classes: 2  # Background + maize
+  min_size: 800
+  max_size: 1333
+  box_score_thresh: 0.05
+  box_nms_thresh: 0.4
+  box_detections_per_img: 100
+  
+  # RPN settings
+  rpn_pre_nms_top_n_train: 2000
+  rpn_post_nms_top_n_train: 1000
+  rpn_post_nms_top_n_test: 500
+  rpn_fg_iou_thresh: 0.7
+  rpn_bg_iou_thresh: 0.3
+  
+  # ROI settings
+  box_fg_iou_thresh: 0.6
+  box_bg_iou_thresh: 0.3
+  box_batch_size_per_image: 512
+  box_positive_fraction: 0.35
+  
+  # Anchor settings
+  anchor_sizes: [[4, 8, 16, 32, 64, 96, 128, 256]]
+  anchor_ratios: [[0.5, 0.75, 1.0, 1.5, 2.0]]
 
 training:
   epochs: 150
   batch_size: 1
-  learning_rate: 0.05
-  momentum: 0.9
-  weight_decay: 0.0005
-  lr_step_size: 10
-  lr_gamma: 0.1
   checkpoint_dir: "checkpoints"
-  save_freq: 5
+  save_freq: 5  # Save checkpoint every 5 epochs
+  
+  optimizer:
+    backbone_lr: 0.005
+    rpn_lr: 0.01
+    roi_heads_lr: 0.01
+    momentum: 0.9
+    weight_decay: 0.0005
+    lr_step_size: 10
+    lr_gamma: 0.1
+  
+  augmentation:
+    horizontal_flip_prob: 0.5
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
 
 data:
   train_dir: "data/train"
   val_dir: "data/val"
   train_annotations: "annotations/train.json"
   val_annotations: "annotations/val.json"
-  augmentations: ["horizontal_flip"]
-  num_workers: null  # Auto-configure based on system
-
-resources:
-  device: "auto"
-  memory_config: "max_split_size_mb:32"
+  num_workers: 0  # Set to 0 for stability
   pin_memory: false
   persistent_workers: false
+
+resources:
+  memory_config: "max_split_size_mb:32"
+  cuda_benchmark: true
