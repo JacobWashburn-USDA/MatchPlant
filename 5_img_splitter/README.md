@@ -199,4 +199,4 @@ The tool processes images and annotations by:
 
 ## **License**
 
-This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
+This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/LICENSE) file.
