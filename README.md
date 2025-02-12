@@ -78,10 +78,10 @@ To use the MatchPlant pipeline with our prepared dataset:
 **Download from Zenodo**
    ```bash
    # Using wget
-   wget [ZENODO_DOWNLOAD_LINK]
+   wget [ZENODO_LINK]
    
    # Using curl
-   curl -O [ZENODO_DOWNLOAD_LINK]
+   curl -O [ZENODO_LINK]
    ```
 
 The dataset contains:
@@ -95,24 +95,12 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 
 If you use MatchPlant in your research, please cite:
 
-```bibtex
-@article{sangjan2025matchplant,
-  title={MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection and Data Extraction},
-  author={Sangjan, Worasit and Pandey, Piyush and Best, Norman B and Washburn, Jacob D},
-  year={2025}
-}
+```
 ```
 
 For the dataset, please cite:
 
-```bibtex
-@dataset{[DATASET_CITATION_HERE],
-  title={MatchPlant Dataset: UAV-Based Plant Detection Training Data},
-  author={Sangjan, Worasit and Pandey, Piyush and Best, Norman B and Washburn, Jacob D},
-  year={2025},
-  publisher={Zenodo},
-  doi={[YOUR_DOI_HERE]}
-}
+```
 ```
 
 ## License
@@ -123,7 +111,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions and collaboration opportunities, please contact:
 
-**Jacob Washburn** | Email: jacob.washburn@usda.gov
+**Jacob Washburn**; Email: jacob.washburn@usda.gov
 
 ## Acknowledgments
 
