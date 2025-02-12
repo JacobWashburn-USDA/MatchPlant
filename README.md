@@ -13,7 +13,7 @@ An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection
 
 ## Overview
 
-MatchPlant is an open-source pipeline designed for automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for UAV imagery preparation with automated deep learning methods and data extraction capabilities. In this case, the pipeline is used for individual maize detection, by leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
+MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. In this case, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
 
 ## Key Features
 
@@ -26,7 +26,7 @@ MatchPlant is an open-source pipeline designed for automated detection of indivi
 
 ## Repository Structure
 
-This repository is organized into the following branches, each containing specific components of the pipeline:
+This repository is organized into the following modules, each containing specific components of the pipeline:
 
 1. **Data Preprocessing**: Prepare and optimize UAV imagery
    - GPS data embedding tool
@@ -43,17 +43,25 @@ This repository is organized into the following branches, each containing specif
    - Model testing
    - Transfer learning utility
 
-4. **Utilization**: Project location and creat a layer to getobject features
+4. **Utilization**: Project location and create a layer to extract object features
    - Detection projection tool
    - Shapefile generation tool
 
-Each branch contains its own detailed README with specific installation instructions and usage guidelines.
+Each module contains its detailed README with specific installation instructions and usage guidelines.
 
 ## Pipeline Workflow
 
-![Pipeline Diagram](media/image1.png)
+![img](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/images/img.png)
 
 Figure 1: Diagram of the MathPlant-the modular open-source pipeline
+
+###### 1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Look Only Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network
+
+## Requirements
+
+- Python 3.8+
+- OpenDroneMap (ODM)
+- Additional requirements listed in branch-specific documentation
 
 ## Getting Started
 
@@ -61,17 +69,7 @@ To begin using MatchPlant:
 
 1. Choose the appropriate branch for your task
 2. Follow the branch-specific installation instructions
-3. Refer to the branch README for detailed usage guidelines
-
-## Usage
-
-[Usage instructions to be added]
-
-## Requirements
-
-- Python 3.8+
-- OpenDroneMap (ODM)
-- Additional requirements listed in branch-specific documentationly
+3. Refer to the module README for detailed usage guidelines
 
 ## Download Dataset
 
@@ -80,52 +78,40 @@ To use the MatchPlant pipeline with our prepared dataset:
 **Download from Zenodo**
    ```bash
    # Using wget
-   wget [ZENODO_DOWNLOAD_LINK]
+   wget [ZENODO_LINK]
    
    # Using curl
-   curl -O [ZENODO_DOWNLOAD_LINK]
+   curl -O [ZENODO_LINK]
    ```
 
 The dataset contains:
 - UAV images: UAV-captured plant images
 - Annotation file: COCO format bounding boxes
-- Pre-trained model: Faster R-CNN model [To use transfet learning module]
+- Pre-trained model: Faster R-CNN model [To use "transfer learning" module]
 
-For detailed usage instructions, start with  `Data tiling and splitting` branch README.
+After downloading the dataset (UAV images and Annotation file), please start with the module [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter) to use our pipeline.
 
 ## Citation
 
 If you use MatchPlant in your research, please cite:
 
-```bibtex
-@article{sangjan2025matchplant,
-  title={MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection and Data Extraction},
-  author={Sangjan, Worasit and Pandey, Piyush and Best, Norman B and Washburn, Jacob D},
-  year={2025}
-}
+```
 ```
 
 For the dataset, please cite:
 
-```bibtex
-@dataset{[DATASET_CITATION_HERE],
-  title={MatchPlant Dataset: UAV-Based Plant Detection Training Data},
-  author={Sangjan, Worasit and Pandey, Piyush and Best, Norman B and Washburn, Jacob D},
-  year={2025},
-  publisher={Zenodo},
-  doi={[YOUR_DOI_HERE]}
-}
+```
 ```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
 
 ## Contact
 
 For questions and collaboration opportunities, please contact:
 
-**Jacob Washburn** | Email: jacob.washburn@usda.gov
+**Jacob Washburn**; Email: jacob.washburn@usda.gov
 
 ## Acknowledgments
 
