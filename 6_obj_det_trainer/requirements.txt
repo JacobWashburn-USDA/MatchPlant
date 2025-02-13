@@ -19,3 +19,7 @@ psutil>=5.9.0         # System resource monitoring
 # Optional but recommended for development
 ipython>=8.0.0        # Better development environment
 jupyter>=1.0.0        # Notebook support for development
+
+# Note: Some packages like json, pathlib, and time are part of Python's standard library
+# Note: torch and torchvision versions should be compatible with your CUDA version.
+# Check compatibility at: https://pytorch.org/
