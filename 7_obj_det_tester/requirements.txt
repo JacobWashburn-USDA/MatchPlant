@@ -1,0 +1,19 @@
+# Deep Learning Framework
+torch>=2.0.0          # PyTorch for deep learning
+torchvision>=0.15.0   # PyTorch vision utilities and models
+
+# Data Processing and Evaluation
+numpy>=1.24.0         # Numerical computations
+Pillow>=9.0.0        # Image processing (PIL)
+pycocotools>=2.0.6    # COCO format handling and evaluation
+
+# Visualization
+matplotlib>=3.7.0     # Plotting utilities
+seaborn>=0.12.0      # Statistical data visualization
+
+# Configuration
+PyYAML>=6.0          # YAML file handling
+
+# Note: Some packages like json, pathlib, and time are part of Python's standard library
+# Note: torch and torchvision versions should be compatible with your CUDA version.
+# Check compatibility at: https://pytorch.org/
