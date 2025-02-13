@@ -1,6 +1,6 @@
 # **Object Detection Training Tool**
 
-This Python utility trains a Faster R-CNN model for object detection using PyTorch, with support for COCO format datasets. It provides configurable training parameters, data augmentation, and comprehensive evaluation metrics.
+This Python utility trains a Faster R-CNN model for object detection using PyTorch. It supports COCO format datasets and provides configurable training parameters, data augmentation, and comprehensive evaluation metrics.
 
 ### **Note**
 This tool is essential for training deep learning models on annotated datasets. It offers a robust implementation of Faster R-CNN with ResNet50 backbone, flexible configuration options, and detailed training metrics tracking, making it suitable for both research and practical applications.
@@ -67,7 +67,7 @@ python train.py
 ## **Input Requirements**
 
 ### **Required Files**
-1. Training Dataset: This is the output from "5_img_splitter" [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter)
+1. Training Dataset: This is the output from [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter)
     - Images in standard formats (JPG, PNG, TIFF)
     - COCO format annotations (.json)
     - Organized in train/validation splits
@@ -94,7 +94,7 @@ python train.py
       - Memory management
       - Number of workers
   
-    - Data: train and validation data location
+    - Data: train and validate data location
 
 Input structure:
 ```
@@ -231,4 +231,4 @@ Recommended:
 
 ## License
 
-This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
+This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/LICENSE) file.
