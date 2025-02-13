@@ -1,0 +1,44 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Model files
+checkpoints/
+*.pt
+*.pth
+
+# Test results and outputs
+paper_results/
+test_results/
+run_*/
+metrics_run_*.json
+aggregate_results.json
+
+# Generated visualizations
+*/confidence_distribution.png
+*/confusion_matrix.png
+*/test_image_*.png
+
+# Data (should be managed separately)
+data/test/
+annotations/test.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
