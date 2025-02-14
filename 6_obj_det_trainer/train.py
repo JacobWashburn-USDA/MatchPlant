@@ -3,8 +3,8 @@ Script Name: train.py
 Purpose: Trains and evaluates a Faster R-CNN model for maize object detection using PyTorch, 
         with COCO format dataset handling and evaluation metrics
 Authors: Worasit Sangjan and Piyush Pandey
-Date: 11 February 2025 
-Version: 1.3
+Date: 14 February 2025 
+Version: 1.4
 """
 
 import os, platform, multiprocessing, psutil
@@ -13,7 +13,7 @@ import torch.utils.data
 from PIL import Image
 import json
 import datetime
-from config_loader import ConfigLoader 
+from train_config_loader import ConfigLoader 
 from pathlib import Path
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights
@@ -446,7 +446,7 @@ def main():
     # Load configuration
     config_loader = ConfigLoader()
     model_config, training_config, data_config, resource_config = config_loader.create_configs(
-        config_loader.load_config('config.yaml')
+        config_loader.load_config('train_config.yaml')
     )
     
     # Configure environment
