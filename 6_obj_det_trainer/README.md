@@ -9,7 +9,7 @@ This tool is essential for training deep learning models on annotated datasets. 
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
+git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
 cd Ortho_to_image/6_obj_det_trainer
 ```
 
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 ### 4. Configure and run:
 
 ```bash
-# Edit config.yaml to match your dataset and requirements
+# Edit train_config.yaml to match your dataset and requirements
 python train.py
 ```
 
@@ -67,14 +67,14 @@ python train.py
 ## **Input Requirements**
 
 ### **Required Files**
-1. Training Dataset: This is the output from [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter)
+1. Training Dataset: This is the output from [5_img_splitter](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
     - Images in standard formats (JPG, PNG, TIFF)
     - COCO format annotations (.json)
     - Organized in train/validation splits
 
-2. Configuration File (config.yaml)
+2. Configuration File (train_config.yaml)
 
-    Edit `config.yaml` to match your dataset and requirements:
+    Edit `train_config.yaml` to match your dataset and requirements:
 
     - Model Configuration:
        - Number of classes
@@ -99,24 +99,24 @@ python train.py
 Input structure:
 ```
 project_root/
-├── train.py              # Main training script
-├── config.yaml           # Configuration file
-├── config_loader.py      # Configuration loader
-├── coco_eval.py          # COCO evaluation utilities
-├── coco_utils.py         # COCO dataset utilities
-├── engine.py             # Training engine
-├── transforms.py         # Data transformation utilities
-├── utils.py              # General utilities
+├── train.py                    # Main training script
+├── train_config.yaml           # Configuration file
+├── train_config_loader.py      # Configuration loader
+├── coco_eval.py                # COCO evaluation utilities
+├── coco_utils.py               # COCO dataset utilities
+├── engine.py                   # Training engine
+├── transforms.py               # Data transformation utilities
+├── utils.py                    # General utilities
 ├── data/
-│   ├── train/            # Training images
+│   ├── train/                  # Training images
 │   │   ├── image1.jpg
 │   │   └── ...
 │   └── val/
-│       ├── image1.jpg    # Validation images
+│       ├── image1.jpg          # Validation images
 │       └── ...         
 └── annotations/
-    ├── train.json        # Training annotations (COCO format)
-    └── val.json          # Validation annotations (COCO format)
+    ├── train.json              # Training annotations (COCO format)
+    └── val.json                # Validation annotations (COCO format)
 ```
 
 ## **Outputs**
@@ -168,7 +168,7 @@ project_root/
 1. Prepare Dataset:
    - Organize images in train/val folders
    - Ensure COCO format annotations
-   - Verify file paths in config.yaml
+   - Verify file paths in train_config.yaml
 
 2. Configure Training:
    - Adjust model parameters
@@ -197,7 +197,7 @@ Recommended:
 
 1. Memory Management:
     - Adjust batch size based on available GPU memory
-    - Use `memory_config` in config.yaml
+    - Use `memory_config` in train_config.yaml
     - Enable gradient checkpointing for large models
 
 2. Training Speed:
