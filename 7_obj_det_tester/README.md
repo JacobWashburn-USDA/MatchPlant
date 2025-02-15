@@ -7,16 +7,16 @@ This Python utility evaluates and tests Faster R-CNN models trained for object d
 This tool is designed to evaluate trained deep-learning models rigorously. It offers statistical analysis across multiple test runs, size-based performance evaluation, and detailed visualization capabilities, making it suitable for research validation and practical deployment assessment.
 
 ## Table of Contents
-- [**Quick Start**](#quick-start)
-- [**Features**](#features)
-- [**Requirements**](#requirements)
-- [**Input Requirements**](#input-requirements)
-- [**Outputs**](#outputs)
-- [**Usage Instructions**](#usage-instructions)
-- [**Hardware Requirements**](#hardware-requirements)
-- [**Optimization Strategies**](#optimization-strategies)
-- [**Common Issues and Solutions**](#common-issues-and-solutions)
-- [**License**](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Hardware Requirements](#hardware-requirements)
+- [Optimization Strategies](#optimization-strategies)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
