@@ -83,9 +83,9 @@ python train.py
     - Images in standard formats (JPG, PNG, TIFF)
     - COCO format annotations (.json)
     - Organized in train/validation splits
-- Configuration File (train_config.yaml)
-
-  Edit `train_config.yaml` to match your dataset and requirements:
+- PyTorch Utility Files:
+  - coco_eval.py, coco_utils.py, engine.py, transforms.py, and utils.py
+- Configuration File: Edit `train_config.yaml` to match your dataset and requirements:
     - Model Configuration:
        - Number of classes
        - Anchor sizes and ratios
