@@ -85,9 +85,9 @@ python test.py
 
 ### 1. Required Files
 - Testing Dataset:
-    - Test images in standard formats (`data/test/`) from ["5_img_splitter"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
-    - COCO format annotations (`annotations/test.json`) from ["5_img_splitter"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
-    - Trained model checkpoint (`checkpoints/best_model.pt`) from ["6_obj_det_trainer"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6_obj_det_trainer)
+    - Test images in standard formats (`data/test/`) from [5_img_splitter](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
+    - COCO format annotations (`annotations/test.json`) from [5_img_splitter](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
+    - Trained model checkpoint (`checkpoints/best_model.pt`) from [6_obj_det_trainer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6_obj_det_trainer)
 - PyTorch Utility Files:
     - coco_eval.py, coco_utils.py, engine.py, transforms.py, and utils.py
 - Configuration File: Edit `test_config.yaml` to match your requirements:
