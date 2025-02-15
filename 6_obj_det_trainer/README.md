@@ -3,7 +3,7 @@
 This Python utility trains a Faster R-CNN model for object detection using PyTorch. It supports COCO format datasets and provides configurable training parameters, data augmentation, and comprehensive evaluation metrics.
 
 ### **Note**
-This tool is essential for training deep learning models on annotated datasets. It offers a robust implementation of Faster R-CNN with ResNet50 backbone, flexible configuration options, and detailed training metrics tracking, making it suitable for both research and practical applications.
+This tool is essential for training deep learning models on annotated datasets. It offers a robust implementation of Faster R-CNN with ResNet50 backbone, flexible configuration options, and detailed training metrics tracking, making it suitable for research and practical applications.
 
 ## Quick Start
 
@@ -231,4 +231,4 @@ Recommended:
 
 ## License
 
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/LICENSE) file.
+This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
