@@ -14,6 +14,21 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 - Better model generalization due to standardized image geometry
 - Improved accuracy in object size and position predictions
 
+## Table of Contents
+
+- [ODM Process Runners](#odm-process-runners)
+  - [Note for Deep Learning - Object Detection](#note-for-deep-learning---object-detection)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Important: Working Directory](#important-working-directory)
+  - [Usage](#usage)
+    - [For Windows Users](#for-windows-users)
+    - [For Linux/Unix Users](#for-linuxunix-users)
+  - [Output](#output)
+  - [Script Parameters](#script-parameters)
+  - [Error Handling](#error-handling)
+  - [Common Issues](#common-issues)
+
 ## Prerequisites
 
 - OpenDroneMap installed using Docker: Installation guide [here](https://github.com/OpenDroneMap/ODM)
