@@ -25,24 +25,24 @@ cd Ortho_to_image/3_min_img_finder
 
 ### 2. Install dependencies:
 
-For Windows:
+- For Windows:
 ```bash
 pip install -r requirements_win.txt
 ```
 
-For macOS:
+- For macOS:
 ```bash
 pip install -r requirements_mac.txt
 ```
 
 ### 3. Run the script:
 
-For Windows:
+- For Windows:
 ```bash
 python min_img_finder_win.py
 ```
 
-For macOS:
+- For macOS:
 ```bash
 python min_img_finder_mac.py
 ```
@@ -72,7 +72,6 @@ python min_img_finder_mac.py
 - Orthophoto path:
    - Format: GeoTIFF (.tif)
    - Used as a reference for coverage analysis
-
 - Image Folders path:
    - Orthorectified images (GeoTIFF format) - for spatial analysis
    - Original undistorted images for the final dataset
@@ -120,7 +119,6 @@ output_folder/
    ```python
    python min_img_finder_win.py  # or min_img_finder_mac.py for macOS
    ```
-
 - Initial Setup:
    - Select your reference orthophoto
    - Choose your input image folders
@@ -145,12 +143,10 @@ Figure 2. Example of min_img_window
    - Decrease the flight line width
    - Increase overlap parameters
    - Lower the uncovered area threshold
-
 - Too Many Images:
    - Increase flight line width
    - Decrease maximum overlap
    - Increase uncovered area threshold
-
 - Processing Issues:
    - Ensure consistent image georeferencing
    - Verify image format compatibility
