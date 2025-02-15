@@ -10,7 +10,6 @@ This tool is handy for deep learning workflows that require creating efficient d
 - [**Features**](#features)
 - [**Requirements**](#requirements)
 - [**Input Requirements**](#input-requirements)
-- [**Input Structure**](#input-structure)
 - [**Outputs**](#outputs)
 - [**Usage Instructions**](#usage-instructions)
 - [**Optimization Strategy**](#optimization-strategy)
@@ -79,17 +78,7 @@ python min_img_finder_mac.py
    - Orthorectified images (GeoTIFF format) - for spatial analysis
    - Original undistorted images for the final dataset
 
-### Configuration Setup
-   
-1. Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md)
-   - Flight line width (%) - controls spacing between selected images
-   - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
-   - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
-   - Uncovered area threshold (%) - sets acceptable coverage gaps
-
-## **Input Structure**
-
-Remark: All input is from the "2_odm_runner" method [here](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
+Input Structure: All input is from the ["2_odm_runner"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
 ```
 project_root/
 ├── images/                     
@@ -101,6 +90,14 @@ project_root/
 │       └── images/           # Undistorted image folder
 └── orthorectified/           # Orthorectified image folder
 ```
+
+### Configuration Setup
+   
+1. Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md)
+   - Flight line width (%) - controls spacing between selected images
+   - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
+   - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
+   - Uncovered area threshold (%) - sets acceptable coverage gaps
 
 ## **Outputs**
 
