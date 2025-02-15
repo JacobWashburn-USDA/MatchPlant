@@ -7,14 +7,14 @@ This Python utility splits large images and their corresponding COCO format anno
 This tool is essential for preparing large-scale imagery datasets for deep-learning model training. It handles the complexities of splitting images and their annotations while maintaining proper object relationships and coordinates. The tool is handy for aerial photography and other large-format images.
 
 ## Table of Contents
-- [**Quick Start**](#quick-start)
-- [**Features**](#features)
-- [**Requirements**](#requirements)
-- [**Input Requirements**](#input-requirements)
-- [**Outputs**](#outputs)
-- [**Usage Instructions**](#usage-instructions)
-- [**Common Issues and Solutions**](#common-issues-and-solutions)
-- [**License**](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
