@@ -69,12 +69,12 @@ python min_img_finder_mac.py
 
 ## **Input Requirements**
 
-### **Required Files**
-1. Orthophoto path:
+### 1. Required Files:
+- Orthophoto path:
    - Format: GeoTIFF (.tif)
    - Used as a reference for coverage analysis
 
-2. Image Folders path:
+- Image Folders path:
    - Orthorectified images (GeoTIFF format) - for spatial analysis
    - Original undistorted images for the final dataset
 
@@ -91,9 +91,9 @@ project_root/
 └── orthorectified/           # Orthorectified image folder
 ```
 
-### Configuration Setup
+### 2. Configuration Setup:
    
-1. Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md)
+- Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md)
    - Flight line width (%) - controls spacing between selected images
    - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
    - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
@@ -101,7 +101,7 @@ project_root/
 
 ## **Outputs**
 
-1. Optimized Dataset:
+- Optimized Dataset:
    - Selected_undistorted_images folder - Minimum number of images
    - Selected_images_list file - Coverage report (.csv)
    - Coverage_plot image - Visual coverage map (png)
@@ -117,12 +117,12 @@ output_folder/
 
 ## **Usage Instructions**
 
-1. Launch Application:
+- Launch Application:
    ```python
    python min_img_finder_win.py  # or min_img_finder_mac.py for macOS
    ```
 
-2. Initial Setup:
+- Initial Setup:
    - Select your reference orthophoto
    - Choose your input image folders
    - Configure optimization parameters based on your needs
@@ -132,7 +132,7 @@ output_folder/
 
 Figure 1. Example of ininitial_setup_window
      
-3. Dataset Creation:
+- Dataset Creation:
    - Review coverage to ensure all areas of interest are included
    - Save your optimized dataset
   
@@ -143,25 +143,25 @@ Figure 2. Example of min_img_window
 ## **Optimization Strategy**
 
 The tool optimizes your dataset by:
-1. Analyzing flight lines to maintain systematic coverage
-2. Eliminating redundant, overlapping images
-3. Ensuring representation of all unique viewpoints
-4. Maintaining minimum required overlap for complete coverage
-5. Selecting images that maximize area coverage while minimizing count
+- Analyzing flight lines to maintain systematic coverage
+- Eliminating redundant, overlapping images
+- Ensuring representation of all unique viewpoints
+- Maintaining minimum required overlap for complete coverage
+- Selecting images that maximize area coverage while minimizing count
 
 ## **Common Issues and Solutions**
 
-1. Missing Coverage:
+- Missing Coverage:
    - Decrease the flight line width
    - Increase overlap parameters
    - Lower the uncovered area threshold
 
-2. Too Many Images:
+- Too Many Images:
    - Increase flight line width
    - Decrease maximum overlap
    - Increase uncovered area threshold
 
-3. Processing Issues:
+- Processing Issues:
    - Ensure consistent image georeferencing
    - Verify image format compatibility
    - Check available system memory
