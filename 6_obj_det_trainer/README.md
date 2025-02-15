@@ -7,16 +7,16 @@ This Python utility trains a Faster R-CNN model for object detection using PyTor
 This tool is essential for training deep learning models on annotated datasets. It offers a robust implementation of Faster R-CNN with ResNet50 backbone, flexible configuration options, and detailed training metrics tracking, making it suitable for research and practical applications.
 
 ## Table of Contents
-- [**Quick Start**](#quick-start)
-- [**Features**](#features)
-- [**Requirements**](#requirements)
-- [**Input Requirements**](#input-requirements)
-- [**Outputs**](#outputs)
-- [**Usage Instructions**](#usage-instructions)
-- [**Hardware Requirements**](#hardware-requirements)
-- [**Optimization Strategies**](#optimization-strategies)
-- [**Common Issues and Solutions**](#common-issues-and-solutions)
-- [**License**](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Hardware Requirements](#hardware-requirements)
+- [Optimization Strategies](#optimization-strategies)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
