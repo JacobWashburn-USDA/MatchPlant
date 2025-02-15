@@ -61,7 +61,7 @@ cd Ortho_to_image/1_gcp_finder
 
 ## **Requirements**
 
-- Python 3.x
+- Python 3.9+
 - Dependencies:
   - OpenCV (cv2)
   - NumPy
