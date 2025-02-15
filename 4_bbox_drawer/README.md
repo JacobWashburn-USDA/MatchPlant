@@ -7,14 +7,14 @@ This Python utility creates annotated image datasets for object detection models
 This tool is essential for deep learning workflows that require creating annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
 
 ## Table of Contents
-- [**Quick Start**](#quick-start)
-- [**Features**](#features)
-- [**Requirements**](#requirements)
-- [**Input Requirements**](#input-requirements)
-- [**Outputs**](#outputs)
-- [**Usage Instructions**](#usage-instructions)
-- [**Common Issues and Solutions**](#common-issues-and-solutions)
-- [**License**](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
@@ -72,7 +72,7 @@ cd Ortho_to_image/4_bbox_drawer
 
 ### 1. Required Files
 - Image folder path:
-  - The image input folder is created by ["3_min_img_finder"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) - the "selected_undistorted_images" folder
+  - The image input folder is created by [3_min_img_finder](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) - the "selected_undistorted_images" folder
   - Supported formats:
     - JPG/JPEG
     - PNG
