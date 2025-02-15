@@ -3,13 +3,33 @@
 A Python utility for identifying and marking Ground Control Points (GCPs) in drone imagery. This tool provides an interactive interface for matching GCP coordinates with their corresponding locations in drone-captured images.
 
 ### **Note**
+
 This tool is handy for drone imagery processing workflows where the orthomosaic software, [OpenDroneMap open-source software](https://github.com/OpenDroneMap/ODM/tree/master), needs the GCP file to increase the precision of the orthomosaic images.
+
+## Table of Contents
+- [**GCP (Ground Control Point) Finder Tool**](#gcp-ground-control-point-finder-tool)
+    - [**Note**](#note)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+    - [1. Clone the repository:](#1-clone-the-repository)
+    - [2. Install dependencies:](#2-install-dependencies)
+    - [3. Run the script:](#3-run-the-script)
+  - [**Features**](#features)
+  - [**Requirements**](#requirements)
+  - [**Input Requirements**](#input-requirements)
+    - [**Required Files**](#required-files)
+    - [Configuration Setup](#configuration-setup)
+  - [**Outputs**](#outputs)
+  - [**Usage Instructions**](#usage-instructions)
+  - [**Interactive Controls**](#interactive-controls)
+  - [**Common Issues and Solutions**](#common-issues-and-solutions)
+  - [**License**](#license)
 
 ## Quick Start
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
+git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
 cd Ortho_to_image/1_gcp_finder
 ```
 
@@ -82,7 +102,7 @@ X,Y,Z,id
 ```
 
 ### Configuration Setup
-1. Sensor Dimensions: For the information, please click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/camera_sensor_dimension.md)
+1. Sensor Dimensions: For the information, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/camera_sensor_dimension.md)
    - Camera sensor width (millimeter)
    - Camera sensor height (millimeter)
      
@@ -131,7 +151,7 @@ input_image_folder/
    - Set distance threshold 
    - Click "Click to Start Finding" to begin
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/img_1.png?raw=true)
+![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/images/img_1.png?raw=true)
 
 Figure 1. Example of ininitial_setup_window
 
@@ -142,7 +162,7 @@ Figure 1. Example of ininitial_setup_window
    - Press 'S' to save points
    - Press 'D' to delete last point
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/1_gcp_finder/images/GCP_marking_window.jpg?raw=true)
+![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/images/GCP_marking_window.jpg?raw=true)
 
 Figure 2. Example of gcp_marking_window
 
@@ -176,4 +196,4 @@ Figure 2. Example of gcp_marking_window
 
 ## **License**
 
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/LICENSE) file.
+This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
