@@ -9,6 +9,7 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 - Helps create higher-quality training datasets for computer vision tasks
 
 **Key Benefits:**
+
 - Reduced noise in training data by removing camera lens distortion
 - More consistent object appearance across images
 - Better model generalization due to standardized image geometry
@@ -16,18 +17,13 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 
 ## Table of Contents
 
-- [ODM Process Runners](#odm-process-runners)
-  - [Note for Deep Learning - Object Detection](#note-for-deep-learning---object-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Prerequisites](#prerequisites)
-  - [Important: Working Directory](#important-working-directory)
-  - [Usage](#usage)
-    - [For Windows Users](#for-windows-users)
-    - [For Linux/Unix Users](#for-linuxunix-users)
-  - [Output](#output)
-  - [Script Parameters](#script-parameters)
-  - [Error Handling](#error-handling)
-  - [Common Issues](#common-issues)
+- [Prerequisites](#prerequisites)
+- [Important: Working Directory](#important-working-directory)
+- [Usage](#usage)
+- [Output](#output)
+- [Script Parameters](#script-parameters)
+- [Error Handling](#error-handling)
+- [Common Issues](#common-issues)
 
 ## Prerequisites
 
@@ -48,7 +44,7 @@ your_drone_project/         # This is where your images are
 │   └── gcp_list.txt        # Optional: GCP file if you have ground control points
 ├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
 ```
-gcp_list.txt can be created by "1_gcp_finder" process [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/1_gcp_finder)
+gcp_list.txt can be created by "1_gcp_finder" process [here](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/1_gcp_finder)
 
 ## Usage
 
