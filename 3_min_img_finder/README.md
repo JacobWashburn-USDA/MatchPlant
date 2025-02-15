@@ -58,7 +58,7 @@ cd Ortho_to_image/3_min_img_finder
 
 ## **Requirements**
 
-- Python 3.x
+- Python 3.9+
 - Dependencies:
   - NumPy
   - Pandas
