@@ -43,7 +43,7 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
   │   └── gcp_list.txt        # Optional: GCP file if you have ground control points
   ├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
   ```
-- `gcp_list.txt` can be created by ["1_gcp_finder"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/1_gcp_finder)
+- `gcp_list.txt` can be created by [1_gcp_finder](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/1_gcp_finder)
 
 ## Usage
 
