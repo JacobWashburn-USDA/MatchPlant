@@ -128,7 +128,6 @@ output_folder/
 ![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/images/img_1.png?raw=true)
 
 Figure 1. Example of ininitial_setup_window
-     
 - Dataset Creation:
    - Review coverage to ensure all areas of interest are included
    - Save your optimized dataset
