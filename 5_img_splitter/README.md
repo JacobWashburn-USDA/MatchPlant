@@ -74,13 +74,13 @@ cd Ortho_to_image/5_img_splitter
 
 ### 1. Required Files
 - Image folder path
-  - The image input folder is created by ["3_min_img_finder"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) method - the "selected_undistorted_images" folder
+  - The image input folder is created by [3_min_img_finder](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) method - the "selected_undistorted_images" folder
   - supported formats:
     - TIF/TIFF
     - JPG/JPEG
     - PNG
 - Annotation folder path
-  - The annotation input folder is created by ["4_bbox_drawer"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/4_bbox_drawer) method - the "img_box" folder
+  - The annotation input folder is created by [4_bbox_drawer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/4_bbox_drawer) method - the "img_box" folder
   - Annotation file - COCO format in JSON files
 - Input structure:
   ```
