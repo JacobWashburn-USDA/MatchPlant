@@ -3,8 +3,8 @@ Script Name: test.py
 Purpose: Test and evaluates a Faster R-CNN model for object detection using PyTorch, 
         with COCO format dataset handling and evaluation metrics
 Authors: Worasit Sangjan
-Date: 12 February 2025 
-Version: 1.0
+Date: 14 February 2025 
+Version: 1.1
 """
 
 import torch
@@ -114,7 +114,12 @@ class COCOSizeEvaluator:
         self.coco_gt = coco_gt
         self.config = config
         self.results = []
-        self.img_ids = sorted(list(coco_gt.imgs.keys()))
+        # Get only image IDs that have annotations
+        annotation_imgs = set()
+        for ann in self.coco_gt.anns.values():
+            annotation_imgs.add(ann['image_id'])
+        self.img_ids = sorted(list(annotation_imgs))
+        print(f"\nInitialized evaluator with {len(self.img_ids)} test images")
 
     def update(self, predictions, targets):
         for pred, target in zip(predictions, targets):
@@ -124,7 +129,7 @@ class COCOSizeEvaluator:
             labels = pred["labels"]
             
             for box, score, label in zip(boxes, scores, labels):
-                if score > self.config.metrics.confidence_threshold:  # Use config threshold
+                if score > self.config.metrics.confidence_threshold:
                     x1, y1, x2, y2 = box.tolist()
                     width = x2 - x1
                     height = y2 - y1
@@ -138,12 +143,33 @@ class COCOSizeEvaluator:
 
     def evaluate(self):
         if not self.results:
-            return {}
+            return {}, {}
             
         # Create COCO results object
         coco_dt = self.coco_gt.loadRes(self.results)
         coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')
         coco_eval.params.imgIds = self.img_ids
+        
+        # Get mAP metrics first
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+        
+        # Store comprehensive mAP metrics
+        map_metrics = {
+            'AP_IoU=0.50:0.95': coco_eval.stats[0],  # mAP averaged over IoUs
+            'AP_IoU=0.50': coco_eval.stats[1],       # mAP at IoU=0.50
+            'AP_IoU=0.75': coco_eval.stats[2],       # mAP at IoU=0.75
+            'AP_small': coco_eval.stats[3],          # mAP for small objects
+            'AP_medium': coco_eval.stats[4],         # mAP for medium objects
+            'AP_large': coco_eval.stats[5],          # mAP for large objects
+            'AR_maxDets=1': coco_eval.stats[6],      # AR given 1 detection per image
+            'AR_maxDets=10': coco_eval.stats[7],     # AR given 10 detections per image
+            'AR_maxDets=100': coco_eval.stats[8],    # AR given 100 detections per image
+            'AR_small': coco_eval.stats[9],          # AR for small objects
+            'AR_medium': coco_eval.stats[10],        # AR for medium objects
+            'AR_large': coco_eval.stats[11]          # AR for large objects
+        }
         
         # Evaluate by size using size ranges from config
         size_performance = {}
@@ -158,15 +184,11 @@ class COCOSizeEvaluator:
             
             # Get precision and recall for IoU=0.5
             precision = coco_eval.eval['precision']
-            # Take precision for IoU @ 0.5, all categories, all area ranges, max recall
             precision_value = float(np.mean(precision[0, :, 0, 0, -1]))
             
-            # Get recall values for IoU @ 0.5
             recall = coco_eval.eval['recall']
-            # Take recall for IoU @ 0.5, all area ranges, max dets
             recall_value = float(np.mean(recall[0, :, 0]))
             
-            # Calculate F1 score
             f1_value = 2 * (precision_value * recall_value) / (precision_value + recall_value) if (precision_value + recall_value) > 0 else 0
             
             size_performance[size] = {
@@ -175,7 +197,7 @@ class COCOSizeEvaluator:
                 'f1_score': f1_value
             }
         
-        return size_performance
+        return map_metrics, size_performance
 
 def plot_confidence_distribution(all_scores, save_path, config):
     plt.figure(figsize=config.visualization.figure_size, dpi=config.visualization.dpi)
@@ -228,21 +250,21 @@ def visualize_test_results(image, pred_boxes, pred_scores, gt_boxes, save_path, 
     
     image.save(save_path)
 
-def run_single_test(config=None):
+def run_single_test(config=None, run_dir=None):
     """Run a single test iteration and return results"""
     if config is None:
         config_loader = TestConfigLoader()
         config = config_loader.create_config(
-            config_loader.load_config('config.yaml')
+            config_loader.load_config('test_config.yaml')
         )
     
     start_time = time.time()
     device, _ = configure_device_and_resources()
     
-    # Use config parameters
-    results_dir = Path(config.output.results_dir)
+    # Use config parameters or run-specific directory if provided
+    results_dir = Path(run_dir) if run_dir else Path(config.output.results_dir)
     results_dir.mkdir(exist_ok=True)
-    test_results_dir = Path(config.output.test_results_dir)
+    test_results_dir = results_dir / 'images' 
     test_results_dir.mkdir(exist_ok=True)
     
     # Load test dataset using config
@@ -263,7 +285,7 @@ def run_single_test(config=None):
     
     # Initialize evaluators
     coco_gt = COCO(config.data.test_annotations)
-    size_evaluator = COCOSizeEvaluator(coco_gt, config)  # Pass config to evaluator
+    size_evaluator = COCOSizeEvaluator(coco_gt, config)
     
     model = load_model(config.model_path, device)
     
@@ -309,11 +331,12 @@ def run_single_test(config=None):
                     config
                 )
     
-    # Get size performance using COCO evaluation
-    size_performance = size_evaluator.evaluate()
+    # Get performance metrics using COCO evaluation
+    map_metrics, size_performance = size_evaluator.evaluate()
     
     # Return results
     return {
+        'map_metrics': map_metrics,  # New mAP metrics
         'performance': {
             'iou_0.5': {metric: np.mean([r['iou_0.5'][metric] for r in all_results]) 
                        for metric in ['precision', 'recall', 'f1_score']},
@@ -334,48 +357,46 @@ def run_multiple_tests(num_runs=None):
     """Run multiple test iterations and compute statistics"""
     config_loader = TestConfigLoader()
     config = config_loader.create_config(
-        config_loader.load_config('config.yaml')
+        config_loader.load_config('test_config.yaml')
     )
     
     if num_runs is None:
         num_runs = config.num_runs
         
-    all_runs_results = []  # Add this line
+    all_runs_results = []
     
     for run in range(num_runs):
         print(f"\nRunning test {run + 1}/{num_runs}")
         
-        # Create directories for this run
-        run_results_dir = Path(config.output.results_dir) / f'run_{run + 1}'  # Use config path
-        run_results_dir.mkdir(exist_ok=True, parents=True)
-        run_test_results_dir = Path(config.output.test_results_dir) / f'run_{run + 1}'  # Use config path
-        run_test_results_dir.mkdir(exist_ok=True, parents=True)
+        # Create directory for this run
+        run_dir = Path(config.output.results_dir) / f'run_{run + 1}'
+        run_dir.mkdir(exist_ok=True, parents=True)
         
-        # Run test
-        results = run_single_test(config)
+        # Run test with run-specific directory
+        results = run_single_test(config, run_dir=run_dir)
         all_runs_results.append(results)
         
         if config.output.save_individual_results:
             # Generate plots for this run
             plot_confidence_distribution(
                 results['all_scores'],
-                run_results_dir / 'confidence_distribution.png',
+                run_dir / 'confidence_distribution.png',
                 config
             )
             create_confusion_matrix(
                 results['first_result'],
-                run_results_dir / 'confusion_matrix.png',
+                run_dir / 'confusion_matrix.png',
                 config
             )
         
         # Save individual run results
-        with open(run_results_dir / f'metrics_run_{run + 1}.json', 'w') as f:
-            json.dump(results, f, indent=4, cls=NumpyEncoder)  # Use custom encoder
+        with open(run_dir / f'metrics_run_{run + 1}.json', 'w') as f:
+            json.dump(results, f, indent=4, cls=NumpyEncoder)
     
     # Calculate statistics
     stats = calculate_statistics(all_runs_results)
     
-    # Save aggregate results
+    # Save aggregate results in main results directory
     aggregate_path = Path(config.output.results_dir) / 'aggregate_results.json'
     with open(aggregate_path, 'w') as f:
         json.dump(stats, f, indent=4, cls=NumpyEncoder)
@@ -395,6 +416,24 @@ def calculate_statistics(all_runs_results):
         '95_confidence': {}
     }
     
+    # Add mAP metrics statistics
+    stats['mean']['map_metrics'] = {}
+    stats['std']['map_metrics'] = {}
+    stats['min']['map_metrics'] = {}
+    stats['max']['map_metrics'] = {}
+    stats['95_confidence']['map_metrics'] = {}
+    
+    # Calculate statistics for mAP metrics
+    map_keys = all_runs_results[0]['map_metrics'].keys()
+    for key in map_keys:
+        values = [run['map_metrics'][key] for run in all_runs_results]
+        stats['mean']['map_metrics'][key] = np.mean(values)
+        stats['std']['map_metrics'][key] = np.std(values)
+        stats['min']['map_metrics'][key] = np.min(values)
+        stats['max']['map_metrics'][key] = np.max(values)
+        stats['95_confidence']['map_metrics'][key] = 1.96 * stats['std']['map_metrics'][key] / np.sqrt(len(all_runs_results))
+    
+    # Original statistics calculation
     for metric_type in ['performance', 'size_performance']:
         stats['mean'][metric_type] = {}
         stats['std'][metric_type] = {}
@@ -422,7 +461,6 @@ def calculate_statistics(all_runs_results):
                 stats['min'][metric_type][category][metric] = np.min(values)
                 stats['max'][metric_type][category][metric] = np.max(values)
                 
-                # Calculate 95% confidence interval
                 confidence = 1.96 * stats['std'][metric_type][category][metric] / np.sqrt(len(all_runs_results))
                 stats['95_confidence'][metric_type][category][metric] = confidence
     
@@ -432,7 +470,37 @@ def print_summary(stats):
     """Print summary of results"""
     print("\nAggregate Results Summary:")
     
-    print("\nPerformance Metrics:")
+    print("\nMean Average Precision Metrics:")
+    for metric in ['AP_IoU=0.50:0.95', 'AP_IoU=0.50', 'AP_IoU=0.75']:
+        mean = stats['mean']['map_metrics'][metric]
+        conf = stats['95_confidence']['map_metrics'][metric]
+        std = stats['std']['map_metrics'][metric]
+        min_val = stats['min']['map_metrics'][metric]
+        max_val = stats['max']['map_metrics'][metric]
+        print(f"{metric}: {mean:.3f} ± {conf:.3f} "
+              f"(std: {std:.3f}, min: {min_val:.3f}, max: {max_val:.3f})")
+    
+    print("\nSize-based AP Metrics:")
+    for metric in ['AP_small', 'AP_medium', 'AP_large']:
+        mean = stats['mean']['map_metrics'][metric]
+        conf = stats['95_confidence']['map_metrics'][metric]
+        std = stats['std']['map_metrics'][metric]
+        min_val = stats['min']['map_metrics'][metric]
+        max_val = stats['max']['map_metrics'][metric]
+        print(f"{metric}: {mean:.3f} ± {conf:.3f} "
+              f"(std: {std:.3f}, min: {min_val:.3f}, max: {max_val:.3f})")
+    
+    print("\nAverage Recall Metrics:")
+    for metric in ['AR_maxDets=1', 'AR_maxDets=10', 'AR_maxDets=100']:
+        mean = stats['mean']['map_metrics'][metric]
+        conf = stats['95_confidence']['map_metrics'][metric]
+        std = stats['std']['map_metrics'][metric]
+        min_val = stats['min']['map_metrics'][metric]
+        max_val = stats['max']['map_metrics'][metric]
+        print(f"{metric}: {mean:.3f} ± {conf:.3f} "
+              f"(std: {std:.3f}, min: {min_val:.3f}, max: {max_val:.3f})")
+    
+    print("\nOriginal Performance Metrics:")
     for iou in ['iou_0.5', 'iou_0.75']:
         print(f"\n{iou.upper()}:")
         for metric in ['precision', 'recall', 'f1_score']:
