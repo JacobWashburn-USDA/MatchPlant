@@ -3,6 +3,7 @@
 This Python utility creates annotated image datasets for object detection models. It provides an interactive interface for drawing bounding boxes around objects of interest and supports COCO (.json file) and YOLO (.txt file) annotation formats with Windows and macOS platform implementations.
 
 ### **Note**
+
 This tool is essential for deep learning workflows that require creating annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
 
 ## Table of Contents
@@ -26,26 +27,26 @@ cd Ortho_to_image/4_bbox_drawer
 ### 2. Install dependencies:
 
 - For Windows:
-```bash
-pip install -r requirements_win.txt
-```
+  ```bash
+  pip install -r requirements_win.txt
+  ```
 
 - For macOS:
-```bash
-pip install -r requirements_mac.txt
-```
+  ```bash
+  pip install -r requirements_mac.txt
+  ```
 
 ### 3. Run the script:
 
 - For Windows:
-```bash
-python bbox_drawer_win.py
-```
+  ```bash
+  python bbox_drawer_win.py
+  ```
 
 - For macOS:
-```bash
-python bbox_drawer_mac.py
-```
+  ```bash
+  python bbox_drawer_mac.py
+  ```
 
 ## **Features**
 
@@ -71,20 +72,19 @@ python bbox_drawer_mac.py
 
 ### 1. Required Files
 - Image folder path:
-  - Click [here](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) / The image input folder is created by "3_min_img_finder" method - the "selected_undistorted_images" folder
+  - The image input folder is created by ["3_min_img_finder"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) - the "selected_undistorted_images" folder
   - Supported formats:
     - JPG/JPEG
     - PNG
     - TIF/TIFF
-
-Input structure:
-```
-project_root/
-├── images/          # Your input image folder
-│   ├── image1.jpg
-│   ├── image2.jpg
-│   └── ...
-```
+- Input structure:
+  ```
+  project_root/
+  ├── images/          # Your input image folder
+  │   ├── image1.jpg
+  │   ├── image2.jpg
+  │   └── ...
+  ```
 
 ### 2. Configuration Setup
 - Initial Configuration:
@@ -104,26 +104,25 @@ project_root/
 - img_box folder
     - Images with annotation
     - Annotation files of each image in the chosen format
-
-Output structure:
-```
-project_root/
-├── mask_box/                         # Individual masked images and annotations
-│   ├── image1_1.jpg
-│   ├── image1_1.json/txt
-│   └── ...
-└── img_box/                          # Images with visualized annotations and annotations
-    ├── image1.jpg
-    ├── image1_annotations.json/txt
-    └── ...
-```
+- Output structure:
+  ```
+  project_root/
+  ├── mask_box/                         # Individual masked images and annotations
+  │   ├── image1_1.jpg
+  │   ├── image1_1.json/txt
+  │   └── ...
+  └── img_box/                          # Images with visualized annotations and annotations
+      ├── image1.jpg
+      ├── image1_annotations.json/txt
+      └── ...
+  ```
 
 ## **Usage Instructions**
 
 - Launch Application:
-   ```python
-   python bbox_drawer_win.py  # or bbox_drawer_mac.py for macOS
-   ```
+  ```python
+  python bbox_drawer_win.py  # or bbox_drawer_mac.py for macOS
+  ```
 - Initial Setup:
    - Select your image folder
    - Choose annotation format (COCO/YOLO)
