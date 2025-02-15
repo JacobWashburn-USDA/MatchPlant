@@ -8,12 +8,25 @@ An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection
 - Piyush Pandey
 - Norman B. Best
 - Jacob D. Washburn
-
+  
 *USDA-ARS, Plant Genetics Research Unit, Columbia, MO, United States*
+
+## Table of Contents
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Repository Structure](#repository-structure)
+- [Pipeline Workflow](#pipeline-workflow)
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Download Dataset](#download-dataset)
+- [Citation](#citation)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+- [License](#license)
 
 ## Overview
 
-MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. In this case, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
+MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. For the case study, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
 
 ## Key Features
 
@@ -97,22 +110,21 @@ If you use MatchPlant in your research, please cite:
 
 ```
 ```
-
 For the dataset, please cite:
 
 ```
 ```
 
-## License
-
-This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
-
 ## Contact
 
 For questions and collaboration opportunities, please contact:
 
-**Jacob Washburn**; Email: jacob.washburn@usda.gov
+**Jacob D. Washburn**; Email: jacob.washburn@usda.gov
 
 ## Acknowledgments
 
 This research was supported in part by an appointment to the Agricultural Research Service (ARS) Research Participation Program administered by the Oak Ridge Institute for Science and Education (ORISE) through an interagency agreement between the U.S. Department of Energy (DOE) and the U.S. Department of Agriculture (USDA). ORISE is managed by ORAU under DOE contract number DE-SC0014664. Funding was provided by the United States Department of Agriculture, Agricultural Research Service, and SCINet Postdoctoral Fellows Program. All opinions expressed in this publication are the author’s and do not necessarily reflect the policies and views of USDA, DOE, or ORAU/ORISE.
+
+## License
+
+This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
