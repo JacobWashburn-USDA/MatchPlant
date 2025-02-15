@@ -6,19 +6,14 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
 This tool is handy for drone imagery processing workflows where GPS data must be embedded post-flight or when working with systems that record position data separately from image capture.
 
 ## Table of Contents
-- [**GPS Embedding Tool for Drone Imagery**](#gps-embedding-tool-for-drone-imagery)
-    - [**Note**](#note)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Start](#quick-start)
-  - [**Features**](#features)
-  - [**Requirements**](#requirements)
-  - [**Input Requirements**](#input-requirements)
-  - [**Outputs**](#outputs)
-  - [**Usage Examples**](#usage-examples)
-    - [**Interactive Usage**](#interactive-usage)
-    - [**Programmatic Usage**](#programmatic-usage)
-  - [**Common Issues and Solutions**](#common-issues-and-solutions)
-  - [**License**](#license)
+- [Quick Start](#quick-start)
+- [**Features**](#features)
+- [**Requirements**](#requirements)
+- [**Input Requirements**](#input-requirements)
+- [**Outputs**](#outputs)
+- [**Usage Examples**](#usage-examples)
+- [**Common Issues and Solutions**](#common-issues-and-solutions)
+- [**License**](#license)
 
 ## Quick Start
 
@@ -82,7 +77,7 @@ python 0_gps_embed.py
       - Z (Altitude)
       - File must be placed in the same folder as images
      
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/MatchPlant/images/img_events_txt.png?raw=true)
+![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/0_gps_embeder/images/img_events_txt.png)
 
 Figure 1. Example of events.txt file
       
