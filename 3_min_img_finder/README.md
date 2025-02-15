@@ -3,6 +3,7 @@
 This is a Python utility for creating optimal drone image datasets for object detection models. It helps reduce dataset redundancy by selecting the minimum number of images needed to cover a target area, making object detection training more efficient.
 
 ### **Note**
+
 This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
 
 ## Table of Contents
@@ -26,26 +27,26 @@ cd Ortho_to_image/3_min_img_finder
 ### 2. Install dependencies:
 
 - For Windows:
-```bash
-pip install -r requirements_win.txt
-```
+  ```bash
+  pip install -r requirements_win.txt
+  ```
 
 - For macOS:
-```bash
-pip install -r requirements_mac.txt
-```
+  ```bash
+  pip install -r requirements_mac.txt
+  ```
 
 ### 3. Run the script:
 
 - For Windows:
-```bash
-python min_img_finder_win.py
-```
+  ```bash
+  python min_img_finder_win.py
+  ```
 
 - For macOS:
-```bash
-python min_img_finder_mac.py
-```
+  ```bash
+  python min_img_finder_mac.py
+  ```
 
 ## **Features**
 
@@ -75,19 +76,18 @@ python min_img_finder_mac.py
 - Image Folders path:
    - Orthorectified images (GeoTIFF format) - for spatial analysis
    - Original undistorted images for the final dataset
-
-Input Structure: All input is from the ["2_odm_runner"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
-```
-project_root/
-├── images/                     
-├── odm_dem/                   
-├── odm_orthophoto/
-│   └── odm_orthophoto.tif    # Orthophoto image
-├── opensfm/                   
-│   └── undistorted/         
-│       └── images/           # Undistorted image folder
-└── orthorectified/           # Orthorectified image folder
-```
+- Input Structure: All input is from the ["2_odm_runner"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
+  ```
+  project_root/
+  ├── images/                     
+  ├── odm_dem/                   
+  ├── odm_orthophoto/
+  │   └── odm_orthophoto.tif    # Orthophoto image
+  ├── opensfm/                   
+  │   └── undistorted/         
+  │       └── images/           # Undistorted image folder
+  └── orthorectified/           # Orthorectified image folder
+  ```
 
 ### 2. Configuration Setup:
    
@@ -103,15 +103,14 @@ project_root/
    - Selected_undistorted_images folder - Minimum number of images
    - Selected_images_list file - Coverage report (.csv)
    - Coverage_plot image - Visual coverage map (png)
-
-Output structure:
-```
-output_folder/
-├── selected_undistorted_images_YYYYMMDD_HHMMSS/  # Your optimized dataset
-│   └── selected_images...
-├── selected_images_list_YYYYMMDD_HHMMSS.csv      # Selection metadata
-└── coverage_plot_YYYYMMDD_HHMMSS.png             # Coverage visualization
-```
+- Output structure:
+  ```
+  output_folder/
+  ├── selected_undistorted_images_YYYYMMDD_HHMMSS/  # Your optimized dataset
+  │   └── selected_images...
+  ├── selected_images_list_YYYYMMDD_HHMMSS.csv      # Selection metadata
+  └── coverage_plot_YYYYMMDD_HHMMSS.png             # Coverage visualization
+  ```
 
 ## **Usage Instructions**
 
