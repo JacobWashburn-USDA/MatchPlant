@@ -27,27 +27,27 @@ cd Ortho_to_image/1_gcp_finder
 
 ### 2. Install dependencies:
 
-For Windows:
-```bash
-pip install -r requirements_win.txt
-```
+- For Windows:
+  ```bash
+  pip install -r requirements_win.txt
+  ```
 
-For macOS:
-```bash
-pip install -r requirements_mac.txt
-```
+- For macOS:
+  ```bash
+  pip install -r requirements_mac.txt
+  ```
 
 ### 3. Run the script:
 
-For Windows:
-```bash
-python gcp_finder_win.py
-```
+- For Windows:
+  ```bash
+  python gcp_finder_win.py
+  ```
 
-For macOS:
-```bash
-python gcp_finder_mac.py
-```
+- For macOS:
+  ```bash
+  python gcp_finder_mac.py
+  ```
 
 ## **Features**
 
@@ -73,32 +73,29 @@ python gcp_finder_mac.py
 
 ## **Input Requirements**
 
-### **Required Files**
-1. Image Files:
+### 1. Required Files
+- Image Files:
    - Format: JPG/JPEG/TIF/TIFF
    - Must contain EXIF metadata with GPS coordinates
    - Located in a single directory
-
-2. GCP File (CSV format):
+- GCP File (CSV format):
    - Required columns:
      - X: Longitude/Easting
      - Y: Latitude/Northing
      - Z: Elevation
      - id: GCP identifier
-    
-GCP File format:
-```
-X,Y,Z,id
--123.456,45.789,100.5,1
--123.457,45.790,102.3,2
-```
+   - GCP File format:
+     ```
+     X,Y,Z,id
+     -123.456,45.789,100.5,1
+     -123.457,45.790,102.3,2
+     ```
 
-### Configuration Setup
-1. Sensor Dimensions: For the information, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/camera_sensor_dimension.md)
+### 2. Configuration Setup
+- Sensor Dimensions: For the information, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/camera_sensor_dimension.md)
    - Camera sensor width (millimeter)
    - Camera sensor height (millimeter)
-     
-2. Distance Threshold Configuration (meter, default = 10 m):
+- Distance Threshold Configuration (meter, default = 10 m):
    - The distance threshold determines how far (in meters) from a GCP the software will search for relevant images
    - A larger threshold (e.g., 20m) will find more potential images but may include ones where the GCP is less visible
    - A smaller threshold (e.g., 5m) will be more selective, showing only images taken closer to the GCP
@@ -110,33 +107,30 @@ X,Y,Z,id
 
 ## **Outputs**
 
-1. gcp_list.txt:
+- gcp_list.txt:
    - Format: "UTM_X UTM_Y Elevation ImageX ImageY Filename GCP_ID"
    - Contains all marked GCP locations
    - Includes coordinate transformations
    - Headers specify coordinate system
-
-`gcp_list.txt` format:
-```
-WGS84 UTM [zone][hemisphere]
-[UTM_X] [UTM_Y] [Elevation] [ImageX] [ImageY] [Filename] [GCP_ID]
-```
-
-The program creates `gcp_list.txt` in your input image folder:
-```
-input_image_folder/
-├── your_images.jpg
-├── gcp_list.txt        # Generated GCP file
-```
+   - `gcp_list.txt` format:
+      ```
+      WGS84 UTM [zone][hemisphere]
+      [UTM_X] [UTM_Y] [Elevation] [ImageX] [ImageY] [Filename] [GCP_ID]
+      ```
+   - The program creates `gcp_list.txt` in your input image folder:
+      ```
+      input_image_folder/
+      ├── your_images.jpg
+      ├── gcp_list.txt        # Generated GCP file
+      ```
 
 ## **Usage Instructions**
 
-1. Launch Application:
+- Launch Application:
    ```python
    python gcp_finder_win.py   # or gcp_finder_mac.py for macOS
    ```
-
-2. Initial Setup:
+- Initial Setup:
    - Select an image folder
    - Choose GCP data file
    - Enter camera sensor dimensions: Check sensor dimension 
@@ -146,8 +140,7 @@ input_image_folder/
 ![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/images/img_1.png?raw=true)
 
 Figure 1. Example of ininitial_setup_window
-
-3. GCP Marking:
+- GCP Marking:
    - Select GCP ID from the radio buttons
    - Choose a relevant image from the list
    - Right-click to mark the GCP location
@@ -164,24 +157,21 @@ Figure 2. Example of gcp_marking_window
   - Right Click: Mark GCP location
   - Left Click + Drag: Pan image
   - Scroll Wheel: Zoom in/out
-
 - Keyboard Controls:
   - 'S': Save marked points
   - 'D': Delete last point
 
 ## **Common Issues and Solutions**
 
-1. No Images Listed:
+- No Images Listed:
    - Verify image folder path
    - Check image EXIF data integrity
    - Confirm GCP coordinates are within range
-
-2. Coordinate Transformation Errors:
+- Coordinate Transformation Errors:
    - Validate GCP file format
    - Check coordinate system consistency
    - Verify UTM zone information
-
-3. Image Loading Failures:
+- Image Loading Failures:
    - Ensure supported image format
    - Check file permissions
    - Verify image file integrity
