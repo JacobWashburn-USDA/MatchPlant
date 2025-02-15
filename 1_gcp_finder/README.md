@@ -7,15 +7,15 @@ A Python utility for identifying and marking Ground Control Points (GCPs) in dro
 This tool is handy for drone imagery processing workflows where the orthomosaic software, [OpenDroneMap open-source software](https://github.com/OpenDroneMap/ODM/tree/master), needs the GCP file to increase the precision of the orthomosaic images.
 
 ## Table of Contents
-- [**Quick Start**](#quick-start)
-- [**Features**](#features)
-- [**Requirements**](#requirements)
-- [**Input Requirements**](#input-requirements)
-- [**Outputs**](#outputs)
-- [**Usage Instructions**](#usage-instructions)
-- [**Interactive GUI Controls**](#interactive-gui-controls)
-- [**Common Issues and Solutions**](#common-issues-and-solutions)
-- [**License**](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Interactive GUI Controls](#interactive-gui-controls)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
