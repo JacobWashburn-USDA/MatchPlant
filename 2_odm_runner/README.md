@@ -9,7 +9,6 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 - Helps create higher-quality training datasets for computer vision tasks
 
 **Key Benefits:**
-
 - Reduced noise in training data by removing camera lens distortion
 - More consistent object appearance across images
 - Better model generalization due to standardized image geometry
@@ -35,48 +34,48 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 
 **The scripts must be run from the directory containing your drone images!**
 
-Example directory structure:
-```
-your_drone_project/         # This is where your images are
-├── images/                 # Your drone images
-│   ├── IMG_0001.JPG
-│   ├── IMG_0002.JPG
-│   └── gcp_list.txt        # Optional: GCP file if you have ground control points
-├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
-```
-gcp_list.txt can be created by "1_gcp_finder" process [here](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/1_gcp_finder)
+- Example of directory structure:
+  ```
+  your_drone_project/         # This is where your images are
+  ├── images/                 # Your drone images
+  │   ├── IMG_0001.JPG
+  │   ├── IMG_0002.JPG
+  │   └── gcp_list.txt        # Optional: GCP file if you have ground control points
+  ├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
+  ```
+- `gcp_list.txt` can be created by ["1_gcp_finder"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/1_gcp_finder)
 
 ## Usage
 
 ### For Windows Users
 
-1. Copy `run_ODM_process.ps1` to your image directory
-2. Place your `gcp_list.txt` in the `images` folder
-3. Navigate to your image directory:
-```PowerShell
-cd path\to\your\drone_project
-```
-4. Run the script:
-```PowerShell
-.\run_ODM_process.ps1 
-```
+- Copy `run_ODM_process.ps1` to your image directory
+- Place your `gcp_list.txt` in the `images` folder
+- Navigate to your image directory:
+  ```PowerShell
+  cd path\to\your\drone_project
+  ```
+- Run the script:
+  ```PowerShell
+  .\run_ODM_process.ps1 
+  ```
 
 ### For Linux/Unix Users
 
-1. Copy `run_ODM_process.sh` to your image directory
-2. Place your `gcp_list.txt` in the `images` folder
-3. Navigate to your image directory:
-```bash
-cd path/to/your/drone_project
-```
-4. Make the script executable:
-```bash
-chmod +x run_ODM_process.sh
-```
-5. Run the script:
-```bash
-./run_ODM_process.sh
-```
+- Copy `run_ODM_process.sh` to your image directory
+- Place your `gcp_list.txt` in the `images` folder
+- Navigate to your image directory:
+  ```bash
+  cd path/to/your/drone_project
+  ```
+- Make the script executable:
+  ```bash
+  chmod +x run_ODM_process.sh
+  ```
+- Run the script:
+  ```bash
+  ./run_ODM_process.sh
+  ```
 
 ## Output
 
@@ -102,17 +101,14 @@ The scripts use these default parameters:
 
 ## Common Issues
 
-1. **Wrong Working Directory**
+- Wrong Working Directory
    - Make sure you are running the script from the directory containing your images
    - The script uses the current directory path for all operations
-
-2. **Docker not running**
+- Docker not running
    - Ensure the Docker daemon is running before executing the scripts
-   
-3. **Permission Issues**
+- Permission Issues
    - Windows: Ensure PowerShell has the necessary permissions
    - Linux: Make sure the script is executable (`chmod +x`)
-
-4. **Path Issues**
+- Path Issues
    - Avoid spaces in folder and file names
    - Use the scripts from the directory containing your images
