@@ -12,7 +12,6 @@ This tool is handy for deep learning workflows that require creating efficient d
 - [**Input Requirements**](#input-requirements)
 - [**Outputs**](#outputs)
 - [**Usage Instructions**](#usage-instructions)
-- [**Optimization Strategy**](#optimization-strategy)
 - [**Common Issues and Solutions**](#common-issues-and-solutions)
 - [**License**](#license)
 
@@ -139,15 +138,6 @@ Figure 1. Example of ininitial_setup_window
 ![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/images/img_2.png?raw=true)
 
 Figure 2. Example of min_img_window
-
-## **Optimization Strategy**
-
-The tool optimizes your dataset by:
-- Analyzing flight lines to maintain systematic coverage
-- Eliminating redundant, overlapping images
-- Ensuring representation of all unique viewpoints
-- Maintaining minimum required overlap for complete coverage
-- Selecting images that maximize area coverage while minimizing count
 
 ## **Common Issues and Solutions**
 
