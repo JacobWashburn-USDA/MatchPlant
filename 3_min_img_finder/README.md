@@ -7,14 +7,14 @@ This is a Python utility for creating optimal drone image datasets for object de
 This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
 
 ## Table of Contents
-- [**Quick Start**](#quick-start)
-- [**Features**](#features)
-- [**Requirements**](#requirements)
-- [**Input Requirements**](#input-requirements)
-- [**Outputs**](#outputs)
-- [**Usage Instructions**](#usage-instructions)
-- [**Common Issues and Solutions**](#common-issues-and-solutions)
-- [**License**](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
@@ -76,7 +76,7 @@ cd Ortho_to_image/3_min_img_finder
 - Image Folders path:
    - Orthorectified images (GeoTIFF format) - for spatial analysis
    - Original undistorted images for the final dataset
-- Input Structure: All input is from the ["2_odm_runner"](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
+- Input Structure: All input is from the [2_odm_runner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
   ```
   project_root/
   ├── images/                     
