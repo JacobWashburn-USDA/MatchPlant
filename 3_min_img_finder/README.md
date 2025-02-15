@@ -5,6 +5,18 @@ This is a Python utility for creating optimal drone image datasets for object de
 ### **Note**
 This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
 
+## Table of Contents
+- [**Quick Start**](#quick-start)
+- [**Features**](#features)
+- [**Requirements**](#requirements)
+- [**Input Requirements**](#input-requirements)
+- [**Input Structure**](#input-structure)
+- [**Outputs**](#outputs)
+- [**Usage Instructions**](#usage-instructions)
+- [**Optimization Strategy**](#optimization-strategy)
+- [**Common Issues and Solutions**](#common-issues-and-solutions)
+- [**License**](#license)
+
 ## Quick Start
 
 ### 1. Clone the repository:
@@ -69,15 +81,15 @@ python min_img_finder_mac.py
 
 ### Configuration Setup
    
-1. Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/configuration_parameters_guide.md)
+1. Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md)
    - Flight line width (%) - controls spacing between selected images
    - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
    - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
    - Uncovered area threshold (%) - sets acceptable coverage gaps
 
-## **Input structure**
+## **Input Structure**
 
-Remark: All input is from the "2_odm_runner" method [here](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/2_odm_runner)
+Remark: All input is from the "2_odm_runner" method [here](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
 ```
 project_root/
 ├── images/                     
@@ -119,7 +131,7 @@ output_folder/
    - Configure optimization parameters based on your needs
    - Click "Click to Start Finding" to begin optimization
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/images/img_1.png?raw=true)
+![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/images/img_1.png?raw=true)
 
 Figure 1. Example of ininitial_setup_window
      
@@ -127,7 +139,7 @@ Figure 1. Example of ininitial_setup_window
    - Review coverage to ensure all areas of interest are included
    - Save your optimized dataset
   
-![image](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/3_min_img_finder/images/img_2.png?raw=true)
+![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/images/img_2.png?raw=true)
 
 Figure 2. Example of min_img_window
 
@@ -159,4 +171,4 @@ The tool optimizes your dataset by:
 
 ## **License**
 
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/LICENSE) file.
+This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
