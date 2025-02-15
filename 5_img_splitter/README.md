@@ -62,7 +62,7 @@ cd Ortho_to_image/5_img_splitter
 
 ## **Requirements**
 
-- Python 3.x
+- Python 3.9+
 - Dependencies:
   - OpenCV (cv2)
   - NumPy
