@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Project specific directories (from actual code)
+data/                 # Training/validation data directory
+                      # Includes: train/, val/, new_train/, new_val/
+annotations/          # COCO format annotations
+                      # Includes: train.json, val.json, new_train.json, new_val.json
+checkpoints/          # Model checkpoints directory
+validation_results/   # Validation outputs from train.py and transfer_train.py
+
+# Model checkpoints
+*.pt            # Includes: best_model.pt, model_epoch_*.pt, emergency_save.pt
+                #           best_model_transfer.pt, model_transfer_epoch_*.pt
+                #           emergency_save_transfer.pt
+
+# Results and logs
+validation_summary.jsonl
+validation_results_*.json
+
+# Images
+*.jpg
+*.png
+*.tif
+
+# Keep configuration
+!config.yaml
+!transfer_config.yaml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+venv/
+env/
+.env/
+
+# OS specific
+.DS_Store       # Mac
+Thumbs.db       # Windows
+._*
+Desktop.ini
