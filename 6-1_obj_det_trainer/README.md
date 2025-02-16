@@ -134,6 +134,8 @@ python train.py
     loss: 1.2345
     loss_classifier: 0.4567
     loss_box_reg: 0.3456
+    loss_objectness: 0.2345
+    loss_rpn_box_reg: 0.5678
     ```
   - Validation results 
     ```
@@ -141,6 +143,8 @@ python train.py
     AP @ IoU=0.50:0.95: 0.456
     AP @ IoU=0.50: 0.789
     AP @ IoU=0.75: 0.567
+    AP for small/medium/large objects 
+    AR (Average Recall) metrics 
     ```
 - Saving Results:
   - Checkpoints are saved in `./checkpoints/`
