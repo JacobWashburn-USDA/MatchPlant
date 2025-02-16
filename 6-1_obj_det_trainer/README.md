@@ -79,7 +79,7 @@ python train.py
 ### 1. Required Files
 - Training Dataset: This is the output from [5_img_splitter](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
     - Images in standard formats (JPG, PNG, TIFF)
-    - COCO format annotations (.json)
+    - COCO format annotations (.json), Use [4_bbox_drawer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/4_bbox_drawer)
     - Organized in train/validation splits
 - PyTorch Utility Files:
   - coco_eval.py, coco_utils.py, engine.py, transforms.py, and utils.py
