@@ -100,8 +100,8 @@ To use the MatchPlant pipeline with our prepared dataset:
 The dataset contains:
 - UAV images: UAV-captured plant images
 - Annotation file: COCO format bounding boxes
-- Pre-trained model: Faster R-CNN model [To use "transfer learning" module]
-
+- Pre-trained model: Faster R-CNN model: Download to use in [6-2_obj_det_trans_learner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-2_obj_det_trans_learner)
+  
 After downloading the dataset (UAV images and Annotation file), please start with the module [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter) to use our pipeline.
 
 ## Citation
