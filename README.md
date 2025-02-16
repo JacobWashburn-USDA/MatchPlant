@@ -72,7 +72,7 @@ Figure 1: Diagram of the MathPlant-the modular open-source pipeline
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.9+
 - OpenDroneMap (ODM)
 - Additional requirements listed in branch-specific documentation
 

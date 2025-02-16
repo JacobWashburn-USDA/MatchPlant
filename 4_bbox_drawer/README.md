@@ -60,7 +60,7 @@ cd Ortho_to_image/4_bbox_drawer
 
 ## **Requirements**
 
-- Python 3.x
+- Python 3.9+
 - Dependencies:
   - OpenCV (cv2)
   - NumPy

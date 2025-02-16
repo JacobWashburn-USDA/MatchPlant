@@ -44,7 +44,7 @@ python 0_gps_embed.py
 
 ## **Requirements**
 
-- Python 3.x
+- Python 3.9+
 - Dependencies:
   - piexif: For EXIF metadata manipulation
   - PIL (Pillow): For image processing

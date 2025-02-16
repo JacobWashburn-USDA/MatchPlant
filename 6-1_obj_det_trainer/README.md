@@ -67,7 +67,7 @@ python train.py
 
 ## **Requirements**
 
-- Python 3.x
+- Python 3.9+
 - Dependencies:
   - PyTorch
   - torchvision
