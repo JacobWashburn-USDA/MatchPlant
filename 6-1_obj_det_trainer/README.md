@@ -43,13 +43,11 @@ These files are essential for training and contain helper functions for:
 - General utilities (utils.py)
 
 ### 3. Install dependencies:
-
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Configure and run:
-
 ```bash
 # Edit train_config.yaml to match your dataset and requirements
 python train.py
