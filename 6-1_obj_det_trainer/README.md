@@ -23,7 +23,7 @@ This tool is essential for training deep learning models on annotated datasets. 
 ### 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd Ortho_to_image/6_obj_det_trainer
+cd Ortho_to_image/6-1_obj_det_trainer
 ```
 
 ### 2. Download required utility files:
