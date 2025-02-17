@@ -23,7 +23,7 @@ This tool is essential for training deep learning models on annotated datasets. 
 ### 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd Ortho_to_image/6_obj_det_trainer
+cd Ortho_to_image/6-1_obj_det_trainer
 ```
 
 ### 2. Download required utility files:
@@ -43,13 +43,11 @@ These files are essential for training and contain helper functions for:
 - General utilities (utils.py)
 
 ### 3. Install dependencies:
-
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Configure and run:
-
 ```bash
 # Edit train_config.yaml to match your dataset and requirements
 python train.py
@@ -81,7 +79,7 @@ python train.py
 ### 1. Required Files
 - Training Dataset: This is the output from [5_img_splitter](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
     - Images in standard formats (JPG, PNG, TIFF)
-    - COCO format annotations (.json)
+    - COCO format annotations (.json), Use [4_bbox_drawer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/4_bbox_drawer)
     - Organized in train/validation splits
 - PyTorch Utility Files:
   - coco_eval.py, coco_utils.py, engine.py, transforms.py, and utils.py
@@ -136,6 +134,8 @@ python train.py
     loss: 1.2345
     loss_classifier: 0.4567
     loss_box_reg: 0.3456
+    loss_objectness: 0.2345
+    loss_rpn_box_reg: 0.5678
     ```
   - Validation results 
     ```
@@ -143,6 +143,8 @@ python train.py
     AP @ IoU=0.50:0.95: 0.456
     AP @ IoU=0.50: 0.789
     AP @ IoU=0.75: 0.567
+    AP for small/medium/large objects 
+    AR (Average Recall) metrics 
     ```
 - Saving Results:
   - Checkpoints are saved in `./checkpoints/`

@@ -1,60 +1,54 @@
 # **Object Detection Transfer Learning Tool**
 
-This Python utility implements transfer learning for Faster R-CNN models in object detection using PyTorch. It enables fine-tuning of pre-trained models with configurable layer freezing, learning rates, and comprehensive evaluation metrics.
+This Python utility uses PyTorch to implement transfer learning for Faster R-CNN models in object detection. It enables fine-tuning pre-trained models with configurable layer freezing, learning rates, and comprehensive evaluation metrics. The pre-trained model is provided, trained on individual maize in a research field.
 
 ### **Note**
 
 This tool extends the base object detection training system with transfer learning capabilities. It provides flexible configuration for layer freezing, learning rate adjustments, and selective parameter updates, making it ideal for adapting pre-trained models to new domains with limited data.
 
-For detailed technical information about the transfer learning implementation, see [Transfer Learning Guide](transfer_learning_guide.md).
+See [Transfer Learning Guide](transfer_learning_guide.md) for detailed technical information about the transfer learning implementation.
 
 ## Table of Contents
-- [**Object Detection Transfer Learning Tool**](#object-detection-transfer-learning-tool)
-    - [**Note**](#note)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Start](#quick-start)
-    - [1. Prepare your environment:](#1-prepare-your-environment)
-    - [2. Configure transfer learning:](#2-configure-transfer-learning)
-    - [3. Run transfer learning:](#3-run-transfer-learning)
-  - [**Features**](#features)
-  - [**Requirements**](#requirements)
-  - [**Input Requirements**](#input-requirements)
-    - [1. Required Files](#1-required-files)
-  - [**Outputs**](#outputs)
-  - [**Usage Instructions**](#usage-instructions)
-  - [Hardware Requirements](#hardware-requirements)
-  - [Optimization Strategies](#optimization-strategies)
-  - [Common Issues and Solutions](#common-issues-and-solutions)
-  - [License](#license)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Input Requirements](#input-requirements)
+- [Outputs](#outputs)
+- [Usage Instructions](#usage-instructions)
+- [Hardware Requirements](#hardware-requirements)
+- [Optimization Strategies](#optimization-strategies)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+- [License](#license)
 
 ## Quick Start
 
-### 1. Prepare your environment:
-Make sure you have the base object detection training system installed and configured as described in the [base README](README.md).
-
-### 2. Configure transfer learning:
-Edit `transfer_config.yaml` to set your transfer learning parameters. For detailed configuration options, see the [Transfer Learning Guide - Configuration Examples](transfer_learning_guide.md#configuration-examples):
-
-```yaml
-transfer:
-  pretrained_model_path: "best_model.pt"
-  freeze_backbone: true
-  freeze_rpn: false
-  freeze_roi_heads: false
-  learning_rates:
-    backbone: 0.0001
-    rpn: 0.001
-    roi_heads: 0.001
+### 1. Clone the repository:
+```bash
+git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
+cd Ortho_to_image/6-2_obj_det_trans_learner
 ```
 
-### 3. Run transfer learning:
+### 2. Download required files:
+- Pre-trained model: Please download from [Zenodo]? 
+- Required base files: from [6-1_obj_det_trainer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-1_obj_det_trainer)
+    - Base training script: `train.py`
+    - Configuration loader: `train_config_loader.py`
+    - PyTorch utility files: `coco_eval.py`, `coco_utils.py`, `engine.py`, `transforms.py`, and `utils.py`.
+  
+### 3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure and run:
+Edit `transfer_config.yaml` to set your transfer learning parameters. For detailed configuration options, see the [Transfer Learning Guide - Configuration Examples](transfer_learning_guide.md#configuration-examples):
 ```bash
 python transfer_train.py
 ```
 
 ## **Features**
 
-- Selective Layer Freezing: Control which model components to freeze/unfreeze (see [Model Architecture and Freezing](transfer_learning_guide.md#model-architecture-and-freezing))
+- Selective Layer Freezing: Control which model components to freeze/unfreeze, see [Transfer Learning Guide - Model Architecture and Freezing](transfer_learning_guide.md#model-architecture-and-freezing)
 - Component-Specific Learning Rates: Different learning rates for backbone, RPN, and ROI heads
 - Pre-trained Model Loading: Robust checkpoint loading with error handling
 - Parameter Management: Detailed tracking of trainable parameters
@@ -65,36 +59,54 @@ python transfer_train.py
 
 ## **Requirements**
 
-Same as base training system (see [base requirements](README.md#requirements)), plus:
 - Python 3.9+
-- PyTorch
-- torchvision
-- pycocotools
-- PyYAML
-- Pillow
-- psutil
+- Dependencies:
+  - PyTorch
+  - torchvision
+  - pycocotools
+  - PyYAML
+  - Pillow
+  - psutil
 
 ## **Input Requirements**
 
-### 1. Required Files
-- Pre-trained Model:
-  - Checkpoint file (.pt) from base training
+### 1. Dataset Requirements
+- **Image Size Compatibility**: If the provided pre-trained model is used, your new training images should have similar dimensions to those used in the pre-trained model. For more detail, please check [Transfer Learning Guide - Tips for Transfer Learning](transfer_learning_guide.md#tips-for-transfer-learning) and [Transfer Learning Guide - Configuration Examples](transfer_learning_guide.md#configuration-examples)
+  - The model configuration in `transfer_config.yaml` specifies (In case the provided pre-trained model is used):
+    ```yaml
+    model:
+      min_size: 800
+      max_size: 1333
+    ```
+  - Your new training images should be prepared to match these dimensions. Significant differences in image sizes between pre-trained and new data can negatively impact transfer learning performance
+- **Dataset**:
+  - New domain images and annotations in COCO format: Use [4_bbox_drawer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/4_bbox_drawer)
+  - Organized in train/validation splits: Use [5_img_splitter](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/5_img_splitter)
+
+### 2. Required Files
+- Pre-trained Model: Download from [Zenodo](?)
+- Base training and utility codes: Download from [6-1_obj_det_trainer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-1_obj_det_trainer)
+  - Base training codes: `train.py` and `train_config_loader.py`
+  - Utility files: `coco_eval.py`, `coco_utils.py`, `engine.py`, `transforms.py`, and `utils.py`
 - Transfer Learning Configuration:
   - `transfer_config.yaml` (see [Configuration Examples](transfer_learning_guide.md#configuration-examples))
-- Dataset:
-  - New domain images and annotations in COCO format
-  - Organized in train/validation splits
 - Code Files:
   - `transfer_train.py`: Main transfer learning script
   - `transfer_utils.py`: Transfer learning utilities
-  - Base training system utilities (see [Code Reuse from Base Training](transfer_learning_guide.md#code-reuse-from-base-training))
 - Input structure:
   ```
   project_root/
   ├── transfer_train.py           # Transfer learning main script
   ├── transfer_utils.py           # Transfer learning utilities
   ├── transfer_config.yaml        # Transfer learning configuration
-  ├── best_model.pt               # Pre-trained model checkpoint
+  ├── pre-trained model.pt        # Pre-trained model checkpoint
+  ├── train.py          
+  ├── train_config_loader.py      
+  ├── coco_eval.py        
+  ├── coco_utils.py
+  ├── engine.py     
+  ├── transforms.py       
+  ├── utils.py        
   ├── data/
   │   ├── new_train/              # New domain training images
   │   │   ├── image1.jpg
@@ -110,26 +122,48 @@ Same as base training system (see [base requirements](README.md#requirements)), 
 ## **Outputs**
 
 - Training and Validation Progress:
-  - Real-time metrics including:
+  - Real-time metric  
     ```
     Epoch: [0][10/500]
-    Trainable parameters: 1,234,567
-    Total parameters: 2,345,678
-    Percentage trainable: 52.63%
-    Loss: 1.2345
-    Validation mAP: 0.789
+    boxes: 6
+    lr: 0.010000
+    loss: 1.2345
+    loss_classifier: 0.4567
+    loss_box_reg: 0.3456
+    loss_objectness: 0.2345
+    loss_rpn_box_reg: 0.5678
     ```
-- Saved Models:
-  - Checkpoints saved in `./checkpoints/`
+  - Validation results 
+    ```
+    Evaluation Summary:
+    AP @ IoU=0.50:0.95: 0.456
+    AP @ IoU=0.50: 0.789
+    AP @ IoU=0.75: 0.567
+    AP for small/medium/large objects 
+    AR (Average Recall) metrics 
+    ```
+- Saving Results:
+  - Checkpoints are saved in `./checkpoints/`
     - `best_model_transfer.pt`: Best performing model
     - `model_transfer_epoch_N.pt`: Regular checkpoints
     - `emergency_save_transfer.pt`: Save on interruption
-
+    - Validation results are saved in `./validation_results/`
+- Output structure:
+  ```
+  project_root/
+  ├── checkpoints/
+  │   ├── best_model_transfer.pt
+  │   ├── model_transfer_epoch_N.pt
+  │   └── emergency_save_transfer.pt
+  └── validation_results/
+      ├── validation_results_epoch_N_timestamp.json
+      └── validation_summary.jsonl
+  ```
+  
 ## **Usage Instructions**
 
 - Prepare Pre-trained Model:
-   - Ensure base model is properly trained
-   - Note the checkpoint path
+   - Ensure the base model is appropriately trained
 - Configure Transfer Learning:
    - Set layer freezing strategy (see [When to Freeze/Unfreeze Layers](transfer_learning_guide.md#when-to-freezeunfreeze-layers))
    - Configure learning rates
@@ -141,7 +175,6 @@ Same as base training system (see [base requirements](README.md#requirements)), 
 
 ## Hardware Requirements
 
-Same as base training system (see [base hardware requirements](README.md#hardware-requirements)):
 - Minimum:
   - 8GB RAM
   - CUDA-capable GPU with 4GB VRAM
@@ -158,7 +191,7 @@ For detailed optimization guidelines, see [Tips for Transfer Learning](transfer_
 - Layer Freezing:
   - Freeze backbone for similar domains
   - Unfreeze more layers for different domains
-  - Consider dataset size when choosing freezing strategy
+  - Consider dataset size when choosing a freezing strategy
 - Learning Rates:
   - Use lower rates for unfrozen backbone
   - Higher rates for ROI heads
