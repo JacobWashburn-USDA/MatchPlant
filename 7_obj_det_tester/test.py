@@ -3,8 +3,8 @@ Script Name: test.py
 Purpose: Test and evaluates a Faster R-CNN model for object detection using PyTorch, 
         with COCO format dataset handling and evaluation metrics
 Authors: Worasit Sangjan
-Date: 14 February 2025 
-Version: 1.1
+Date: 21 February 2025 
+Version: 1.2
 """
 
 import torch
@@ -14,6 +14,8 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
+from typing import Dict, List, Tuple, Any
+from dataclasses import dataclass
 import time
 import seaborn as sns
 from test_config_loader import TestConfigLoader
@@ -21,6 +23,7 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 from train import (MaizeDatasetCOCO, get_transform, build_model, 
                   configure_device_and_resources, collate_fn)
+from prediction_coco_converter import create_prediction_annotations
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -222,7 +225,8 @@ def create_confusion_matrix(results, save_path, config):
     plt.savefig(save_path, dpi=config.visualization.dpi)
     plt.close()
 
-def visualize_test_results(image, pred_boxes, pred_scores, gt_boxes, save_path, config):
+def visualize_test_results(image, pred_boxes, pred_scores, gt_boxes, target, output_dir, config, coco_gt):
+    """Visualize detection results with predicted and ground truth boxes"""
     if isinstance(image, torch.Tensor):
         image = torchvision.transforms.ToPILImage()(image)
     draw = ImageDraw.Draw(image)
@@ -233,7 +237,7 @@ def visualize_test_results(image, pred_boxes, pred_scores, gt_boxes, save_path, 
             x1, y1, x2, y2 = box.tolist()
             draw.rectangle(
                 [x1, y1, x2, y2], 
-                outline=config.visualization.pred_box_color, 
+                outline=config.visualization.pred_box_color,
                 width=config.visualization.box_width
             )
             draw.text((x1, y1-10), f'{score:.2f}', 
@@ -248,7 +252,19 @@ def visualize_test_results(image, pred_boxes, pred_scores, gt_boxes, save_path, 
             width=config.visualization.box_width
         )
     
-    image.save(save_path)
+    # Get original filename from COCO dataset using the passed coco_gt object
+    image_info = coco_gt.loadImgs(target['image_id'].item())[0]
+    original_filename = image_info['file_name']
+    
+    # Create save path with original filename but PNG extension
+    save_name = Path(original_filename).stem + '.png'
+    final_save_path = output_dir / save_name
+    
+    # Ensure output directory exists
+    output_dir.mkdir(exist_ok=True, parents=True)
+    
+    # Save visualization
+    image.save(str(final_save_path))
 
 def run_single_test(config=None, run_dir=None):
     """Run a single test iteration and return results"""
@@ -286,9 +302,19 @@ def run_single_test(config=None, run_dir=None):
     # Initialize evaluators
     coco_gt = COCO(config.data.test_annotations)
     size_evaluator = COCOSizeEvaluator(coco_gt, config)
-    
+
     model = load_model(config.model_path, device)
-    
+
+    # Add this new line:
+    create_prediction_annotations(
+        test_loader=test_loader,
+        model=model,
+        test_annotation_path=config.data.test_annotations,
+        output_dir=results_dir,
+        confidence_threshold=config.visualization.confidence_threshold,
+        device=device
+    )    
+
     # Collect results
     all_results = []
     all_scores = []
@@ -307,7 +333,7 @@ def run_single_test(config=None, run_dir=None):
         # Update size evaluator
         size_evaluator.update(predictions, targets)
         
-        for pred, target in zip(predictions, targets):
+        for idx, (pred, target) in enumerate(zip(predictions, targets)):
             # Performance analysis
             results = analyze_detection_performance(
                 pred['boxes'].cpu(),
@@ -323,12 +349,14 @@ def run_single_test(config=None, run_dir=None):
             # Result visualization
             if config.visualization.save_visualizations:
                 visualize_test_results(
-                    images[0].cpu(),
+                    images[idx].cpu(),
                     pred['boxes'].cpu(),
                     pred['scores'].cpu(),
                     target['boxes'].cpu(),
-                    test_results_dir / f'test_image_{i}.png',
-                    config
+                    target,  
+                    test_results_dir,
+                    config,
+                    coco_gt
                 )
     
     # Get performance metrics using COCO evaluation
