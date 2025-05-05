@@ -12,6 +12,10 @@ metrics:
     small: [0, 1024]      # 32x32
     medium: [1024, 9216]  # 32x32 to 96x96
     large: [9216, null]   # > 96x96
+  # Added a section for the coco evaluation parameters
+  coco:
+    use_size_evaluation: true
+    use_iou_evaluation: true
 
 # Data configuration
 data:
@@ -34,8 +38,7 @@ visualization:
 
 # Output configuration
 output:
-  results_dir: "./paper_results"
-  test_results_dir: "./test_results"
+  results_dir: "./test_results"
   save_individual_results: true
   save_aggregate_results: true
   save_visualizations: true
