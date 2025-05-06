@@ -4,19 +4,27 @@ This Python utility evaluates and tests Faster R-CNN models trained for object d
 
 ### **Note**
 
-This tool is designed to evaluate trained deep-learning models rigorously. It offers statistical analysis across multiple test runs, size-based performance evaluation, and detailed visualization capabilities, making it suitable for research validation and practical deployment assessment.
+This tool is designed to evaluate trained deep-learning models. It offers statistical analysis across multiple test runs, size-based performance evaluation, and detailed visualization capabilities, making it suitable for research validation and practical deployment assessment.
 
 ## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Hardware Requirements](#hardware-requirements)
-- [Optimization Strategies](#optimization-strategies)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+- [**Object Detection Testing Tool**](#object-detection-testing-tool)
+    - [**Note**](#note)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+    - [1. Clone the repository:](#1-clone-the-repository)
+    - [2. Download required utility files (In case these files are not downloaded in train process)](#2-download-required-utility-files-in-case-these-files-are-not-downloaded-in-train-process)
+    - [3. Install dependencies:](#3-install-dependencies)
+    - [4. Configure and run:](#4-configure-and-run)
+  - [**Features**](#features)
+  - [**Requirements**](#requirements)
+  - [**Input Requirements**](#input-requirements)
+    - [1. Required Files](#1-required-files)
+  - [Outputs](#outputs)
+  - [**Usage Instructions**](#usage-instructions)
+  - [Hardware Requirements](#hardware-requirements)
+  - [Optimization Strategies](#optimization-strategies)
+  - [Common Issues and Solutions](#common-issues-and-solutions)
+  - [License](#license)
 
 ## Quick Start
 
@@ -58,28 +66,28 @@ python test.py
 
 ## **Features**
 
-- Multiple Test Iterations: Statistical analysis across multiple runs
-- Comprehensive Metrics: IoU-based evaluation at multiple thresholds
-- Size-based Analysis: Performance evaluation for small, medium, and large objects
-    - COCO Evaluation: Standard object detection metrics
+- **Multiple Test Iterations**: Statistical analysis across multiple runs
+- **Comprehensive Metrics**: IoU-based evaluation at multiple thresholds
+- **Size-based Analysis**: Performance evaluation for small, medium, and large objects
+    - **COCO Evaluation**: Standard object detection metrics
         - Small object detection (0-32×32 pixels)
         - Medium object detection (32×32-96×96 pixels)
         - Large object detection (>96×96 pixels)
-- Visualization Tools: Detection visualization, confidence distributions, confusion matrices
-- Statistical Analysis: Mean, standard deviation, confidence intervals
+- **Visualization Tools**: Detection visualization and confidence distributions
+- **Statistical Analysis**: Mean, standard deviation, confidence intervals
 
 ## **Requirements**
 
 - Python 3.9+
 - Dependencies:
-  - PyTorch
-  - torchvision
-  - pycocotools
-  - PyYAML
-  - matplotlib
-  - seaborn
-  - Pillow
-  - numpy
+  - torch>=2.0.0
+  - torchvision>=0.15.0
+  - numpy>=1.24.0
+  - Pillow>=9.0.0
+  - pycocotools>=2.0.6
+  - matplotlib>=3.7.0
+  - seaborn>=0.12.0
+  - PyYAML>=6.0
 
 ## **Input Requirements**
 
@@ -105,6 +113,19 @@ python test.py
             small: [0, 1024]      # 32x32
             medium: [1024, 9216]  # 32x32 to 96x96
             large: [9216, null]   # > 96x96
+          coco:
+            use_size_evaluation: true
+            use_iou_evaluation: true
+      ```
+    - Data Configuration
+      ```yaml
+      data:
+        test_dir: "data/test"
+        test_annotations: "annotations/test.json"
+        batch_size: 1
+        num_workers: 0
+        pin_memory: false
+        persistent_workers: false
       ```
     - Visualization Settings
       ```yaml
@@ -115,6 +136,16 @@ python test.py
           box_width: 2
           figure_size: [10, 6]
           dpi: 100
+          save_visualizations: true
+      ```
+    - Output Configuration
+      ```yaml
+      output:
+        results_dir: "./paper_results"
+        test_results_dir: "./test_results"
+        save_individual_results: true
+        save_aggregate_results: true
+        save_visualizations: true
       ```
 - Input structure:
   ```
@@ -158,19 +189,7 @@ The tool generates comprehensive evaluation results, including:
   AR_maxDets=10: 0.789 ± 0.023 (std: 0.012, min: 0.777, max: 0.801)
   AR_maxDets=100: 0.821 ± 0.019 (std: 0.010, min: 0.811, max: 0.831)
   ```
-- IoU-based Performance:
-  ```
-  IoU_0.5:
-      Precision: 0.856 ± 0.023 (std: 0.012, min: 0.844, max: 0.868)
-      Recall: 0.789 ± 0.018 (std: 0.009, min: 0.780, max: 0.798)
-      F1_Score: 0.821 ± 0.015 (std: 0.008, min: 0.813, max: 0.829)
-
-  IoU_0.75:
-      Precision: 0.823 ± 0.025 (std: 0.013, min: 0.810, max: 0.836)
-      Recall: 0.754 ± 0.021 (std: 0.011, min: 0.743, max: 0.765)
-      F1_Score: 0.787 ± 0.018 (std: 0.009, min: 0.778, max: 0.796)
-  ```
-- Size-based Performance Analysis:
+- Size-based Performance (IoU=0.5):
   ```
   Small Objects:
       Precision: 0.723 ± 0.034 (std: 0.017, min: 0.706, max: 0.740)
@@ -193,11 +212,9 @@ The tool generates comprehensive evaluation results, including:
     ├── paper_results/                          # Primary results directory
     │   ├── run_1/
     │   │   ├── metrics_run_1.json              # Detailed metrics for run 1
-    │   │   │   ├── map_metrics                 # mAP and AR metrics
-    │   │   │   ├── performance                 # IoU-based metrics
-    │   │   │   └── size_performance            # Size-based metrics
     │   │   ├── confidence_distribution.png     # Distribution of detection scores
-    │   │   └── confusion_matrix.png            # TP, FP, FN analysis
+    │   │   └── images/                         # Detection visualizations
+    │   │       └── test_image_*.png            # Individual detection results
     │   ├── run_2/
     │   │   └── ...
     │   └── aggregate_results.json              # Statistical analysis across all runs
@@ -206,11 +223,6 @@ The tool generates comprehensive evaluation results, including:
     │       ├── min                             # Minimum values
     │       ├── max                             # Maximum values
     │       └── 95_confidence                   # Confidence intervals
-    └── test_results/                           # Detection visualization results
-        ├── run_1/
-        │   └── test_image_*.png                # Individual detection results
-        └── run_2/
-            └── ...
   ```
 
 ## **Usage Instructions**
@@ -223,7 +235,7 @@ The tool generates comprehensive evaluation results, including:
 - Configure Testing:
    - Set model checkpoint path
    - Configure the number of test runs
-   - Set evaluation metrics
+   - Set evaluation metrics and size ranges
    - Configure visualization options
 - Run Tests:
   ```bash
@@ -260,7 +272,8 @@ The tool generates comprehensive evaluation results, including:
 
 - Memory Issues
    - Reduce batch size in test_config.yaml
-   - Decrease the number of workers
+   - Set num_workers to 0
+   - Set pin_memory to false
    - Run on a smaller subset of test data
 - Performance Issues
    - Check GPU utilization
@@ -269,7 +282,7 @@ The tool generates comprehensive evaluation results, including:
 - Visualization Problems
    - Ensure output directories exist
    - Check file permissions
-   - Verify image format compatibility
+   - Verify the save_visualizations flag is set to true
 - PyTorch Utility Issues
    - Verify all required utility files are downloaded
    - Check file permissions of utility files
