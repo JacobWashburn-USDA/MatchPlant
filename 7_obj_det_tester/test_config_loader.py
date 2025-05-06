@@ -2,13 +2,19 @@
 Script Name: test_config_loader.py
 Purpose: To manage configuration for object detection testing
 Author: Worasit Sangjan
-Date: 12 February 2025
+Date: 4 May 2025
 """
 
 import yaml
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Tuple, Dict, Any, Optional
 from pathlib import Path
+
+@dataclass
+class CocoEvalConfig:
+    """Configuration for COCO evaluation"""
+    use_size_evaluation: bool = True
+    use_iou_evaluation: bool = True
 
 @dataclass
 class VisualizationConfig:
@@ -24,9 +30,10 @@ class VisualizationConfig:
 @dataclass
 class MetricsConfig:
     """Configuration for evaluation metrics"""
-    iou_thresholds: List[float] = (0.5, 0.75)
+    iou_thresholds: List[float] = field(default_factory=lambda: [0.5, 0.75])
     confidence_threshold: float = 0.5
-    size_ranges: Dict[str, Tuple[int, Optional[int]]] = None
+    size_ranges: Dict[str, List[Optional[int]]] = None
+    coco: Any = None  # Will be converted to CocoEvalConfig
 
     def __post_init__(self):
         if self.size_ranges is None:
@@ -37,11 +44,21 @@ class MetricsConfig:
             }
         else:
             # Convert lists from YAML to tuples
-            self.size_ranges = {
-                size: (range_[0], range_[1] if range_[1] is not None else None)
-                for size, range_ in self.size_ranges.items()
-            }
+            processed_ranges = {}
+            for size, range_ in self.size_ranges.items():
+                if isinstance(range_, list):
+                    processed_ranges[size] = (range_[0], range_[1])
+                else:
+                    processed_ranges[size] = range_
+            self.size_ranges = processed_ranges
         
+        # Handle COCO config section
+        if self.coco is None:
+            self.coco = CocoEvalConfig()
+        elif isinstance(self.coco, dict):
+            self.coco = CocoEvalConfig(**self.coco)
+        
+        # Validate parameters
         if not 0 <= self.confidence_threshold <= 1:
             raise ValueError("confidence_threshold must be between 0 and 1")
         if not all(0 <= iou <= 1 for iou in self.iou_thresholds):
@@ -123,8 +140,14 @@ class TestConfigLoader:
     def create_config(config_dict: Dict[str, Any]) -> TestConfig:
         """Create and validate test configuration object"""
         try:
-            metrics_config = MetricsConfig(**config_dict.get('metrics', {}))
+            # Get metrics section or empty dict if not present
+            metrics_dict = config_dict.get('metrics', {})
+            metrics_config = MetricsConfig(**metrics_dict)
+            
+            # Required data section
             data_config = DataConfig(**config_dict['data'])
+            
+            # Optional sections
             viz_config = VisualizationConfig(**config_dict.get('visualization', {}))
             output_config = OutputConfig(**config_dict.get('output', {}))
             
@@ -137,6 +160,7 @@ class TestConfigLoader:
                 output=output_config
             )
             
+            # Validate paths
             ConfigValidator.validate_paths(test_config)
             
             return test_config
