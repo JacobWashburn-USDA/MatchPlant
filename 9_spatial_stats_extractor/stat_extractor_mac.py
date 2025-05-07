@@ -1,6 +1,7 @@
 """
 Script Name: stat_extractor_mac.py
 Purpose: To extract spatial statistics from raster data using CSV (bounding boxes) with transformation parameters
+Author: Worasit Sangjan
 Date Created: March 15, 2025
 Version: 3.0
 """
@@ -410,6 +411,12 @@ class ZonalStatsWorker(threading.Thread):
                 
                 # Calculate statistics
                 stats = {}
+                # Add box info first to ensure they are the first columns
+                stats['box_id'] = i + 1
+                stats['ul_x'], stats['ul_y'] = box_lim[0], box_lim[1]
+                stats['lr_x'], stats['lr_y'] = box_lim[2], box_lim[3]
+                
+                # Now add the statistical values
                 if 'min' in self.stats_to_calculate and len(pixel_values) > 0:
                     stats['min'] = np.nanmin(pixel_values)
                 if 'max' in self.stats_to_calculate and len(pixel_values) > 0:
@@ -424,22 +431,28 @@ class ZonalStatsWorker(threading.Thread):
                     stats['sum'] = np.nansum(pixel_values)
                 if 'count' in self.stats_to_calculate:
                     stats['count'] = len(pixel_values)
-
+                
                 # Calculate percentile if selected
                 if 'percentile' in self.stats_to_calculate and len(pixel_values) > 0:
                     stats[f'percentile_{self.percentile_value}'] = np.nanpercentile(pixel_values, self.percentile_value)
-                   
-                # Add box info
-                stats['box_id'] = i + 1
-                stats['ul_x'], stats['ul_y'] = box_lim[0], box_lim[1]
-                stats['lr_x'], stats['lr_y'] = box_lim[2], box_lim[3]
                 
                 results.append(stats)
         
         # Update progress to 95% before creating DataFrame
         self.progress = 95
+        
         # Create a DataFrame from results
         results_df = pd.DataFrame(results)
+        
+        # Ensure specific column order
+        # First define a list with the desired column order
+        box_info_columns = ['box_id', 'ul_x', 'ul_y', 'lr_x', 'lr_y']
+        stat_columns = [col for col in results_df.columns if col not in box_info_columns]
+        ordered_columns = box_info_columns + stat_columns
+        
+        # Reorder the DataFrame columns
+        results_df = results_df[ordered_columns]
+        
         # Update progress to 98% before saving file
         self.progress = 98
 
