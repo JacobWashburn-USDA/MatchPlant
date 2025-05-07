@@ -51,13 +51,13 @@ cd repo-name/spatial_statistics_extractor
 
 ## **Features**
 
-- Interactive GUI: User-friendly interface for statistical analysis
+- Interactive GUI: User interface for statistical analysis
 - Raster Visualization: Preview raster data and bounding boxes
 - Multiple Statistics: Calculate min, max, mean, median, standard deviation, sum, count, and percentiles
 - Coordinate System Support: Handle different coordinate reference systems
 - Multi-threaded Processing: Efficient calculation for large datasets
 - Progress Tracking: Visual progress indicators during calculations
-- CSV Output: Export results in organized CSV format with customizable column order
+- CSV Output: Export results in organized CSV format
 
 ## **Requirements**
 
@@ -79,13 +79,13 @@ cd repo-name/spatial_statistics_extractor
    - Must contain geospatial reference information (CRS)
 - CSV Bounds File:
    - Contains transformation parameters for bounding boxes
-   - This file will come from the output of module8 of the processing pipeline
+   - This file will come from the output of module 8 of the processing pipeline
    - Format requires 11 columns with the following structure:
      - Columns 0-5: Affine transformation parameters
      - Columns 6-8: Additional parameters
      - Column 9: String containing pixel dimensions for the bounding box
-     - Column 10: Additional information
-   - Example of CSV bounds file structure (first rows of 8568 rows × 11 columns):
+     - Column 10: file name
+   - Example of CSV bounds file structure:
 
 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -148,15 +148,15 @@ cd repo-name/spatial_statistics_extractor
 
 - Preview Display Issues:
    - Ensure both raster and CSV files are loaded
-   - Verify CRS compatibility between raster and bounds
-   - For large rasters, preview is automatically downsampled
+   - Verify CRS compatibility between the raster and the bounding boxes
+   - For large rasters, the preview is automatically downsampled
 - Statistics Calculation Errors:
    - Check that at least one statistic is selected
    - Ensure percentile values are between 0 and 100
    - Verify enough memory is available for large datasets
 - Output File Issues:
    - Ensure you have write permissions for the selected directory
-   - Verify the file isn't open in another application
+   - Verify the file is not open in another application
 
 ## **License**
 
