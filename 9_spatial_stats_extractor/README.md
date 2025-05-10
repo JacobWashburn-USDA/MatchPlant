@@ -7,15 +7,23 @@ A Python utility for extracting spatial statistics from raster data using CSV bo
 This tool is essential for analyzing spatial data in precision agriculture, environmental monitoring, and remote sensing workflows. It efficiently extracts statistical information from defined regions of interest in geospatial raster data, supporting better decision-making and data analysis.
 
 ## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Interactive GUI Controls](#interactive-gui-controls)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+- [**Spatial Statistics Extractor Tool**](#spatial-statistics-extractor-tool)
+    - [**Note**](#note)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+    - [1. Clone the repository:](#1-clone-the-repository)
+    - [2. Install dependencies:](#2-install-dependencies)
+    - [3. Run the script:](#3-run-the-script)
+  - [**Features**](#features)
+  - [**Requirements**](#requirements)
+  - [**Input Requirements**](#input-requirements)
+    - [1. Required Files](#1-required-files)
+    - [2. Configuration Setup](#2-configuration-setup)
+  - [**Outputs**](#outputs)
+  - [**Usage Instructions**](#usage-instructions)
+  - [**Interactive GUI Controls**](#interactive-gui-controls)
+  - [**Common Issues and Solutions**](#common-issues-and-solutions)
+  - [**License**](#license)
 
 ## Quick Start
 
@@ -125,6 +133,10 @@ cd repo-name/spatial_statistics_extractor
    - Click "Browse" to select your raster file
    - Optionally enter a CRS EPSG code if not using the raster's CRS
    - Click "Click to Update Preview" to visualize data
+
+![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/9_spatial_stats_extractor/image/img.png?raw=true)
+
+Figure 1. Example of setup and preview window
   
 - Statistics Configuration:
    - Check the statistics you want to calculate
