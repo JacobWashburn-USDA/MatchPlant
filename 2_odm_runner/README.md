@@ -16,13 +16,18 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
-- [Important: Working Directory](#important-working-directory)
-- [Usage](#usage)
-- [Output](#output)
-- [Script Parameters](#script-parameters)
-- [Error Handling](#error-handling)
-- [Common Issues](#common-issues)
+- [ODM Process Runners](#odm-process-runners)
+  - [Note for Deep Learning - Object Detection](#note-for-deep-learning---object-detection)
+  - [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Important: Working Directory](#important-working-directory)
+  - [Usage](#usage)
+    - [For Windows Users](#for-windows-users)
+    - [For Linux/Unix Users](#for-linuxunix-users)
+  - [Output](#output)
+  - [Script Parameters](#script-parameters)
+  - [Error Handling](#error-handling)
+  - [Common Issues](#common-issues)
 
 ## Prerequisites
 
@@ -80,7 +85,7 @@ The ODM is particularly valuable for preparing drone imagery for object detectio
 ## Output
 
 The script will create several output directories:
-- `odm_orthophoto/`: Contains the orthophoto results
+- `odm_orthophoto/`: Contains the orthomosaic results
 - `odm_dem/`: Contains Digital Elevation Model
 - `odm_texturing/`: Contains the textured mesh
 - `odm_georeferencing/`: Contains georeferenced results
@@ -89,7 +94,7 @@ The script will create several output directories:
 ## Script Parameters
 
 The scripts use these default parameters:
-- Orthophoto resolution: 0.5 cm
+- Orthomosaic resolution: 0.5 cm
 - DSM generation enabled
 - Uses GCP if `gcp_list.txt` is present in the images folder
 
