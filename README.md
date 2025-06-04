@@ -12,28 +12,32 @@ An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection
 *USDA-ARS, Plant Genetics Research Unit, Columbia, MO, United States*
 
 ## Table of Contents
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Repository Structure](#repository-structure)
-- [Pipeline Workflow](#pipeline-workflow)
-- [Requirements](#requirements)
-- [Getting Started](#getting-started)
-- [Download Dataset](#download-dataset)
-- [Citation](#citation)
-- [Contact](#contact)
-- [Acknowledgments](#acknowledgments)
-- [License](#license)
+- [MatchPlant](#matchplant)
+  - [Authors](#authors)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Key Features](#key-features)
+  - [Repository Structure](#repository-structure)
+  - [Pipeline Workflow](#pipeline-workflow)
+          - [1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Look Only Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network](#1-gps-global-position-system-2-uav-unmanned-aerial-vehicle-3-gcp-ground-control-point-4-gui-graphical-user-interface-5-coco-common-objects-in-context-6-yolo-you-look-only-once-7-faster-r-cnn-faster-region-based-convolutional-neural-network)
+  - [Requirements](#requirements)
+  - [Getting Started](#getting-started)
+  - [Download Dataset](#download-dataset)
+  - [Citation](#citation)
+  - [Contact](#contact)
+  - [Acknowledgments](#acknowledgments)
+  - [License](#license)
 
 ## Overview
 
-MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. For the case study, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images, MatchPlant effectively removes common artifacts from the training dataset while ensuring accurate spatial analysis and trait extraction.
+MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. For the case study, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images. MatchPlant also provides the utilization modules to incorporate the detected bounding boxes to extract the digital plant traits from an orthomosaic.
 
 ## Key Features
 
 - **Modular Design**: Flexible framework adaptable to various agricultural applications
 - **Automated Object Detection**: Uses Faster R-CNN for reliable individual plant detection
-- **High-Precision Processing**: Trains on high-resolution undistorted UAV images to avoid orthophoto artifacts
-- **Geospatial Transformation**: Accurately projects detected plant coordinates onto orthophotos
+- **High-Precision Processing**: Trains on high-resolution undistorted UAV images to avoid orthomosaic artifacts
+- **Geospatial Transformation**: Accurately projects detected plant coordinates onto orthomosaic
 - **User-Friendly Tools**: User-friendly GUI tools for data preparation and manual annotation
 - **Data Extraction & Analysis**: Enables spatial analysis and phenotypic trait extraction
 
@@ -44,7 +48,7 @@ This repository is organized into the following modules, each containing specifi
 1. **Data Preprocessing**: Prepare and optimize UAV imagery
    - GPS data embedding tool
    - GCP file creation tool
-   - Orthophoto generation using OpenDroneMap
+   - Orthomosaic generation using OpenDroneMap
 
 2. **Data Preparation**: Label and organize training, validation, and testing data
    - Optimal UAV image dataset creation tool
@@ -74,14 +78,14 @@ Figure 1: Diagram of the MathPlant-the modular open-source pipeline
 
 - Python 3.9+
 - OpenDroneMap (ODM)
-- Additional requirements listed in branch-specific documentation
+- Additional requirements listed in module-specific documentation
 
 ## Getting Started
 
 To begin using MatchPlant:
 
-1. Choose the appropriate branch for your task
-2. Follow the branch-specific installation instructions
+1. Choose the appropriate module for your task
+2. Follow the module-specific installation instructions
 3. Refer to the module README for detailed usage guidelines
 
 ## Download Dataset
