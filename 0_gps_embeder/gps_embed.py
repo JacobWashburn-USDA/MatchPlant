@@ -22,10 +22,7 @@ class TimestampMatcher:
         self.utm_zone = None
         self.hemisphere = None
 
-    #-------------------
     # 1. Setup Methods
-    #-------------------
-
     def set_utm_zone(self, zone: int, hemisphere: str) -> None:
         """Set UTM zone and hemishere for coordinate conversion"""
         if not (1 <= zone <= 60):
@@ -46,10 +43,7 @@ class TimestampMatcher:
         epsg = base + self.utm_zone 
         return f'EPSG:{epsg}'
 
-    #-----------------------
     # 2. Input Processing
-    #-----------------------
-
     def get_image_files(self, folder_path: str) -> List[str]:
         """Get all image files from folder sorted by name"""
         image_extensions = {'.jpg', '.jpeg', '.JPG', '.JPEG'}
@@ -86,10 +80,7 @@ class TimestampMatcher:
         print(f"Loaded {len(self.events_data)} events")
         print(f"Using UTM Zone: {self.utm_zone}{self.hemisphere}")
 
-    #-----------------------------
     # 3. Time Matching Process
-    #-----------------------------
-
     def read_image_exif(self, image_path: str) -> Optional[Dict]:
         """Read EXIF data from an image"""
         with Image.open(image_path) as img:
@@ -174,11 +165,8 @@ class TimestampMatcher:
 
             return event_data
         return None
-    
-    #-----------------------------
-    # 4. Coordinate Processing
-    #-----------------------------
 
+    # 4. Coordinate Processing
     def convert_coordinates(self, x: float, y: float, z: float) -> Dict:
         """Convert from UTM to WGS84 coordinates"""
         if self.utm_zone is None:
@@ -198,10 +186,7 @@ class TimestampMatcher:
             'altitude': round(z, 2)
         }
 
-    #--------------------------
     # 5. Output Generation
-    #--------------------------
-
     def save_matched_events(self, input_file: str, output_file: str):
         """Save events data with matched images and timing errors"""
         with open(input_file, 'r') as f:
@@ -347,10 +332,7 @@ class TimestampMatcher:
         print(f"Successfully updated GPS data in {os.path.basename(image_path)}")
         print(f"GPS: {gps_data['latitude']}, {gps_data['longitude']}, {gps_data['altitude']}")
 
-#---------------------
 # Helper Functions
-#---------------------
-
 def get_user_utm_input() -> tuple:
     """Get UTM zone information from user with validation"""
     while True:
