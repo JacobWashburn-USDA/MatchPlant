@@ -119,6 +119,7 @@ To use the MatchPlant pipeline with our prepared dataset, download from Zenodo:
    - **Pre-trained model**: [Download Pre-trained model_Faster R-CNN.pt](https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt?download=1)
   
 **Getting Started with the Dataset:**
+
 After downloading the dataset (UAV images and Annotation file), please start with the module [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter) to use our pipeline.
 
 ## Citation
@@ -126,16 +127,12 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 If you use MatchPlant in your research, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). 
-MatchPlant: An open-source pipeline for UAV-based object detection and data extraction. 
-[Citation information will be updated upon publication]
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction. [Citation information will be updated upon publication]
 ```
 For the dataset, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). 
-MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction [Dataset]. 
-Zenodo. https://doi.org/10.5281/zenodo.14856123
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
 
 ## Contact
@@ -146,7 +143,7 @@ For questions and collaboration opportunities, please contact:
 
 ## Acknowledgments
 
-This research was supported in part by an appointment to the Agricultural Research Service (ARS) Research Participation Program administered by the Oak Ridge Institute for Science and Education (ORISE) through an interagency agreement between the U.S. Department of Energy (DOE) and the U.S. Department of Agriculture (USDA). ORISE is managed by ORAU under DOE contract number DE-SC0014664. Funding was provided by the United States Department of Agriculture, Agricultural Research Service, and SCINet Postdoctoral Fellows Program. All opinions expressed in this publication are the author’s and do not necessarily reflect the policies and views of USDA, DOE, or ORAU/ORISE.
+This research was supported in part by an appointment to the Agricultural Research Service (ARS) Research Participation Program administered by the Oak Ridge Institute for Science and Education (ORISE) through an interagency agreement between the U.S. Department of Energy (DOE) and the U.S. Department of Agriculture (USDA). ORISE is managed by ORAU under DOE contract number DE-SC0014664. This research used resources provided by the SCINet project and/or the AI Center of Excellence of the USDA Agricultural Research Service, ARS project numbers 0201-88888-003-000D and 0201-88888-002-000D. Funding was also provided by the United States Department of Agriculture, Agricultural Research Service, SCINet Postdoctoral Fellows Program. All opinions expressed in this publication are the author’s and do not necessarily reflect the policies and views of USDA, DOE, or ORAU/ORISE.
 
 ## License
 
