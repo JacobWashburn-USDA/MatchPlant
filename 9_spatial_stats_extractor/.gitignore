@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution/packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+.env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project output directories
+output/                 # Statistics results
+results/                # Analysis outputs
+data/                   # Input data files
+temp/                   # Temporary processing files
+
+# Project output files
+*_stats.csv             # Generated statistics files
+*_results.csv           # Analysis results
+*.tif                   # Raster data files
+*.tiff                  # Raster data files
+*.img                   # Image files
+*.shp                   # Shapefile components
+*.shx
+*.dbf
+*.prj
+
+# Matplotlib
+.matplotlib/            # Matplotlib cache
+
+# Mac specific
+.DS_Store
+._*
+
+# Windows specific
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*~
+*.bak
+*.log
