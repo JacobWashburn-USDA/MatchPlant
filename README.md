@@ -1,6 +1,6 @@
 # MatchPlant
 
-An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection and Data Extraction
+An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection and Data Extraction
 
 ## Authors
 
@@ -19,7 +19,6 @@ An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection
   - [Key Features](#key-features)
   - [Repository Structure](#repository-structure)
   - [Pipeline Workflow](#pipeline-workflow)
-          - [1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Look Only Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network](#1-gps-global-position-system-2-uav-unmanned-aerial-vehicle-3-gcp-ground-control-point-4-gui-graphical-user-interface-5-coco-common-objects-in-context-6-yolo-you-look-only-once-7-faster-r-cnn-faster-region-based-convolutional-neural-network)
   - [Requirements](#requirements)
   - [Getting Started](#getting-started)
   - [Download Dataset](#download-dataset)
@@ -30,13 +29,13 @@ An Open-Source Pipeline for UAV (unmanned aerial vehicle)-Based Object Detection
 
 ## Overview
 
-MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. For the case study, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution undistorted UAV images. MatchPlant also provides the utilization modules to incorporate the detected bounding boxes to extract the digital plant traits from an orthomosaic.
+MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. For the case study, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution, undistorted UAV images. MatchPlant also provides utilization modules to incorporate the detected bounding boxes and extract digital plant traits from an orthomosaic.
 
 ## Key Features
 
 - **Modular Design**: Flexible framework adaptable to various agricultural applications
 - **Automated Object Detection**: Uses Faster R-CNN for reliable individual plant detection
-- **High-Precision Processing**: Trains on high-resolution undistorted UAV images to avoid orthomosaic artifacts
+- **High-Precision Processing**: Trains on high-resolution, undistorted UAV images to avoid orthomosaic artifacts
 - **Geospatial Transformation**: Accurately projects detected plant coordinates onto orthomosaic
 - **User-Friendly Tools**: User-friendly GUI tools for data preparation and manual annotation
 - **Data Extraction & Analysis**: Enables spatial analysis and phenotypic trait extraction
@@ -70,9 +69,9 @@ Each module contains its detailed README with specific installation instructions
 
 ![img](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/images/img.png)
 
-Figure 1: Diagram of the MathPlant-the modular open-source pipeline
+Figure 1: Diagram of the MathPlant modular open-source pipeline
 
-###### 1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Look Only Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network
+###### 1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Only Look Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network
 
 ## Requirements
 
