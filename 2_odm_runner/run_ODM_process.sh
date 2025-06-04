@@ -21,8 +21,8 @@ else
     USE_GCP=0
 fi
 
-# Step 2: Run ODM for Orthophoto
-echo "Running ODM for Orthophoto..."
+# Step 2: Run ODM
+echo "Running ODM..."
 DOCKER_CMD="docker run -ti --rm \
     -v $IMAGES_FOLDER:/code/images \
     -v $PROJECT_FOLDER/odm_orthophoto:/code/odm_orthophoto \
@@ -40,7 +40,7 @@ if [ "$USE_GCP" -eq 1 ]; then
     DOCKER_CMD="$DOCKER_CMD --gcp images/gcp_list.txt"
 fi
 
-# Execute ODM orthophoto command
+# Execute ODM command
 eval $DOCKER_CMD
 
 # Step 3: Generate img_list.txt
