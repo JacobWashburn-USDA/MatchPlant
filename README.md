@@ -19,7 +19,6 @@ An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection
   - [Key Features](#key-features)
   - [Repository Structure](#repository-structure)
   - [Pipeline Workflow](#pipeline-workflow)
-          - [1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Only Look Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network](#1-gps-global-position-system-2-uav-unmanned-aerial-vehicle-3-gcp-ground-control-point-4-gui-graphical-user-interface-5-coco-common-objects-in-context-6-yolo-you-only-look-once-7-faster-r-cnn-faster-region-based-convolutional-neural-network)
   - [Requirements](#requirements)
   - [Getting Started](#getting-started)
   - [Download Dataset](#download-dataset)
@@ -90,14 +89,14 @@ To begin using MatchPlant:
 
 ## Download Dataset
 
+To use the MatchPlant pipeline with our prepared dataset, download from Zenodo:
+
+**Zenodo Repository**: https://zenodo.org/records/14856123
+
 **Dataset Contents:**
 - **UAV images**: Undistorted images created by OpenDroneMap software from high-resolution RGB images collected during the 2021 growing season
 - **Annotation file**: COCO format bounding box annotations (.json files) for individual maize detection
 - **Pre-trained model**: Faster R-CNN model trained on the UAV images for individual maize detection (use in [6-2_obj_det_trans_learner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-2_obj_det_trans_learner))
-  
-To use the MatchPlant pipeline with our prepared dataset, download from Zenodo:
-
-**Zenodo Repository**: https://zenodo.org/records/14856123
 
 **Download Options:**
 
