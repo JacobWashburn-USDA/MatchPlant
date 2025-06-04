@@ -19,6 +19,7 @@ An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection
   - [Key Features](#key-features)
   - [Repository Structure](#repository-structure)
   - [Pipeline Workflow](#pipeline-workflow)
+          - [1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Only Look Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network](#1-gps-global-position-system-2-uav-unmanned-aerial-vehicle-3-gcp-ground-control-point-4-gui-graphical-user-interface-5-coco-common-objects-in-context-6-yolo-you-only-look-once-7-faster-r-cnn-faster-region-based-convolutional-neural-network)
   - [Requirements](#requirements)
   - [Getting Started](#getting-started)
   - [Download Dataset](#download-dataset)
@@ -89,22 +90,35 @@ To begin using MatchPlant:
 
 ## Download Dataset
 
-To use the MatchPlant pipeline with our prepared dataset:
+**Dataset Contents:**
+- **UAV images**: Undistorted images created by OpenDroneMap software from high-resolution RGB images collected during the 2021 growing season
+- **Annotation file**: COCO format bounding box annotations (.json files) for individual maize detection
+- **Pre-trained model**: Faster R-CNN model trained on the UAV images for individual maize detection (use in [6-2_obj_det_trans_learner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-2_obj_det_trans_learner))
+  
+To use the MatchPlant pipeline with our prepared dataset, download from Zenodo:
 
-**Download from Zenodo**
+**Zenodo Repository**: https://zenodo.org/records/14856123
+
+**Download Options:**
+
+1. **Complete Dataset Download**
    ```bash
    # Using wget
-   wget [ZENODO_LINK]
+   wget https://zenodo.org/records/14856123/files/UAV%20images.zip
+   wget https://zenodo.org/records/14856123/files/Annotation%20file.zip
+   wget https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt
    
    # Using curl
-   curl -O [ZENODO_LINK]
+   curl -O https://zenodo.org/records/14856123/files/UAV%20images.zip
+   curl -O https://zenodo.org/records/14856123/files/Annotation%20file.zip
+   curl -O https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt
    ```
-
-The dataset contains:
-- UAV images: UAV-captured plant images
-- Annotation file: COCO format bounding boxes
-- Pre-trained model: Faster R-CNN model: Download to use in [6-2_obj_det_trans_learner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-2_obj_det_trans_learner)
+2. **Individual File Downloads**
+   - **UAV images** (ZIP): [Download UAV images.zip](https://zenodo.org/records/14856123/files/UAV%20images.zip?download=1)
+   - **Annotation file** (ZIP): [Download Annotation file.zip](https://zenodo.org/records/14856123/files/Annotation%20file.zip?download=1)
+   - **Pre-trained model**: [Download Pre-trained model_Faster R-CNN.pt](https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt?download=1)
   
+**Getting Started with the Dataset:**
 After downloading the dataset (UAV images and Annotation file), please start with the module [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter) to use our pipeline.
 
 ## Citation
@@ -112,10 +126,16 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 If you use MatchPlant in your research, please cite:
 
 ```
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). 
+MatchPlant: An open-source pipeline for UAV-based object detection and data extraction. 
+[Citation information will be updated upon publication]
 ```
 For the dataset, please cite:
 
 ```
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). 
+MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction [Dataset]. 
+Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
 
 ## Contact
