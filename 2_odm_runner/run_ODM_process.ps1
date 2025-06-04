@@ -19,8 +19,8 @@ if (Test-Path $GcpFile) {
     $UseGcp = $false
 }
 
-# Step 2: Run ODM for Orthophoto
-Write-Host "Running ODM for Orthophoto..."
+# Step 2: Run ODM 
+Write-Host "Running ODM..."
 $DockerCmd = @"
 docker run -ti --rm `
     -v "$ImagesFolder:/code/images" `
@@ -39,7 +39,7 @@ if ($UseGcp) {
     $DockerCmd += " --gcp images/gcp_list.txt"
 }
 
-# Execute ODM orthophoto command
+# Execute ODM command
 Invoke-Expression $DockerCmd
 
 # Step 3: Generate img_list.txt
