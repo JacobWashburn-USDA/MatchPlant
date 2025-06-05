@@ -7,14 +7,22 @@ This is a Python utility for creating optimal drone image datasets for object de
 This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
 
 ## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+- [**Minimum Image Finder Tool**](#minimum-image-finder-tool)
+    - [**Note**](#note)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+    - [1. Clone the repository:](#1-clone-the-repository)
+    - [2. Install dependencies:](#2-install-dependencies)
+    - [3. Run the script:](#3-run-the-script)
+  - [**Features**](#features)
+  - [**Requirements**](#requirements)
+  - [**Input Requirements**](#input-requirements)
+    - [1. Required Files:](#1-required-files)
+    - [2. Configuration Setup:](#2-configuration-setup)
+  - [**Outputs**](#outputs)
+  - [**Usage Instructions**](#usage-instructions)
+  - [**Common Issues and Solutions**](#common-issues-and-solutions)
+  - [**License**](#license)
 
 ## Quick Start
 
@@ -70,7 +78,7 @@ cd Ortho_to_image/3_min_img_finder
 ## **Input Requirements**
 
 ### 1. Required Files:
-- Orthophoto path:
+- Orthomosaic path:
    - Format: GeoTIFF (.tif)
    - Used as a reference for coverage analysis
 - Image Folders path:
@@ -82,7 +90,7 @@ cd Ortho_to_image/3_min_img_finder
   ├── images/                     
   ├── odm_dem/                   
   ├── odm_orthophoto/
-  │   └── odm_orthophoto.tif    # Orthophoto image
+  │   └── odm_orthophoto.tif    # Orthomosaic
   ├── opensfm/                   
   │   └── undistorted/         
   │       └── images/           # Undistorted image folder
@@ -119,7 +127,7 @@ cd Ortho_to_image/3_min_img_finder
    python min_img_finder_win.py  # or min_img_finder_mac.py for macOS
    ```
 - Initial Setup:
-   - Select your reference orthophoto
+   - Select your reference orthomosaic
    - Choose your input image folders
    - Configure optimization parameters based on your needs
    - Click "Click to Start Finding" to begin optimization
