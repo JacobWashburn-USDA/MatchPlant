@@ -1,7 +1,7 @@
 """
 Script Name: min_img_finder_win
 Purpose: To find the minimum set of drone images needed to cover a target area while 
-         maintaining specified overlap requirements for Windon OS
+         maintaining specified overlap requirements for Window OS
 Author: Worasit Sangjan
 Date Created: 31 January 2025
 Version: 1.1
@@ -74,8 +74,8 @@ class InitialWindow:
                      fontsize=14, fontweight='bold',
                      transform=self.ax.transAxes)
 
-        # Orthophoto
-        self.ax.text(0.265, 0.875, "Orthophoto:",
+        # Orthomosaic
+        self.ax.text(0.265, 0.875, "Orthomosaic:",
                      ha='right', va='center',
                      transform=self.ax.transAxes)
         
@@ -146,7 +146,7 @@ class InitialWindow:
 
         if type_ == 'ortho':
             file_path = filedialog.askopenfilename(
-                title='Select Orthophoto',
+                title='Select Orthomosaic',
                 filetypes=[('TIF files', '*.tif')]
             )
             if file_path:
@@ -176,7 +176,7 @@ class InitialWindow:
         """Validate all inputs and start the optimization"""
         # Validate paths
         paths = {
-            'orthophoto': self.ortho_input.text.strip(),
+            'orthomosaic': self.ortho_input.text.strip(),
             'image folder': self.img_input.text.strip(),
             'undistorted folder': self.undist_input.text.strip()
         }
@@ -189,7 +189,7 @@ class InitialWindow:
 
         # Validate and collect parameters
         config = {
-            'orthophoto_path': paths['orthophoto'],
+            'orthomosaic_path': paths['orthomosaic'],
             'image_folder': paths['image folder']
         }
 
@@ -204,7 +204,7 @@ class InitialWindow:
                 return
 
         optimizer = MinimumCoverageOptimizer(
-            orthophoto_path=config['orthophoto_path'],
+            orthomosaic_path=config['orthomosaic_path'],
             image_folder=config['image_folder']
         )
         
@@ -252,9 +252,9 @@ class ImageInfo:
 
 class MinimumCoverageOptimizer:
     """Optimize drone image coverage with minimum overlap requirements"""
-    def __init__(self, orthophoto_path: str, image_folder: str):
+    def __init__(self, orthomosaic_path: str, image_folder: str):
         """Initialize optimizer with paths and default parameters"""
-        self.orthophoto_path = orthophoto_path
+        self.orthomosaic_path = orthomosaic_path
         self.image_folder = image_folder
         self.ortho_dataset = None
         self.ortho_bounds = None
@@ -279,10 +279,10 @@ class MinimumCoverageOptimizer:
 
     def _load_data(self):
         """Load and prepare image data"""
-        if not os.path.exists(self.orthophoto_path):
+        if not os.path.exists(self.orthomosaic_path):
             return False
 
-        self.ortho_dataset = rasterio.open(self.orthophoto_path)
+        self.ortho_dataset = rasterio.open(self.orthomosaic_path)
         self.ortho_bounds = self.ortho_dataset.bounds
         
         rectified_path_list = glob.glob(os.path.join(self.image_folder, '*.tif'))
@@ -755,7 +755,7 @@ class ResultWindow:
         return 100 - uncovered_percentage        
 
     def _setup_background(self):   
-        """Setup the orthophoto as background"""
+        """Setup the orthomosaic as background"""
         ortho_data = self.optimizer.ortho_dataset.read([1, 2, 3])
         ortho_data = np.dstack(ortho_data)
         extent = [
