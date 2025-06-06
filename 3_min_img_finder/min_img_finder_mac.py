@@ -96,8 +96,8 @@ class InitialWindow:
                     fontsize=14, fontweight='bold',
                     transform=self.ax.transAxes)
 
-        # Orthophoto selection
-        self.ax.text(0.265, 0.875, "Orthophoto:",
+        # Orthomosaic selection
+        self.ax.text(0.265, 0.875, "Orthomosaic:",
                     ha='right', va='center',
                     transform=self.ax.transAxes)
         
@@ -106,7 +106,7 @@ class InitialWindow:
         
         ortho_button_ax = self.fig.add_axes([0.685, 0.785, 0.08, 0.03])
         self.ortho_button = Button(ortho_button_ax, 'Browse')
-        self.ortho_button.on_clicked(self.browse_orthophoto)
+        self.ortho_button.on_clicked(self.browse_orthomosaic)
 
         # Orthorectified folder selection
         self.ax.text(0.265, 0.805, "Orthorectified Image Folder:",
@@ -160,10 +160,10 @@ class InitialWindow:
             input_box = self.fig.add_axes([0.415, y_pos_box, 0.15 , 0.03])
             self.param_inputs[label] = TextBox(input_box, '', initial=default)
 
-    def browse_orthophoto(self, event):
-        """Handle orthophoto file selection"""
+    def browse_orthomosaic(self, event):
+        """Handle orthomosaic file selection"""
         file_path = self.file_dialog.ask_open_filename(
-            title='Select Orthophoto',
+            title='Select Orthomosaic',
             filetypes=[('TIF files', '*.tif')]
             )
             
@@ -198,7 +198,7 @@ class InitialWindow:
         """Validate all inputs and start the optimization"""
         # Validate paths
         paths = {
-            'orthophoto': self.ortho_input.text.strip(),
+            'orthomosaic': self.ortho_input.text.strip(),
             'image folder': self.img_input.text.strip(),
             'undistorted folder': self.undist_input.text.strip()
         }
@@ -211,7 +211,7 @@ class InitialWindow:
 
         # Validate and collect parameters
         config = {
-            'orthophoto_path': paths['orthophoto'],
+            'orthomosaic_path': paths['orthomosaic'],
             'image_folder': paths['image folder']
         }
 
@@ -226,7 +226,7 @@ class InitialWindow:
                 return
 
         optimizer = MinimumCoverageOptimizer(
-            orthophoto_path=config['orthophoto_path'],
+            orthomosaic_path=config['orthomosaic_path'],
             image_folder=config['image_folder']
         )
         
@@ -274,9 +274,9 @@ class ImageInfo:
 
 class MinimumCoverageOptimizer:
     """Optimize drone image coverage with minimum overlap requirements"""
-    def __init__(self, orthophoto_path: str, image_folder: str):
+    def __init__(self, orthomosaic_path: str, image_folder: str):
         """Initialize optimizer with paths and default parameters"""
-        self.orthophoto_path = orthophoto_path
+        self.orthomosaic_path = orthomosaic_path
         self.image_folder = image_folder
         self.ortho_dataset = None
         self.ortho_bounds = None
@@ -301,10 +301,10 @@ class MinimumCoverageOptimizer:
 
     def _load_data(self):
         """Load and prepare image data"""
-        if not os.path.exists(self.orthophoto_path):
+        if not os.path.exists(self.orthomosaic_path):
             return False
 
-        self.ortho_dataset = rasterio.open(self.orthophoto_path)
+        self.ortho_dataset = rasterio.open(self.orthomosaic_path)
         self.ortho_bounds = self.ortho_dataset.bounds
         
         rectified_path_list = glob.glob(os.path.join(self.image_folder, '*.tif'))
@@ -776,7 +776,7 @@ class ResultWindow:
         return 100 - uncovered_percentage
 
     def _setup_background(self):    
-        """Setup the orthophoto as background"""
+        """Setup the orthomosaic as background"""
         ortho_data = self.optimizer.ortho_dataset.read([1, 2, 3])
         ortho_data = np.dstack(ortho_data)
         extent = [
