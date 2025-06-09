@@ -1,6 +1,6 @@
 """
 Script Name: img_splitter_win
-Purpose: To create the designed tiles from original image size for Window OS
+Purpose: To create the designed tiles from original image size for Mac OS
 Author: Worasit Sangjan
 Date Created: 31 January 2025
 Version: 1.0
