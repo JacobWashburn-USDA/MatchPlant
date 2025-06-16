@@ -1,5 +1,5 @@
 # Developed: Worasit Sangjan
-# Date: 19 January 2025 (Updated June 2025)
+# Date: 16 June 2025
 
 # Set project paths (update these to match your directory structure)
 ${ProjectFolder} = Get-Location
@@ -66,4 +66,4 @@ $DockerCmdOrthorectifyParts = @(
 $DockerCmdOrthorectify = $DockerCmdOrthorectifyParts -join " "
 Invoke-Expression $DockerCmdOrthorectify
 
-Write-Host "✅ Process complete!"
+Write-Host "Process complete!"
