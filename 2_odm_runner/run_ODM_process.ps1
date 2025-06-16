@@ -1,11 +1,11 @@
 # Developed: Worasit Sangjan
-# Date: 19 January 2025
+# Date: 19 January 2025 (Updated June 2025)
 
 # Set project paths (update these to match your directory structure)
-$ProjectFolder = Get-Location
-$ImagesFolder = Join-Path $ProjectFolder "images"
+${ProjectFolder} = Get-Location
+$ImagesFolder = Join-Path ${ProjectFolder} "images"
 $GcpFile = Join-Path $ImagesFolder "gcp_list.txt"
-$ImgListFile = Join-Path $ProjectFolder "img_list.txt"
+$ImgListFile = Join-Path ${ProjectFolder} "img_list.txt"
 
 # Docker image name
 $OdmImage = "opendronemap/odm"
@@ -19,44 +19,51 @@ if (Test-Path $GcpFile) {
     $UseGcp = $false
 }
 
-# Step 2: Run ODM 
+# Step 2: Run ODM
 Write-Host "Running ODM..."
-$DockerCmd = @"
-docker run -ti --rm `
-    -v "$ImagesFolder:/code/images" `
-    -v "$ProjectFolder/odm_orthophoto:/code/odm_orthophoto" `
-    -v "$ProjectFolder/odm_texturing:/code/odm_texturing" `
-    -v "$ProjectFolder/opensfm:/code/opensfm" `
-    -v "$ProjectFolder/odm_dem:/code/odm_dem" `
-    -v "$ProjectFolder/odm_meshing:/code/odm_meshing" `
-    -v "$ProjectFolder/odm_filterpoints:/code/odm_filterpoints" `
-    -v "$ProjectFolder/odm_report:/code/odm_report" `
-    -v "$ProjectFolder/odm_georeferencing:/code/odm_georeferencing" `
-    $OdmImage --orthophoto-resolution=0.5 --dsm
-"@
+$DockerCmdParts = @(
+    "docker run -ti --rm",
+    "-v `"${ImagesFolder}:/code/images`"",
+    "-v `"${ProjectFolder}/odm_orthophoto:/code/odm_orthophoto`"",
+    "-v `"${ProjectFolder}/odm_texturing:/code/odm_texturing`"",
+    "-v `"${ProjectFolder}/opensfm:/code/opensfm`"",
+    "-v `"${ProjectFolder}/odm_dem:/code/odm_dem`"",
+    "-v `"${ProjectFolder}/odm_meshing:/code/odm_meshing`"",
+    "-v `"${ProjectFolder}/odm_filterpoints:/code/odm_filterpoints`"",
+    "-v `"${ProjectFolder}/odm_report:/code/odm_report`"",
+    "-v `"${ProjectFolder}/odm_georeferencing:/code/odm_georeferencing`"",
+    "$OdmImage",
+    "--orthophoto-resolution=0.5",
+    "--dsm"
+)
 
 if ($UseGcp) {
-    $DockerCmd += " --gcp images/gcp_list.txt"
+    $DockerCmdParts += "--gcp images/gcp_list.txt"
 }
 
-# Execute ODM command
+$DockerCmd = $DockerCmdParts -join " "
 Invoke-Expression $DockerCmd
 
 # Step 3: Generate img_list.txt
 Write-Host "Generating img_list.txt..."
 $UndistortedImagesFolder = Join-Path $ProjectFolder "opensfm/undistorted/images"
-Get-ChildItem -Path $UndistortedImagesFolder -Name | Out-File -FilePath $ImgListFile -Encoding ascii
+if (Test-Path $UndistortedImagesFolder) {
+    Get-ChildItem -Path $UndistortedImagesFolder -Name | Out-File -FilePath $ImgListFile -Encoding ascii
+} else {
+    Write-Warning "Undistorted images folder not found. Skipping img_list.txt generation."
+}
 
 # Step 4: Run Orthorectification Process
 Write-Host "Running Orthorectification Process..."
-$DockerCmdOrthorectify = @"
-docker run -ti --rm `
-    -v "$ProjectFolder:/datasets" `
-    --entrypoint /code/contrib/orthorectify/run.sh `
-    $OdmImage `
-    /datasets --image-list img_list.txt
-"@
-
+$DockerCmdOrthorectifyParts = @(
+    "docker run -ti --rm",
+    "-v `"${ProjectFolder}:/datasets`"",
+    "--entrypoint /code/contrib/orthorectify/run.sh",
+    "$OdmImage",
+    "/datasets",
+    "--image-list img_list.txt"
+)
+$DockerCmdOrthorectify = $DockerCmdOrthorectifyParts -join " "
 Invoke-Expression $DockerCmdOrthorectify
 
-Write-Host "Process complete!"
+Write-Host "✅ Process complete!"
