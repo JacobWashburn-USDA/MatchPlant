@@ -60,7 +60,7 @@ This repository is organized into the following modules, each containing specifi
    - Transfer learning utility
 
 4. **Utilization**: Project location and create a layer to extract object features
-   - Detection projection tool
+   - Detection projection tool (Module 8 is under improvement!)
    - Shapefile generation tool
 
 Each module contains its detailed README with specific installation instructions and usage guidelines.
@@ -126,7 +126,7 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 If you use MatchPlant in your research, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction. [Citation information will be updated upon publication]
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection and Data Extraction. arXiv preprint arXiv:2506.12295. https://doi.org/10.48550/arXiv.2506.12295
 ```
 For the dataset, please cite:
 
