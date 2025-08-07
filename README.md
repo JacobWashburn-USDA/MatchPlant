@@ -1,5 +1,13 @@
 # MatchPlant
 
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg)
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![Deep Learning](https://img.shields.io/badge/Deep%20Learning-Faster%20R--CNN-orange.svg)
+![UAV](https://img.shields.io/badge/UAV-Drone%20Imagery-skyblue.svg)
+![Agriculture](https://img.shields.io/badge/Agriculture-Precision%20Farming-green.svg)
+![Research](https://img.shields.io/badge/Research-USDA--ARS-navy.svg)
+
 An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection and Data Extraction
 
 ## Authors
