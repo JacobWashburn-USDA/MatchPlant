@@ -134,12 +134,15 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 If you use MatchPlant in your research, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection and Data Extraction. arXiv preprint arXiv:2506.12295. https://doi.org/10.48550/arXiv.2506.12295
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An Open-Source 
+Pipeline for UAV-Based Single-Plant Detection and Data Extraction. arXiv preprint arXiv:2506.12295. 
+https://doi.org/10.48550/arXiv.2506.12295
 ```
 For the dataset, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.14856123
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline 
+for UAV-based single-plant detection and data extraction [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
 
 ## Contact
