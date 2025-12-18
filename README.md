@@ -138,12 +138,17 @@ Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An O
 Pipeline for UAV-Based Single-Plant Detection and Data Extraction. arXiv preprint arXiv:2506.12295. 
 https://doi.org/10.48550/arXiv.2506.12295
 ```
+
+[![DOI](https://img.shields.io/badge/arXiv-2506.12295-b31b1b.svg)](https://doi.org/10.48550/arXiv.2506.12295)
+
 For the dataset, please cite:
 
 ```
 Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline 
-for UAV-based single-plant detection and data extraction [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.14856123
+for UAV-based single-plant detection and data extraction [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
+
+[![DOI](https://img.shields.io/badge/Zenodo-17970104-blue.svg)](https://doi.org/10.5281/zenodo.17970104)
 
 ## Contact
 
