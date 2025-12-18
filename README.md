@@ -148,7 +148,7 @@ Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An o
 for UAV-based single-plant detection and data extraction [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
 
-[![DOI](https://img.shields.io/badge/Zenodo-17970104-blue.svg)](https://doi.org/10.5281/zenodo.17970104)
+[![DOI](https://img.shields.io/badge/Zenodo-14856123-blue.svg)](https://doi.org/10.5281/zenodo.14856123)
 
 ## Contact
 
