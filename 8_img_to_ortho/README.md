@@ -122,7 +122,7 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
    # Optional
    tile_metadata_path = None  # Set path if used tiles
    output_dir = "orthorectified2"
-   num_threads = 16  # Adjust based on your CPU
+   num_threads = 16           # Adjust based on your CPU
    ```
 
 3. **Run Script:**
@@ -229,7 +229,7 @@ print("All files found")
 import pandas as pd
 df = pd.read_csv('orthorectified2/projected_boxes.csv', header=None)
 print(f"Columns: {len(df.columns)}")  # Should be 13
-print(f"Rows: {len(df)}")  # Should match number of detections
+print(f"Rows: {len(df)}")             # Should match number of detections
 ```
 
 ---
