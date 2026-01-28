@@ -68,7 +68,7 @@ This repository is organized into the following modules, each containing specifi
    - Transfer learning utility
 
 4. **Utilization**: Project location and create a layer to extract object features
-   - Detection projection tool (Module 8 is under improvement!)
+   - Detection projection tool
    - Shapefile generation tool
 
 Each module contains its detailed README with specific installation instructions and usage guidelines.
