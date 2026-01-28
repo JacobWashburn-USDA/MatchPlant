@@ -1,5 +1,13 @@
 # MatchPlant
 
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg)
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![Deep Learning](https://img.shields.io/badge/Deep%20Learning-Faster%20R--CNN-orange.svg)
+![UAV](https://img.shields.io/badge/UAV-Drone%20Imagery-skyblue.svg)
+![Agriculture](https://img.shields.io/badge/Agriculture-Precision%20Agriculture-green.svg)
+![Research](https://img.shields.io/badge/Research-USDA--ARS-navy.svg)
+
 An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection and Data Extraction
 
 ## Authors
@@ -60,7 +68,7 @@ This repository is organized into the following modules, each containing specifi
    - Transfer learning utility
 
 4. **Utilization**: Project location and create a layer to extract object features
-   - Detection projection tool
+   - Detection projection tool (Module 8 is under improvement!)
    - Shapefile generation tool
 
 Each module contains its detailed README with specific installation instructions and usage guidelines.
@@ -126,13 +134,21 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 If you use MatchPlant in your research, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction. [Citation information will be updated upon publication]
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An Open-Source 
+Pipeline for UAV-Based Single-Plant Detection and Data Extraction. arXiv preprint arXiv:2506.12295. 
+https://doi.org/10.48550/arXiv.2506.12295
 ```
+
+[![DOI](https://img.shields.io/badge/arXiv-2506.12295-b31b1b.svg)](https://doi.org/10.48550/arXiv.2506.12295)
+
 For the dataset, please cite:
 
 ```
-Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline for UAV-based single-plant detection and data extraction [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.14856123
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An open-source pipeline 
+for UAV-based single-plant detection and data extraction [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
+
+[![DOI](https://img.shields.io/badge/Zenodo-14856123-blue.svg)](https://doi.org/10.5281/zenodo.14856123)
 
 ## Contact
 
