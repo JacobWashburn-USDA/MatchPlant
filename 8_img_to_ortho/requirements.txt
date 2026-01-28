@@ -1,0 +1,14 @@
+# Geospatial Processing
+rasterio>=1.3.0       # DEM/DSM handling and geospatial transformations
+
+# Data Processing
+numpy>=1.24.0         # Numerical computations
+pandas>=2.0.0         # Data handling and CSV output
+
+# Image Processing
+opencv-python>=4.8.0  # Image processing
+scikit-image>=0.21.0  # Image operations (line drawing, etc.)
+
+# Note: multiprocessing, json, argparse, logging are part of Python's standard library
+# Note: rasterio requires GDAL - install GDAL first if you encounter issues
+# GDAL installation: https://gdal.org/download.html
