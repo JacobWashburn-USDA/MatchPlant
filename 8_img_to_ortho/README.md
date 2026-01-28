@@ -26,9 +26,9 @@ pip install -r requirements.txt
 ### 2. Configure paths:
 Edit `project_boxes.py` (lines 30-36):
 ```python
-dataset_path = '/path/to/your/odm_project'          # ODM output folder
-predictions_json_path = "test_results/predictions.json"  # Module 7 output
-tile_metadata_path = None  # Optional: if you used tiled images
+dataset_path = '/path/to/your/odm_project'                # ODM output folder
+predictions_json_path = "test_results/predictions.json"   # Module 7 output
+tile_metadata_path = None                                 # Optional: if you used tiled images
 ```
 
 ### 3. Run:
@@ -126,7 +126,7 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
    ```
 
 3. **Run Script:**
-   - Open `project_boxes.py` in your IDE and press RUN ▶️
+   - Open `project_boxes.py` in your IDE and press RUN
    - Or from terminal: `python project_boxes.py`
 
 4. **Verify Output:**
@@ -152,18 +152,18 @@ All settings are in `project_boxes.py` (lines 30-48):
 
 ### **Required Settings:**
 ```python
-dataset_path = '/path/to/odm_project'  # Path to ODM output
+dataset_path = '/path/to/odm_project'                    # Path to ODM output
 predictions_json_path = "test_results/predictions.json"  # Module 7 output
 ```
 
 ### **Optional Settings:**
 ```python
-tile_metadata_path = None  # Path to tile metadata (if used tiles)
-output_dir = "orthorectified2"  # Output folder name
-dem_filename = "odm_dem/dsm.tif"  # DSM path (relative to dataset_path)
+tile_metadata_path = None                  # Path to tile metadata (if used tiles)
+output_dir = "orthorectified2"             # Output folder name
+dem_filename = "odm_dem/dsm.tif"           # DSM path (relative to dataset_path)
 num_threads = multiprocessing.cpu_count()  # CPU cores to use
-interpolation_method = 'bilinear'  # 'bilinear' or 'nearest'
-skip_visibility_test = True  # True = faster, False = more accurate
+interpolation_method = 'bilinear'          # 'bilinear' or 'nearest'
+skip_visibility_test = True                # True = faster, False = more accurate
 ```
 
 ### **Performance Tuning:**
