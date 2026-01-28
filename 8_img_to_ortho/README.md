@@ -91,12 +91,12 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
 
 | Columns | Content | Example |
 |---------|---------|---------|
-| 0-5 | Affine transform (a,b,c,d,e,f) | 0.003, 0.0, 562340.234, ... |
-| 6-8 | Placeholders (zeros) | 0.0, 0.0, 0.0 |
-| 9 | Dimensions "(0,0),(w,h)" | "(0, 0), (85, 120)" |
-| 10 | Filename | DJI_0123_box_1.tif |
-| 11 | Detection ID | 1 |
-| 12 | Confidence score | 0.92 |
+| 1-6 | Affine transform (a,b,c,d,e,f) | 0.003, 0.0, 562340.234, ... |
+| 7-9 | Placeholders (zeros) | 0.0, 0.0, 0.0 |
+| 10 | Dimensions "(0,0),(w,h)" | "(0, 0), (85, 120)" |
+| 11 | Filename | DJI_0123_box_1.tif |
+| 12| Detection ID | 1 |
+| 13 | Confidence score | 0.92 |
 
 **Example row:**
 ```csv
@@ -193,7 +193,7 @@ skip_visibility_test = True  # True = faster, False = more accurate
 
 **"No valid pixels found"**
 - Bounding box is outside DSM coverage
-- Check DSM covers entire area
+- Check DSM covers the entire area
 - Verify tile offsets are correct
 
 **"Multithreading error"**
@@ -204,10 +204,10 @@ skip_visibility_test = True  # True = faster, False = more accurate
 **Boxes do not align in Module 9**
 - Missing or incorrect tile metadata
 - Re-run Module 7 on original images (not tiles)
-- Check coordinate system of DSM
+- Check the coordinate system of DSM
 
 **"Cannot find coords.txt"**
-- Re-run Module 2 with proper GCP file
+- Re-run Module 2 with the proper GCP file
 - Check `odm_georeferencing/coords.txt` exists
 
 ### **Validation:**
