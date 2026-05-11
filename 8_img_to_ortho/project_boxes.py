@@ -22,6 +22,8 @@ import cv2
 import json
 import pandas as pd
 import logging
+import argparse
+import re
 
 # =====================================================================
 # Configuration - Edit these paths for your project
@@ -32,11 +34,17 @@ import logging
 dataset_path = '/path/to/your/odm_dataset'  # ← CHANGE THIS!
 
 # Path to predictions.json from Module 7 (Object Detection Testing)
-predictions_json_path = "test_results/predictions.json"  # ← CHANGE THIS!
+predictions_json_path = "test_results/coco_predictions.json"  # ← CHANGE THIS!
 
 # Optional: Path to tile metadata from Module 5 (if you used tiled images)
 # Format: {"tile_001.jpg": {"original_image": "DJI_0123.JPG", "offset_x": 0, "offset_y": 0}, ...}
 tile_metadata_path = None  # Set to path if you have it, else keep as None
+
+# Optional: COCO annotation file from Module 7 testing. Use this when predictions are saved as a flat COCO annotations list.
+annotation_json_path = None
+
+# Optional: one image filename per line, matching image_id order.
+image_list_path = None
 
 # Output settings
 output_dir = "orthorectified2"  # Folder name for output (created inside dataset_path)
@@ -49,12 +57,53 @@ skip_visibility_test = True  # Set to False for more accurate (but slower) resul
 
 # =====================================================================
 
+def parse_args():
+    """Parse optional command-line overrides while preserving edit-in-file usage."""
+    parser = argparse.ArgumentParser(
+        description="Project Module 7 object detections onto an ODM orthomosaic."
+    )
+    parser.add_argument("--dataset-path", default=dataset_path,
+                        help="ODM project folder containing opensfm/, odm_dem/, and odm_georeferencing/.")
+    parser.add_argument("--predictions-json", default=predictions_json_path,
+                        help="Module 7 prediction JSON. Supports full COCO dict or flat COCO prediction list.")
+    parser.add_argument("--annotation-json", default=annotation_json_path,
+                        help="Optional Module 7 COCO test annotation JSON for image_id to filename mapping.")
+    parser.add_argument("--image-list", default=image_list_path,
+                        help="Optional text file with one image filename per line, matching image_id order.")
+    parser.add_argument("--tile-metadata", default=tile_metadata_path,
+                        help="Optional tile metadata JSON from Module 5.")
+    parser.add_argument("--output-dir", default=output_dir,
+                        help="Output folder name, created inside dataset path unless absolute.")
+    parser.add_argument("--dem-filename", default=dem_filename,
+                        help="DSM path relative to dataset path.")
+    parser.add_argument("--num-threads", type=int, default=num_threads,
+                        help="CPU worker count. Use 1 if multiprocessing causes platform issues.")
+    parser.add_argument("--interpolation", choices=["bilinear", "nearest"], default=interpolation_method,
+                        help="Pixel interpolation method.")
+    parser.add_argument("--visibility-test", action="store_true",
+                        help="Enable visibility testing. More accurate but slower.")
+    return parser.parse_args()
+
+
+ARGS = parse_args()
+
+dataset_path = ARGS.dataset_path
+predictions_json_path = ARGS.predictions_json
+annotation_json_path = ARGS.annotation_json
+image_list_path = ARGS.image_list
+tile_metadata_path = ARGS.tile_metadata
+output_dir = ARGS.output_dir
+dem_filename = ARGS.dem_filename
+num_threads = max(1, ARGS.num_threads)
+interpolation_method = ARGS.interpolation
+skip_visibility_test = not ARGS.visibility_test
+
 # Setup logging
 logging.basicConfig(filename='output.log', encoding='utf-8', level=logging.INFO)
 
 # Construct full paths
 dem_path = os.path.join(dataset_path, dem_filename)
-output_path = os.path.join(dataset_path, output_dir)
+output_path = output_dir if os.path.isabs(output_dir) else os.path.join(dataset_path, output_dir)
 
 print("="*60)
 print("MatchPlant Module 8: Bounding Box Projection")
@@ -70,13 +119,60 @@ print("="*60)
 # Helper Functions
 # =====================================================================
 
-def load_predictions(predictions_path):
+def load_image_list(list_path):
+    """Load image filenames from a text file using zero-based line number as image_id."""
+    images = []
+    if list_path and os.path.exists(list_path):
+        with open(list_path, 'r') as f:
+            for idx, line in enumerate(f):
+                filename = line.strip()
+                if filename:
+                    images.append({"id": idx, "file_name": filename})
+        print(f"Loaded {len(images)} image names from {list_path}")
+    return images
+
+
+def load_annotation_images(annotation_path):
+    """Load image metadata from the COCO annotation file used for Module 7 testing."""
+    if not annotation_path or not os.path.exists(annotation_path):
+        return []
+
+    with open(annotation_path, 'r') as f:
+        annotations = json.load(f)
+
+    images = annotations.get("images", [])
+    if images:
+        print(f"Loaded {len(images)} image names from {annotation_path}")
+    return images
+
+
+def load_predictions(predictions_path, annotation_path=None, list_path=None):
     """
-    Load COCO format predictions from test.py output
-    Returns: dict with 'images', 'categories', 'annotations'
+    Load COCO format predictions from Module 7 output.
+
+    Supports either a full COCO-style dict with images/categories/annotations
+    or a flat list of COCO prediction annotations from pycocotools/test.py.
     """
     with open(predictions_path, 'r') as f:
         predictions = json.load(f)
+
+    if isinstance(predictions, list):
+        predictions = {
+            "images": load_annotation_images(annotation_path) or load_image_list(list_path),
+            "categories": [],
+            "annotations": predictions,
+        }
+    else:
+        if "annotations" not in predictions:
+            raise ValueError("Predictions JSON must contain 'annotations' or be a flat prediction list")
+        if not predictions.get("images"):
+            predictions["images"] = load_annotation_images(annotation_path) or load_image_list(list_path)
+
+    if not predictions.get("images"):
+        raise ValueError(
+            "No image metadata found. Provide a full COCO predictions file, --annotation-json, or --image-list."
+        )
+
     print(f"Loaded {len(predictions['annotations'])} predictions from {len(predictions['images'])} test images")
     return predictions
 
@@ -91,8 +187,76 @@ def load_tile_metadata(metadata_path=None):
             print(f"✓ Loaded tile metadata from {metadata_path}")
             return json.load(f)
     else:
-        print("No tile metadata found. Assuming tiles are original undistorted images (offset=0,0)")
+        print("No external tile metadata found. Deriving tile offsets from filenames when possible.")
         return {}
+
+
+def resolve_undistorted_filename(shot_fname, odm_dataset_path):
+    """Try common filename variants to match ODM undistorted image files."""
+    candidates = [shot_fname]
+    base, ext = os.path.splitext(shot_fname)
+
+    if ext.lower() == '.jpg':
+        candidates.append(shot_fname + '.tif')
+    elif ext.lower() == '.tif' and not shot_fname.lower().endswith('.jpg.tif'):
+        candidates.append(base + '.JPG.tif')
+
+    if not shot_fname.upper().startswith('DJI_'):
+        candidates.append('DJI_' + shot_fname)
+        if ext.lower() == '.jpg':
+            candidates.append('DJI_' + shot_fname + '.tif')
+
+    if shot_fname.upper().startswith('DJI_') and ext.lower() == '.jpg':
+        candidates.append(shot_fname + '.tif')
+
+    for candidate in candidates:
+        candidate_path = os.path.join(odm_dataset_path, 'opensfm', 'undistorted', 'images', candidate)
+        if os.path.exists(candidate_path):
+            return candidate
+    return shot_fname
+
+
+def original_image_from_tile_name(tile_name):
+    """Convert common tile names like 0688_548.JPG_r2c3.tif to DJI_0688_548.JPG.tif."""
+    original_image = tile_name.replace('test_', '')
+    original_image = re.sub(r'_r\d+c\d+\.tif$', '.tif', original_image)
+    original_image = re.sub(r'_tile_\d+.*$', '.JPG', original_image)
+    if not original_image.upper().startswith('DJI_'):
+        original_image = 'DJI_' + original_image
+    return original_image
+
+
+def tile_offsets_from_name(tile_name, image_info=None):
+    """Derive tile offsets from row/column filenames when no metadata JSON is present."""
+    match = re.search(r'_r(\d+)c(\d+)\.tif$', tile_name)
+    if not match:
+        return 0, 0
+
+    row = int(match.group(1))
+    col = int(match.group(2))
+    tile_info = (image_info or {}).get('tile_info', {})
+
+    grid_size = tile_info.get('grid_size', '6x4')
+    try:
+        grid_cols, grid_rows = map(int, grid_size.lower().split('x'))
+    except ValueError:
+        grid_cols, grid_rows = 6, 4
+
+    original_w = int(tile_info.get('original_width', 5472))
+    original_h = int(tile_info.get('original_height', 3648))
+    context = int(tile_info.get('overlap_pixels', tile_info.get('context_pixels', 100)))
+
+    cell_w = original_w / grid_cols
+    cell_h = original_h / grid_rows
+
+    offset_x = (col - 1) * cell_w
+    offset_y = (row - 1) * cell_h
+    if col > 1:
+        offset_x -= context
+    if row > 1:
+        offset_y -= context
+
+    return offset_x, offset_y
 
 
 def tile_to_original_coords(bbox, tile_metadata=None, tile_name=None):
@@ -117,11 +281,8 @@ def tile_to_original_coords(bbox, tile_metadata=None, tile_name=None):
         offset_y = meta.get('offset_y', 0)
         original_image = meta.get('original_image', tile_name)
     else:
-        # No metadata - assume tile IS the original image (no offset)
-        offset_x = 0
-        offset_y = 0
-        # Try to extract original image name from tile name
-        original_image = tile_name.replace('test_', '').replace('_tile_', '_').split('_')[0] + '.JPG'
+        offset_x, offset_y = tile_offsets_from_name(tile_name)
+        original_image = original_image_from_tile_name(tile_name)
     
     # Transform coordinates
     bbox_original = [x + offset_x, y + offset_y, w, h]
@@ -228,7 +389,7 @@ def main():
         
         # Load predictions
         print("\nLoading predictions...")
-        predictions = load_predictions(predictions_json_path)
+        predictions = load_predictions(predictions_json_path, annotation_json_path, image_list_path)
         tile_metadata = load_tile_metadata(tile_metadata_path)
         
         # Create image_id to filename mapping
@@ -266,8 +427,8 @@ def main():
             # Process each detection in this image
             for ann in annotations:
                 bbox = ann['bbox']  # [x, y, w, h] in tile coordinates
-                score = ann['score']
-                detection_id = ann['id']
+                score = ann.get('score', 1.0)
+                detection_id = ann.get('id', f"{ann.get('image_id', 'img')}_{len(transform_list)}")
                 
                 # Convert to original image coordinates
                 bbox_original, original_image_name = tile_to_original_coords(
@@ -277,7 +438,7 @@ def main():
                 print(f"  Detection {detection_id}: score={score:.3f}, bbox={bbox} -> {bbox_original}")
                 
                 # Check if shot exists in reconstruction
-                shot_fname = original_image_name
+                shot_fname = resolve_undistorted_filename(original_image_name, dataset_path)
                 box_fname = f"{os.path.splitext(shot_fname)[0]}_box_{detection_id}.tif"
                 
                 if shot_fname not in shots:
@@ -313,6 +474,8 @@ def main():
                 
                 # Get rotation matrix
                 rotation = shot['rotation']
+                if len(rotation) == 3 and not isinstance(rotation[0], (list, tuple)):
+                    rotation, _ = cv2.Rodrigues(np.array(rotation, dtype=np.float64))
                 a1, a2, a3 = rotation[0]
                 b1, b2, b3 = rotation[1]
                 c1, c2, c3 = rotation[2]
@@ -506,7 +669,8 @@ def main():
                     
                     # Save transform info in Module 9 compatible format
                     # Columns 0-5: Affine transform (a, b, c, d, e, f)
-                    transform1 = list(profile['transform'])
+                    affine = profile['transform']
+                    transform1 = [affine.a, affine.b, affine.c, affine.d, affine.e, affine.f]
                     
                     # Columns 6-8: Three zeros (required by Module 9)
                     transform1.extend([0.0, 0.0, 0.0])
