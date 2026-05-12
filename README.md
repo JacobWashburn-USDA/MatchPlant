@@ -95,6 +95,49 @@ To begin using MatchPlant:
 2. Follow the module-specific installation instructions
 3. Refer to the module README for detailed usage guidelines
 
+## Object Detection Quick Commands
+
+After preparing tiled COCO datasets with `5_img_splitter`, train and test Faster R-CNN with modules `6-1_obj_det_trainer` and `7_obj_det_tester`.
+
+Train a model:
+
+```bash
+cd 6-1_obj_det_trainer
+python train.py \
+  --output_dir runs/my_training_run \
+  --train-data-dir data/train \
+  --val-data-dir data/val \
+  --train-annotation-file annotations/train.json \
+  --val-annotation-file annotations/val.json
+```
+
+Evaluate a trained checkpoint:
+
+```bash
+cd ../7_obj_det_tester
+python test.py \
+  --data-dir data/test \
+  --annotation-file annotations/test.json \
+  --checkpoint ../6-1_obj_det_trainer/runs/my_training_run/checkpoints/best_model.pt \
+  --results-dir ../6-1_obj_det_trainer/runs/my_training_run/test_results
+```
+
+For cloud/HPC systems, use `CUDA_VISIBLE_DEVICES=<gpu_id>` to assign one training job to one GPU. Optional arguments such as `--seed`, `--num-workers`, `--batch-size`, and `--val-frequency` are documented in each module README.
+
+Project detections to the orthomosaic:
+
+```bash
+cd ../8_img_to_ortho
+python project_boxes.py \
+  --dataset-path /path/to/odm_project \
+  --predictions-json ../6-1_obj_det_trainer/runs/my_training_run/test_results/coco_predictions.json \
+  --annotation-json ../annotations/test.json \
+  --output-dir orthorectified2 \
+  --num-threads 4
+```
+
+The Module 8 output `projected_boxes.csv` is designed for the downstream spatial statistics module.
+
 ## Download Dataset
 
 To use the MatchPlant pipeline with our prepared dataset, download from Zenodo:
