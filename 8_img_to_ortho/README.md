@@ -23,17 +23,26 @@ This tool is designed for the MatchPlant pipeline. It takes predictions from tra
 pip install -r requirements.txt
 ```
 
-### 2. Configure paths:
-Edit `project_boxes.py` (lines 30-36):
-```python
-dataset_path = '/path/to/your/odm_project'                # ODM output folder
-predictions_json_path = "test_results/predictions.json"   # Module 7 output
-tile_metadata_path = None                                 # Optional: if you used tiled images
+### 2. Run from Module 7 test output:
+```bash
+python project_boxes.py \
+  --dataset-path /path/to/odm_project \
+  --predictions-json ../6-1_obj_det_trainer/runs/my_training_run/test_results/coco_predictions.json \
+  --annotation-json ../annotations/test.json \
+  --output-dir orthorectified2 \
+  --num-threads 4
 ```
 
-### 3. Run:
-- **In IDE**: Open file and RUN
-- **In Terminal**: `python project_boxes.py`
+`--annotation-json` is important when Module 7 saves predictions as a flat COCO prediction list, because Module 8 needs the test `image_id -> file_name` mapping.
+
+### 3. Alternative: configure paths in the script:
+You can still edit `project_boxes.py` directly if you prefer running from an IDE:
+```python
+dataset_path = '/path/to/your/odm_project'
+predictions_json_path = "test_results/coco_predictions.json"
+annotation_json_path = "annotations/test.json"
+tile_metadata_path = None
+```
 
 ### 4. Get results:
 Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
@@ -66,14 +75,13 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
 
 ### **Inputs Required:**
 
-1. **From Module 7** - `predictions.json` (COCO format)
-   ```json
-   {
-     "annotations": [
-       {"id": 1, "image_id": 123, "bbox": [x, y, w, h], "score": 0.89}
-     ]
-   }
-   ```
+1. **From Module 7** - `coco_predictions.json` or full COCO prediction JSON
+   
+   Module 8 supports both common Module 7 output styles:
+   - A flat COCO prediction list, for example `[ {"image_id": 123, "bbox": [x, y, w, h], "score": 0.89} ]`
+   - A full COCO-style dictionary containing `images` and `annotations`
+
+   If using the flat list, also provide the test annotation file with `--annotation-json`.
 
 2. **From Module 2 (ODM)** - Required files:
    - `opensfm/undistorted/images/*.JPG` - Undistorted images
@@ -82,8 +90,9 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
    - `odm_georeferencing/coords.txt` - Coordinate offsets
 
 3. **From Module 5** (Optional) - `tile_metadata.json`
-   - Only needed if Module 7 tested on tiled images
+   - Recommended if Module 7 tested on tiled images
    - Format: `{"tile.jpg": {"original_image": "DJI_0123.JPG", "offset_x": 0, "offset_y": 0}}`
+   - If metadata is not provided, Module 8 attempts to infer offsets from row/column tile names such as `0688_548.JPG_r2c3.tif`.
 
 ### **Output:**
 
@@ -113,21 +122,17 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
    - Module 2: ODM processing finished
    - Module 7: Object detection testing complete with `predictions.json`
 
-2. **Edit Configuration** (lines 30-43 in `project_boxes.py`):
-   ```python
-   # Required
-   dataset_path = '/path/to/your/odm_project'
-   predictions_json_path = "test_results/predictions.json"
-   
-   # Optional
-   tile_metadata_path = None  # Set path if used tiles
-   output_dir = "orthorectified2"
-   num_threads = 16           # Adjust based on your CPU
+2. **Run Script:**
+   ```bash
+   python project_boxes.py \
+     --dataset-path /path/to/odm_project \
+     --predictions-json /path/to/test_results/coco_predictions.json \
+     --annotation-json /path/to/annotations/test.json \
+     --output-dir orthorectified2 \
+     --num-threads 4
    ```
 
-3. **Run Script:**
-   - Open `project_boxes.py` in your IDE and press RUN
-   - Or from terminal: `python project_boxes.py`
+   You can also open `project_boxes.py` in your IDE and edit the default paths at the top.
 
 4. **Verify Output:**
    ```bash
@@ -150,20 +155,24 @@ Output saved to: `dataset_path/orthorectified2/projected_boxes.csv`
 
 All settings are in `project_boxes.py` (lines 30-48):
 
-### **Required Settings:**
-```python
-dataset_path = '/path/to/odm_project'                    # Path to ODM output
-predictions_json_path = "test_results/predictions.json"  # Module 7 output
+### **Command-line settings:**
+```bash
+python project_boxes.py \
+  --dataset-path /path/to/odm_project \
+  --predictions-json /path/to/test_results/coco_predictions.json \
+  --annotation-json /path/to/annotations/test.json \
+  --tile-metadata /path/to/tile_metadata.json \
+  --output-dir orthorectified2 \
+  --num-threads 4
 ```
 
-### **Optional Settings:**
-```python
-tile_metadata_path = None                  # Path to tile metadata (if used tiles)
-output_dir = "orthorectified2"             # Output folder name
-dem_filename = "odm_dem/dsm.tif"           # DSM path (relative to dataset_path)
-num_threads = multiprocessing.cpu_count()  # CPU cores to use
-interpolation_method = 'bilinear'          # 'bilinear' or 'nearest'
-skip_visibility_test = True                # True = faster, False = more accurate
+All command-line settings are optional if you prefer editing the defaults in `project_boxes.py`.
+
+Useful options:
+```bash
+--dem-filename odm_dem/dsm.tif
+--interpolation bilinear
+--visibility-test
 ```
 
 ### **Performance Tuning:**
