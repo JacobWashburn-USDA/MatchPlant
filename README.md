@@ -179,7 +179,7 @@ If you use MatchPlant in your research, please cite:
 ```
 Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2026).
 MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection from Undistorted Images with Orthomosaic Projection.
-Smart Agricultural Technology, 102421. https://doi.org/10.1016/j.atech.2026.102421
+Smart Agricultural Technology, 15, 102421. https://doi.org/10.1016/j.atech.2026.102421
 ```
 
 [![DOI](https://img.shields.io/badge/Smart%20Agricultural%20Technology-Published-orange.svg)](https://doi.org/10.1016/j.atech.2026.102421)
