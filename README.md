@@ -177,12 +177,21 @@ After downloading the dataset (UAV images and Annotation file), please start wit
 If you use MatchPlant in your research, please cite:
 
 ```
+<<<<<<< HEAD
 Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2026). MatchPlant: An Open-Source 
 Pipeline for UAV-Based Single-Plant Detection from Undistorted Images with Orthomosaic Projection. 
 Smart Agricultural Technology, 15, 102421. https://doi.org/10.1016/j.atech.2026.102421
 ```
 
 [![DOI](https://img.shields.io/badge/DOI-10.1016%2Fj.atech.2026.102421-b31b1b.svg)](https://doi.org/10.1016/j.atech.2026.102421)
+=======
+Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2026).
+MatchPlant: An Open-Source Pipeline for UAV-Based Single-Plant Detection from Undistorted Images with Orthomosaic Projection.
+Smart Agricultural Technology, 15, 102421. https://doi.org/10.1016/j.atech.2026.102421
+```
+
+[![DOI](https://img.shields.io/badge/Smart%20Agricultural%20Technology-Published-orange.svg)](https://doi.org/10.1016/j.atech.2026.102421)
+>>>>>>> 0cfa42bd57fbffa973517b502fe83748f46a4e23
 
 For the dataset, please cite:
 
@@ -191,7 +200,7 @@ Sangjan, W., Pandey, P., Best, N. B., & Washburn, J. D. (2025). MatchPlant: An o
 for UAV-based single-plant detection and data extraction [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14856123
 ```
 
-[![DOI](https://img.shields.io/badge/Zenodo-14856123-blue.svg)](https://doi.org/10.5281/zenodo.14856123)
+[![DOI](https://img.shields.io/badge/Zenodo-Online-blue.svg)](https://doi.org/10.5281/zenodo.14856123)
 
 ## Contact
 
