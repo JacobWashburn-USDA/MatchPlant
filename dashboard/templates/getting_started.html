@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Getting Started · MatchPlant Dashboard{% endblock %}
+{% block content %}
+  <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
+  <h1>Getting Started</h1>
+  <p class="lede">There are two ways to work through the MatchPlant pipeline. Pick whichever fits how you like to work.</p>
+
+  <div class="path-grid">
+    <div class="path-card">
+      <div class="path-card-header">
+        <span class="workflow-num">1</span>
+        <h3>Use this dashboard</h3>
+      </div>
+      <p>
+        A web page that walks you through MatchPlant step by step. Click a
+        module to see what it needs, fix anything missing with one click,
+        and run it right there.
+      </p>
+    </div>
+    <div class="path-card">
+      <div class="path-card-header">
+        <span class="workflow-num">2</span>
+        <h3>Follow the GitHub README</h3>
+      </div>
+      <p>
+        Read the <a href="https://github.com/JacobWashburn-USDA/MatchPlant" target="_blank" rel="noopener">documentation</a>
+        and run each module's script yourself from a terminal.
+      </p>
+    </div>
+  </div>
+
+  <h2>Using the dashboard</h2>
+  <p>Please follow the steps below to get started.</p>
+
+  <div class="hint">
+    <p>Everything runs on your own computer's hardware, not a remote server:</p>
+    <ul>
+      <li>GPS embedding, GCP marking, annotation, and image splitting run fine on a normal laptop.</li>
+      <li>For OpenDroneMap (orthomosaic generation) and training or testing the detection model, a GPU is recommended for higher-quality results and faster processing, along with at least 16 GB of RAM. Free disk space needed depends on the size of your UAV image dataset.</li>
+    </ul>
+  </div>
+
+  <ol class="workflow">
+    <li class="workflow-step">
+      <div class="workflow-num">1</div>
+      <div class="workflow-body">
+        <h3>Download MatchPlant</h3>
+        <p>Download the MatchPlant repository to your computer.</p>
+        <a class="btn" href="https://github.com/JacobWashburn-USDA/MatchPlant/archive/refs/heads/main.zip">Download ZIP</a>
+      </div>
+    </li>
+    <li class="workflow-step">
+      <div class="workflow-num">2</div>
+      <div class="workflow-body">
+        <h3>Locate the MatchPlant folder</h3>
+        <p>Tell the dashboard which folder you downloaded it into.</p>
+
+        {% if error %}
+          <p class="dep-status dep-missing">{{ error }}</p>
+        {% elif is_valid %}
+          <p class="dep-status dep-ready">This folder looks correct.</p>
+        {% else %}
+          <p class="dep-status dep-missing">This doesn't look like a MatchPlant folder yet. Update it below.</p>
+        {% endif %}
+
+        <form method="post">
+          <label class="field">
+            MatchPlant folder path
+            <input type="text" name="repo_path" id="repo-path-input" value="{{ current_path }}">
+          </label>
+          <button type="button" id="browse-btn" class="btn secondary">Browse...</button>
+          <button type="submit" class="btn">Save</button>
+        </form>
+      </div>
+    </li>
+    <li class="workflow-step">
+      <div class="workflow-num">3</div>
+      <div class="workflow-body">
+        <h3>Start using modules</h3>
+        <p>Open any module, install what it needs with one click, and run it.</p>
+        <a class="btn" href="{{ url_for('index') }}">Go to the dashboard home</a>
+      </div>
+    </li>
+  </ol>
+{% endblock %}

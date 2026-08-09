@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ module.title }} · MatchPlant Dashboard{% endblock %}
+{% block content %}
+  <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
+  <h1>{{ module.title }}</h1>
+  <p class="card-kind kind-{{ module.kind }}">{{ module.kind }}</p>
+  <p>{{ module.description }}</p>
+  <p class="meta">Directory: <code>{{ module.dir }}</code> &middot; Interpreter: <code>{{ python_exe }}</code></p>
+
+  {% if has_requirements %}
+    {% if missing_packages %}
+      <p class="dep-status dep-missing">Missing: {{ missing_packages|join(', ') }}. Click <strong>Install requirements</strong> below.</p>
+    {% else %}
+      <p class="dep-status dep-ready">Requirements installed for this interpreter.</p>
+    {% endif %}
+  {% endif %}
+
+  {% if docker_status == "ready" %}
+    <p class="dep-status dep-ready">Docker is installed and running.</p>
+  {% elif docker_status == "not_installed" %}
+    <p class="dep-status dep-missing">Docker was not found. Install Docker Desktop, then reload this page.</p>
+  {% elif docker_status == "not_running" %}
+    <p class="dep-status dep-missing">Docker is installed but not running. Start Docker Desktop, then reload this page.</p>
+  {% endif %}
+
+  {% if req_text %}
+    <details>
+      <summary>Requirements ({{ req_name }})</summary>
+      <pre class="box">{{ req_text }}</pre>
+    </details>
+  {% endif %}
+
+  <p class="source-links">
+    View on GitHub:
+    {% for label, url in source_links %}
+      <a href="{{ url }}" target="_blank" rel="noopener">{{ label }}</a>{{ ", " if not loop.last }}
+    {% endfor %}
+  </p>
+
+  {% if module.kind == "config" %}
+    <h2>{{ module.config_file }}</h2>
+    <form method="post" action="{{ url_for('save_config', module_id=module.id) }}">
+      <textarea name="config_text" rows="20" class="config-editor">{{ config_text }}</textarea>
+      <button type="submit" class="btn secondary">Save config</button>
+    </form>
+  {% endif %}
+
+  <h2>Run</h2>
+  <form id="run-form" data-module="{{ module.id }}">
+    {% if module.script.mac and module.script.win %}
+      <label>Script variant
+        <select name="variant">
+          <option value="mac" {{ "selected" if variant == "mac" }}>mac</option>
+          <option value="win" {{ "selected" if variant == "win" }}>win</option>
+        </select>
+      </label>
+    {% endif %}
+
+    {% for f in module.fields %}
+      <label class="field field-{{ f.kind }}">
+        {{ f.label or f.name.replace('_', ' ') }}
+        {% if f.kind == "checkbox" %}
+          <input type="checkbox" name="{{ f.name }}">
+        {% elif f.kind == "select" %}
+          <select name="{{ f.name }}">
+            <option value="">(default: {{ f.default }})</option>
+            {% for c in f.choices %}
+              <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="text" name="{{ f.name }}" placeholder="{{ f.default or '' }}">
+        {% endif %}
+        {% if f.help %}<small>{{ f.help }}</small>{% endif %}
+      </label>
+    {% endfor %}
+
+    <button type="submit" class="btn">
+      {{ "Launch" if module.kind == "gui" else "Run" }}
+    </button>
+    <button type="button" id="stop-btn" class="btn danger" disabled>Stop</button>
+    {% if has_requirements %}
+      <button type="button" id="install-btn" class="btn secondary">Install requirements</button>
+    {% endif %}
+  </form>
+
+  {% if has_requirements %}
+    <p id="missing-hint" class="hint hidden">
+      That looks like a missing package. Click <strong>Install requirements</strong> above.
+      It sets up a dedicated environment for this module and points it there automatically.
+    </p>
+  {% endif %}
+
+  <pre id="log" class="log-box"></pre>
+
+  {% if runs %}
+    <h2>Previous runs</h2>
+    <ul class="run-list">
+      {% for r in runs %}
+        <li><span class="{{ 'run-live' if not r.done else 'run-done' }}">{{ 'running' if not r.done else 'exit ' ~ r.returncode }}</span> <code>{{ r.command|join(' ') }}</code></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block container_class %}wide{% endblock %}
+{% block content %}
+  <div class="hero">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="MatchPlant logo" class="hero-logo">
+    <div class="hero-text">
+      <h1 class="hero-title">MatchPlant</h1>
+      <p>An open-source pipeline for automated detection of individual objects in UAV-derived imagery.</p>
+      <ul>
+        <li>Interactive tools for preparing and annotating UAV imagery</li>
+        <li>Faster R-CNN detection trained on high-resolution, undistorted UAV images</li>
+        <li>Projects detections back onto the orthomosaic to extract digital plant traits</li>
+      </ul>
+      <p class="hero-reference">
+        Reference: Sangjan, W., Pandey, P., Best, N. B., &amp; Washburn, J. D. (2026). MatchPlant: An Open-Source
+        Pipeline for UAV-Based Single-Plant Detection from Undistorted Images with Orthomosaic Projection.
+        <em>Smart Agricultural Technology</em>, 15, 102421.
+        <a href="https://doi.org/10.1016/j.atech.2026.102421" target="_blank" rel="noopener">https://doi.org/10.1016/j.atech.2026.102421</a>
+      </p>
+    </div>
+  </div>
+
+  <p class="info-note">
+    Before using the pipeline, visit <a href="{{ url_for('getting_started') }}">Getting Started</a> to set up
+    and download the MatchPlant pipeline. To fully understand the dashboard, visit
+    <a href="{{ url_for('guide') }}">How to Use</a>.
+  </p>
+
+  <div class="dashboard-layout">
+    <aside class="flow-col">
+      <h2 class="stage-heading">Pipeline flow</h2>
+      <ol class="flow">
+        {% for stage, modules in stages.items() %}
+          {% set stage_num = loop.index %}
+          {% for m in modules %}
+            <li class="flow-node" style="--dot-color: var(--stage-{{ stage_num }})">
+              <a href="{{ url_for('module_detail', module_id=m.id) }}">
+                <span class="flow-num">{{ m.id.split('_')[0] }}</span>{{ m.title }}
+              </a>
+            </li>
+          {% endfor %}
+        {% endfor %}
+      </ol>
+      <ul class="flow-legend">
+        {% for stage in stages.keys() %}
+          <li><span class="dot" style="background: var(--stage-{{ loop.index }})"></span>{{ stage }}</li>
+        {% endfor %}
+      </ul>
+      <a class="full-diagram-link" href="{{ url_for('static', filename='images/img.png') }}" target="_blank" rel="noopener">View full diagram &rarr;</a>
+
+      <ul class="kind-legend">
+        <li><span class="card-kind kind-gui">gui</span><span>desktop app window</span></li>
+        <li><span class="card-kind kind-cli">cli</span><span>command-line form + log</span></li>
+        <li><span class="card-kind kind-config">config</span><span>YAML config file</span></li>
+        <li><span class="card-kind kind-shell">shell</span><span>shell / PowerShell script</span></li>
+      </ul>
+    </aside>
+
+    <div class="dashboard-main">
+      {% for stage, modules in stages.items() %}
+        <h2 class="stage-heading">{{ stage }}</h2>
+        <div class="card-grid">
+          {% for m in modules %}
+            <a class="card" href="{{ url_for('module_detail', module_id=m.id) }}">
+              <div class="card-title"><span class="card-num">{{ m.id.split('_')[0] }}</span>{{ m.title }}</div>
+              <div class="card-kind kind-{{ m.kind }}">{{ m.kind }}</div>
+              <p class="card-desc">{{ m.description }}</p>
+            </a>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

@@ -95,10 +95,11 @@ To begin using MatchPlant:
 2. Follow the module-specific installation instructions
 3. Refer to the module README for detailed usage guidelines
 
-Prefer clicking over the command line? [MatchPlant Dashboard](https://matchplant-dashboard.github.io)
-is a companion web app that lists every module, launches the GUI tools with one click, and runs the
-CLI tools (training, testing, projecting) from a form with a live log. It runs locally on your own
-computer; that link explains how to get it.
+Prefer clicking over the command line? This repository includes the **[MatchPlant Dashboard](dashboard/)**,
+a local web app that lists every module, launches the GUI tools with one click, and runs the CLI
+tools (training, testing, projecting) from a form with a live log. Downloading MatchPlant gets you
+the dashboard automatically; see [dashboard/README.md](dashboard/README.md) to start it, or visit
+[matchplant-dashboard.github.io](https://matchplant-dashboard.github.io) for an overview.
 
 ## Object Detection Quick Commands
 

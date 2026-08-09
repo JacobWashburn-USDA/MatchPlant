@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}How to Use · MatchPlant Dashboard{% endblock %}
+{% block content %}
+  <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
+  <h1>How to Use</h1>
+  <p class="lede">
+    Reference for using the dashboard: a quick walkthrough, the module types you'll encounter,
+    and a few tips for less common situations.
+  </p>
+
+  <h2>1. Quick walkthrough</h2>
+  <ol class="workflow">
+    <li class="workflow-step">
+      <div class="workflow-num">1</div>
+      <div class="workflow-body">
+        <h3>Look at the homepage</h3>
+        <p>All 10 modules, grouped into 4 stages, plus the pipeline flow sidebar for quick navigation.</p>
+        <a class="btn" href="{{ url_for('index') }}">Go to the dashboard home</a>
+      </div>
+    </li>
+    <li class="workflow-step">
+      <div class="workflow-num">2</div>
+      <div class="workflow-body">
+        <h3>Open a module</h3>
+        <p>Select any card to view its description, dependency status, and Run/Launch controls.</p>
+      </div>
+    </li>
+    <li class="workflow-step">
+      <div class="workflow-num">3</div>
+      <div class="workflow-body">
+        <h3>Install requirements, if needed</h3>
+        <p>If the page shows a "Missing" banner, select <strong>Install requirements</strong>. This creates a dedicated environment for the module and configures the dashboard to use it automatically.</p>
+      </div>
+    </li>
+    <li class="workflow-step">
+      <div class="workflow-num">4</div>
+      <div class="workflow-body">
+        <h3>Launch or Run</h3>
+        <p>GUI modules open a native window. CLI modules provide a form and a live log.</p>
+      </div>
+    </li>
+    <li class="workflow-step">
+      <div class="workflow-num">5</div>
+      <div class="workflow-body">
+        <h3>Repeat for each module needed</h3>
+        <p>Proceed through the MatchPlant pipeline from the dashboard home, in order.</p>
+        <a class="btn" href="{{ url_for('index') }}">Go to the dashboard home</a>
+      </div>
+    </li>
+  </ol>
+
+  <h2>2. Module types</h2>
+  <p>Every module card is tagged with one of the following:</p>
+  <ul class="guide-list">
+    <li><span class="card-kind kind-gui">gui</span> Opens a native desktop window (Tkinter) on this computer.</li>
+    <li><span class="card-kind kind-cli">cli</span> Runs from a form on the module's page, with output streamed to a live log.</li>
+    <li><span class="card-kind kind-config">config</span> Configured by editing a YAML file on the page before running.</li>
+    <li><span class="card-kind kind-shell">shell</span> Runs a shell or PowerShell script rather than Python.</li>
+  </ul>
+
+  <h2>3. Tips</h2>
+  <ul class="guide-list">
+    <li><strong>Dependency status.</strong> Each module page indicates whether its required packages are installed, checked automatically against that module's own <code>requirements*.txt</code>. If anything is missing, <strong>Install requirements</strong> creates a dedicated environment for that module and configures the dashboard to use it.</li>
+    <li><strong>Live output.</strong> Launch, Run, and Install requirements all stream their output to a log panel on the page. <strong>Stop</strong> cancels an active process. Each module page also retains a short history of recent runs.</li>
+    <li><strong>Source code.</strong> Each module page links to its folder, README, script, and requirements file on GitHub, so the underlying code can be reviewed before running it.</li>
+    <li><strong>Pipeline order.</strong> The homepage sidebar lists all modules in pipeline order. Steps 6-1 and 6-2 are alternative paths to a trained model, training from scratch or fine-tuning a pretrained checkpoint, and both lead into step 7.</li>
+    <li><strong>Custom environments.</strong> The <a href="{{ url_for('settings_page') }}">Settings</a> page allows a module to be pointed at an existing Python environment instead of a newly created one. This is only needed if a compatible environment (for example, an existing PyTorch or GDAL setup) already exists.</li>
+  </ul>
+{% endblock %}

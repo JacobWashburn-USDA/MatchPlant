@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Settings · MatchPlant Dashboard{% endblock %}
+{% block content %}
+  <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
+  <h1>Settings</h1>
+  <p class="lede">Each module can have its own Python environment (some need only Tkinter, some need PyTorch, some need GDAL/rasterio). Point each module at the interpreter inside the venv where its <code>requirements*.txt</code> is installed. Leave blank to use the interpreter running this dashboard.</p>
+
+  <form method="post">
+    {% for m in modules %}
+      <label class="field">
+        {{ m.title }} <code>({{ m.id }})</code>
+        <input type="text" name="python_{{ m.id }}" value="{{ get_python(m.id) }}">
+      </label>
+    {% endfor %}
+    <button type="submit" class="btn">Save</button>
+  </form>
+{% endblock %}
