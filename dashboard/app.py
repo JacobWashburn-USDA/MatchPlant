@@ -263,37 +263,35 @@ def guide():
     return render_template("guide.html")
 
 
-@app.route("/getting-started", methods=["GET", "POST"])
-def getting_started():
-    error = None
+@app.route("/settings", methods=["GET", "POST"])
+def settings_page():
+    repo_error = None
     if request.method == "POST":
-        path = request.form.get("repo_path", "").strip()
-        if not path:
-            error = "Enter a folder path."
-        elif not settings.is_valid_repo_root(path):
-            error = f"That doesn't look like the MatchPlant folder: {path}"
+        if "repo_path" in request.form:
+            path = request.form.get("repo_path", "").strip()
+            if not path:
+                repo_error = "Enter a folder path."
+            elif not settings.is_valid_repo_root(path):
+                repo_error = f"That doesn't look like the MatchPlant folder: {path}"
+            else:
+                settings.set_repo_root(path)
+                return redirect(url_for("settings_page"))
         else:
-            settings.set_repo_root(path)
-            return redirect(url_for("getting_started"))
+            for module in MODULES:
+                key = f"python_{module['id']}"
+                if key in request.form and request.form[key].strip():
+                    settings.set_python(module["id"], request.form[key].strip())
+            return redirect(url_for("settings_page"))
 
     repo_root = settings.get_repo_root()
     return render_template(
-        "getting_started.html",
+        "settings.html",
+        modules=MODULES,
+        get_python=settings.get_python,
         current_path=str(repo_root),
         is_valid=settings.is_valid_repo_root(repo_root),
-        error=error,
+        repo_error=repo_error,
     )
-
-
-@app.route("/settings", methods=["GET", "POST"])
-def settings_page():
-    if request.method == "POST":
-        for module in MODULES:
-            key = f"python_{module['id']}"
-            if key in request.form and request.form[key].strip():
-                settings.set_python(module["id"], request.form[key].strip())
-        return redirect(url_for("settings_page"))
-    return render_template("settings.html", modules=MODULES, get_python=settings.get_python)
 
 
 if __name__ == "__main__":

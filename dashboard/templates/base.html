@@ -11,7 +11,6 @@
     <a class="brand" href="{{ url_for('index') }}">MatchPlant Dashboard</a>
     <nav class="topbar-nav">
       <a class="nav-link" href="{{ url_for('index') }}">Dashboard</a>
-      <a class="nav-link" href="{{ url_for('getting_started') }}">Getting Started</a>
       <a class="nav-link" href="{{ url_for('guide') }}">How to Use</a>
     </nav>
   </header>
@@ -19,13 +18,13 @@
     {% if os_warning %}
       <div class="banner warning">{{ os_warning }}</div>
     {% endif %}
-    {% if needs_repo_setup and request.endpoint != 'getting_started' %}
+    {% if needs_repo_setup and request.endpoint != 'settings_page' %}
       <div class="setup-banner">
         <div>
           <h2>Locate your MatchPlant folder</h2>
           <p>The dashboard doesn't know where you downloaded MatchPlant yet, so this page may not work correctly until you point it there.</p>
         </div>
-        <a class="btn" href="{{ url_for('getting_started') }}">Locate MatchPlant folder</a>
+        <a class="btn" href="{{ url_for('settings_page') }}">Locate MatchPlant folder</a>
       </div>
     {% endif %}
     {% block content %}{% endblock %}

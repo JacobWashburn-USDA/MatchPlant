@@ -3,6 +3,32 @@
 {% block content %}
   <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
   <h1>Settings</h1>
+
+  <h2>MatchPlant pipeline location</h2>
+  <p class="lede">
+    The dashboard finds the MatchPlant pipeline automatically, since this folder normally sits
+    one level inside it. Only change this if you've moved the dashboard elsewhere, or want to
+    point it at a different MatchPlant checkout.
+  </p>
+
+  {% if repo_error %}
+    <p class="dep-status dep-missing">{{ repo_error }}</p>
+  {% elif is_valid %}
+    <p class="dep-status dep-ready">This folder looks correct.</p>
+  {% else %}
+    <p class="dep-status dep-missing">This doesn't look like a MatchPlant folder yet. Update it below.</p>
+  {% endif %}
+
+  <form method="post">
+    <label class="field">
+      MatchPlant folder path
+      <input type="text" name="repo_path" id="repo-path-input" value="{{ current_path }}">
+    </label>
+    <button type="button" id="browse-btn" class="btn secondary">Browse...</button>
+    <button type="submit" class="btn">Save</button>
+  </form>
+
+  <h2>Per-module Python environments</h2>
   <p class="lede">Each module can have its own Python environment (some need only Tkinter, some need PyTorch, some need GDAL/rasterio). Point each module at the interpreter inside the venv where its <code>requirements*.txt</code> is installed. Leave blank to use the interpreter running this dashboard.</p>
 
   <form method="post">
