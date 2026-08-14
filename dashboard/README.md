@@ -47,7 +47,7 @@ python app.py
 ## Connecting to the MatchPlant pipeline
 
 - Since `dashboard/` lives inside the MatchPlant repository, the dashboard finds the pipeline modules automatically, no setup needed
-- If you ever move this folder somewhere else, or want to point it at a different MatchPlant checkout, the **Getting Started** page inside the dashboard has a **Browse...** button that opens a native folder picker to relocate it
+- If you ever move this folder somewhere else, or want to point it at a different MatchPlant checkout, the **Settings** page inside the dashboard has a **Browse...** button that opens a native folder picker to relocate it
 
 ## Per-module Python environments
 
@@ -84,7 +84,7 @@ flowchart LR
     ProcMgr -->|"stdout / stderr"| Script
 ```
 
-- `modules.py`: manifest of all pipeline modules, script location(s), kind (`gui`, `cli`, `config`, `shell`), and for CLI tools, the argparse-derived form fields. Resolves each module's folder against the MatchPlant pipeline location configured in Settings/Getting Started, not this dashboard's own folder.
+- `modules.py`: manifest of all pipeline modules, script location(s), kind (`gui`, `cli`, `config`, `shell`), and for CLI tools, the argparse-derived form fields. Resolves each module's folder against the MatchPlant pipeline location configured in Settings, not this dashboard's own folder.
 - `process_manager.py`: launches each run as a subprocess and streams its stdout/stderr through a queue.
 - `app.py`: Flask routes for the dashboard, module detail/form, run (`POST`), live log (`GET`, Server-Sent Events), and stop.
 - `settings.py`: persists the MatchPlant pipeline location and per-module interpreter paths to `instance/settings.json` (not committed).
