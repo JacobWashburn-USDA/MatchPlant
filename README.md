@@ -10,6 +10,13 @@
 
 An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection and Data Extraction
 
+## Quick Start
+
+Prefer clicking over the command line? Start at
+[matchplant-dashboard.github.io](https://matchplant-dashboard.github.io) to run MatchPlant through a
+local dashboard, no terminal commands needed. See [Getting Started](#getting-started) below for
+details, or to use MatchPlant from the command line instead.
+
 ## Authors
 
 - Worasit Sangjan
@@ -21,6 +28,7 @@ An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection
 
 ## Table of Contents
 - [MatchPlant](#matchplant)
+  - [Quick Start](#quick-start)
   - [Authors](#authors)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
@@ -89,17 +97,16 @@ Figure 1: Diagram of the MathPlant modular open-source pipeline
 
 ## Getting Started
 
-To begin using MatchPlant:
+There are two ways to use MatchPlant, both included when you download this repository:
 
-1. Choose the appropriate module for your task
-2. Follow the module-specific installation instructions
-3. Refer to the module README for detailed usage guidelines
-
-Prefer clicking over the command line? This repository includes the **[MatchPlant Dashboard](dashboard/)**,
-a local web app that lists every module, launches the GUI tools with one click, and runs the CLI
-tools (training, testing, projecting) from a form with a live log. Downloading MatchPlant gets you
-the dashboard automatically; see [dashboard/README.md](dashboard/README.md) to start it, or visit
-[matchplant-dashboard.github.io](https://matchplant-dashboard.github.io) for an overview.
+1. **Through the dashboard (recommended).** Start at
+   [matchplant-dashboard.github.io](https://matchplant-dashboard.github.io), which walks you through
+   getting it running from the **[dashboard/](dashboard/)** folder already included in this repository,
+   a local web app that lists every module, launches the GUI tools with one click, and runs the CLI
+   tools (training, testing, projecting) from a form with a live log. See
+   [dashboard/README.md](dashboard/README.md) for full details.
+2. **Module by module, from the command line.** Choose the appropriate module for your task,
+   follow its installation instructions, and refer to its README for detailed usage guidelines.
 
 ## Object Detection Quick Commands
 
