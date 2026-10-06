@@ -288,3 +288,158 @@ body {
 .dep-status { padding: 0.5rem 0.8rem; border-radius: 8px; font-size: 0.85rem; display: inline-block; }
 .dep-ready { background: rgba(76, 154, 91, 0.15); color: var(--accent); }
 .dep-missing { background: rgba(179, 38, 30, 0.12); color: var(--kind-shell); }
+
+/* Refined layout: workflow card, spacing and focus styles. */
+:root {
+  --bg: #f8faf7;
+  --fg: #20332a;
+  --muted: #53665a;
+  --border: #d8e3d8;
+  --card-bg: #ffffff;
+  --hero-bg: #f0f4ef;
+}
+
+.topbar { background: #fff; }
+.container { padding-top: 1.75rem; }
+.hero { padding: 1.4rem 1.6rem; }
+.hero-text { line-height: 1.5; }
+.hero-text li { margin-bottom: 0.25rem; }
+.hero-reference { max-width: 75ch; }
+.info-note { background: #eef4ed; }
+
+.card {
+  padding: 1.15rem;
+  box-shadow: 0 1px 3px rgba(25, 65, 35, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover,
+.card:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 5px 16px rgba(25, 65, 35, 0.12);
+}
+.card-desc { line-height: 1.5; }
+.stage-heading { letter-spacing: 0.055em; }
+.flow-node a { line-height: 1.35; }
+
+/* The workflow card is the primary navigation. */
+.container.wide { max-width: 1260px; }
+.dashboard-layout { align-items: stretch; }
+.flow-col {
+  width: 282px;
+  position: relative;
+  top: auto;
+  display: flex;
+}
+.workflow-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.1rem;
+  border: 1px solid #b8d0ba;
+  border-top: 4px solid var(--accent);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(25, 65, 35, 0.09);
+}
+.workflow-card-head { padding: 0.1rem 0.25rem 0.7rem; }
+.workflow-eyebrow {
+  color: var(--accent);
+  font-size: 0.69rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.workflow-card-head h2 {
+  margin: 0.25rem 0 0.35rem;
+  color: var(--fg);
+  font-size: 1.32rem;
+  letter-spacing: -0.035em;
+}
+.workflow-card-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.workflow-card nav { display: flex; flex: 1; flex-direction: column; }
+.workflow-timeline {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 0.45rem;
+}
+.workflow-timeline::before { background: #c6d7c9; }
+.workflow-timeline .flow-node { margin-bottom: 0.18rem; }
+.workflow-timeline .flow-node a { padding: 0.34rem 0.5rem; }
+.workflow-timeline .flow-node::before { width: 10px; height: 10px; }
+.flow-stage-label {
+  position: relative;
+  margin: 0.85rem 0 0.28rem -0.25rem;
+  color: var(--dot-color);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+}
+.flow-stage-label:first-child { margin-top: 0.35rem; }
+.flow-stage-label a { color: inherit; text-decoration: none; }
+.flow-stage-label a:hover { text-decoration: underline; }
+.flow-route-note {
+  margin: 0.45rem 0 0.2rem;
+  color: var(--muted);
+  font-size: 0.71rem;
+  font-weight: 650;
+}
+.flow-or {
+  position: relative;
+  width: fit-content;
+  margin: 0.05rem 0 0.05rem 0.5rem;
+  padding: 0 0.3rem;
+  border-radius: 3px;
+  background: #fff;
+  color: var(--stage-3);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.workflow-card-foot { padding: 0.85rem 0.25rem 0; border-top: 1px solid var(--border); }
+.workflow-card-foot > a {
+  color: var(--accent);
+  font-size: 0.77rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.workflow-card-foot > a:hover { text-decoration: underline; }
+.workflow-card-foot details { margin-top: 0.65rem; color: var(--muted); font-size: 0.75rem; }
+.workflow-card-foot summary { cursor: pointer; }
+.workflow-card-foot .kind-legend { margin-top: 0.55rem; padding-top: 0.55rem; }
+.workflow-card-foot .kind-legend li { margin-bottom: 0.55rem; }
+.dashboard-main > .stage-heading:first-child { margin-top: 0.35rem; }
+.dashboard-main > .stage-heading { scroll-margin-top: 1rem; }
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #1c5d99;
+  outline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .dashboard-layout { align-items: flex-start; gap: 1.25rem; }
+  .flow-col { width: 100%; }
+  .workflow-card { max-width: 420px; }
+  .workflow-card nav,
+  .workflow-timeline { flex: none; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 1rem; }
+  .hero { gap: 0.5rem; }
+  .hero-logo { width: min(240px, 100%); height: auto; }
+  .hero-title { font-size: 2rem; }
+  .card-grid { grid-template-columns: 1fr; }
+}

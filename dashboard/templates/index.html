@@ -25,38 +25,47 @@
   </p>
 
   <div class="dashboard-layout">
-    <aside class="flow-col">
-      <h2 class="stage-heading">Pipeline flow</h2>
-      <ol class="flow">
-        {% for stage, modules in stages.items() %}
-          {% set stage_num = loop.index %}
-          {% for m in modules %}
-            <li class="flow-node" style="--dot-color: var(--stage-{{ stage_num }})">
-              <a href="{{ url_for('module_detail', module_id=m.id) }}">
-                <span class="flow-num">{{ m.id.split('_')[0] }}</span>{{ m.title }}
-              </a>
-            </li>
-          {% endfor %}
-        {% endfor %}
-      </ol>
-      <ul class="flow-legend">
-        {% for stage in stages.keys() %}
-          <li><span class="dot" style="background: var(--stage-{{ loop.index }})"></span>{{ stage }}</li>
-        {% endfor %}
-      </ul>
-      <a class="full-diagram-link" href="{{ url_for('static', filename='images/img.png') }}" target="_blank" rel="noopener">View full diagram &rarr;</a>
-
-      <ul class="kind-legend">
-        <li><span class="card-kind kind-gui">gui</span><span>desktop app window</span></li>
-        <li><span class="card-kind kind-cli">cli</span><span>command-line form + log</span></li>
-        <li><span class="card-kind kind-config">config</span><span>YAML config file</span></li>
-        <li><span class="card-kind kind-shell">shell</span><span>shell / PowerShell script</span></li>
-      </ul>
+    <aside class="flow-col" aria-label="Pipeline workflow">
+      <div class="workflow-card">
+        <div class="workflow-card-head">
+          <span class="workflow-eyebrow">Tools and workflow</span>
+          <h2>Pipeline flow</h2>
+          <p>Open any module directly and provide its required inputs. The connected path shows the full workflow.</p>
+        </div>
+        <nav aria-label="Pipeline modules and stages">
+          <ol class="flow workflow-timeline">
+            {% for stage, modules in stages.items() %}
+              {% set stage_num = loop.index %}
+              <li class="flow-stage-label" style="--dot-color: var(--stage-{{ stage_num }})">
+                <a href="#stage-{{ stage_num }}">{{ stage }}</a>
+              </li>
+              {% for m in modules %}
+                {% if m.id.startswith('6-1') %}<li class="flow-route-note">Choose one training route</li>{% endif %}
+                {% if m.id.startswith('6-2') %}<li class="flow-or">or</li>{% endif %}
+                <li class="flow-node" style="--dot-color: var(--stage-{{ stage_num }})">
+                  <a href="{{ url_for('module_detail', module_id=m.id) }}"><span class="flow-num">{{ m.id.split('_')[0] }}</span>{{ m.title }}</a>
+                </li>
+              {% endfor %}
+            {% endfor %}
+          </ol>
+        </nav>
+        <div class="workflow-card-foot">
+          <a href="{{ url_for('static', filename='images/img.png') }}" target="_blank" rel="noopener">View full workflow diagram &rarr;</a>
+          <details><summary>Module types</summary>
+            <ul class="kind-legend">
+              <li><span class="card-kind kind-gui">gui</span><span>desktop app window</span></li>
+              <li><span class="card-kind kind-cli">cli</span><span>command-line form + log</span></li>
+              <li><span class="card-kind kind-config">config</span><span>YAML config file</span></li>
+              <li><span class="card-kind kind-shell">shell</span><span>shell / PowerShell script</span></li>
+            </ul>
+          </details>
+        </div>
+      </div>
     </aside>
 
     <div class="dashboard-main">
       {% for stage, modules in stages.items() %}
-        <h2 class="stage-heading">{{ stage }}</h2>
+        <h2 class="stage-heading" id="stage-{{ loop.index }}">{{ stage }}</h2>
         <div class="card-grid">
           {% for m in modules %}
             <a class="card" href="{{ url_for('module_detail', module_id=m.id) }}">
