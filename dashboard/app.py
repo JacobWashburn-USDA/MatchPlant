@@ -36,8 +36,9 @@ def current_variant():
     if system == "Windows":
         return "win", None
     return "mac", (
-        f"Detected OS '{system}'. This pipeline ships mac/win variants only; "
-        "defaulting to the mac scripts. Override the interpreter/script in Settings if needed."
+        f"Detected OS '{system}'. This pipeline ships macOS and Windows variants only; "
+        "defaulting to the macOS scripts. Choose a script in the Operating system menu "
+        "on each module page, or change the interpreter in Settings if needed."
     )
 
 

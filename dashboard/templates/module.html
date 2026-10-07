@@ -48,10 +48,10 @@
   <h2>Run</h2>
   <form id="run-form" data-module="{{ module.id }}">
     {% if module.script.mac and module.script.win %}
-      <label>Script variant
+      <label>Operating system
         <select name="variant">
-          <option value="mac" {{ "selected" if variant == "mac" }}>mac</option>
-          <option value="win" {{ "selected" if variant == "win" }}>win</option>
+          <option value="mac" {{ "selected" if variant == "mac" }}>macOS</option>
+          <option value="win" {{ "selected" if variant == "win" }}>Windows</option>
         </select>
       </label>
     {% endif %}

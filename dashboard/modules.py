@@ -224,7 +224,8 @@ def github_links(module, req_name=None):
     if readme_path(module) is not None:
         links.append(("README", github_url(module, "README.md")))
     for variant, filename in module["script"].items():
-        label = "Script" if variant == "any" else f"Script ({variant})"
+        display_variant = {"mac": "macOS", "win": "Windows"}.get(variant, variant)
+        label = "Script" if variant == "any" else f"Script ({display_variant})"
         links.append((label, github_url(module, filename)))
     if req_name:
         links.append((req_name, github_url(module, req_name)))
