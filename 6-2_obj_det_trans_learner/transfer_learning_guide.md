@@ -2,6 +2,13 @@
 
 This guide explains the transfer learning implementation in our object detection system, focusing on layer freezing, code reuse, and configuration options.
 
+
+## Dashboard configuration and implementation
+
+The [Transfer Learning README](README.md#using-the-dashboard) explains the settings form, Browse buttons, help icons, and advanced YAML editor. The form writes `transfer_config.yaml` before running the Python training script.
+
+Module 6.2 directly loads shared helpers from the sibling Module 6.1 folder. Keep both folders in the repository; do not copy training scripts into Module 6.2. Its own configuration loader and model builder bridge the current APIs.
+
 ## Table of Contents
 - [Model Architecture and Freezing](#model-architecture-and-freezing)
 - [Code Reuse from Base Training](#code-reuse-from-base-training)
@@ -62,36 +69,11 @@ Our Faster R-CNN model consists of three main components that can be selectively
 
 ## Code Reuse from Base Training
 
-We reuse several key components from the base training system:
+`transfer_train.base_training()` loads `../6-1_obj_det_trainer/train.py` explicitly. The transfer runner reuses `MaizeDatasetCOCO`, `get_transform(train)`, `collate_fn`, `configure_device_and_resources()`, and `evaluate(...)`.
 
-- ### Dataset Handling
-  ```python
-  from train import MaizeDatasetCOCO
-  ```
-  - Maintains consistent data loading
-  - Preserves COCO format compatibility
-  - Reuses tested data augmentation pipeline
-- ### Model Building
-  ```python
-  from train import build_model
-  ```
-  - Ensures architectural consistency
-  - Maintains anchor configurations
-  - Preserves model parameters
-- ### Training Functions
-  ```python
-  from train import train_one_epoch, evaluate
-  ```
-  - Reuses optimized training loop
-  - Maintains evaluation metrics
-  - Preserves loss calculations
-- ### Configuration System
-  ```python
-  from train_config_loader import ConfigLoader
-  ```
-  - Extends existing configuration system
-  - Maintains parameter validation
-  - Preserves configuration structure
+Module 6.2 provides its own validated YAML loader, checkpoint-aware Faster R-CNN builder, and training loop. It does not depend on `train_config_loader.py` or Module 6.1's `build_model` signature. Model architecture and anchor count are checked against checkpoint weights; custom anchor dimensions must match the checkpoint's original configuration. See [checkpoint compatibility](README.md#checkpoint-compatibility).
+
+The frozen backbone stays in evaluation mode during training so its normalization statistics are preserved. RPN and ROI heads stay in the training loss path even when their parameters are frozen. At least one component must be unfrozen.
 
 ## When to Freeze/Unfreeze Layers
 

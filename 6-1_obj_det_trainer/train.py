@@ -9,7 +9,6 @@ import numpy as np
 from pathlib import Path
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import FasterRCNN_ResNet50_FPN_V2_Weights
-from torchvision.models.detection.rpn import AnchorGenerator
 from torchvision import transforms as T
 from torch.utils.data import DataLoader
 try:
@@ -162,14 +161,9 @@ def get_transform(train):
     return DetectionTransform() 
 
 def build_model(num_classes, pretrained=True):
-    # Custom anchor generator
-    anchor_generator = AnchorGenerator(
-        sizes=((32, 64, 96, 128),),
-        aspect_ratios=((0.5, 1.0, 2.0),)
-    )
-
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn_v2(
         weights=FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT if pretrained else None,
+        weights_backbone=None,
         box_detections_per_img=100,
         min_size=980,
         max_size=1240,
@@ -180,7 +174,6 @@ def build_model(num_classes, pretrained=True):
         rpn_fg_iou_thresh=0.7,
         rpn_bg_iou_thresh=0.3,
         rpn_post_nms_top_n_test=500,
-        anchor_generator=anchor_generator  # Pass as a named argument
     )
     
     in_features = model.roi_heads.box_predictor.cls_score.in_features
@@ -257,8 +250,7 @@ class COCOEvaluator:
             coco_eval.summarize()
             return coco_eval.stats
         except Exception as e:
-            print(f"Error during evaluation: {str(e)}")
-            return [0.0] * 12
+            raise RuntimeError(f"COCO evaluation failed: {e}") from e
 
 def train_one_epoch(model, optimizer, data_loader, device, epoch, scaler=None, use_amp=True, clear_cache=False):
     model.train()
@@ -280,10 +272,11 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, scaler=None, u
                     loss_dict = model(images, targets)
                     losses = sum(loss for loss in loss_dict.values())
             except Exception as e:
-                print(f"Forward pass error at iteration {i}: {e}")
-                continue
+                raise RuntimeError(f"Forward pass failed at batch {i}: {e}") from e
 
             # Store loss values before cleanup
+            if not torch.isfinite(losses):
+                raise ValueError("Training loss is not finite.")
             loss_value = losses.item()
             loss_classifier_value = loss_dict['loss_classifier'].item()
             loss_box_reg_value = loss_dict['loss_box_reg'].item()
@@ -338,6 +331,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, scaler=None, u
         print(f"Training iteration error: {e}")
         import traceback
         traceback.print_exc()
+        raise
         
     return total_loss / len(data_loader)
 
@@ -542,6 +536,12 @@ def resolve_run_dirs(args):
 
 def main():
     args = parse_args()
+    if args.epochs < 1 or args.batch_size < 1:
+        raise ValueError("Epochs and batch size must be positive.")
+    if args.num_workers is not None and args.num_workers < 0:
+        raise ValueError("Data loading workers cannot be negative.")
+    if not np.isfinite(args.lr) or args.lr <= 0:
+        raise ValueError("Learning rate must be positive and finite.")
     os.environ.setdefault('PYTORCH_CUDA_ALLOC_CONF', 'expandable_segments:True')
     if args.seed is not None:
         print(f"Using seeded reviewer-response training run: seed={args.seed}")
@@ -580,6 +580,9 @@ def main():
         Path(args.val_annotation_file),
         transforms=get_transform(train=False)
     )
+
+    if not len(dataset) or not len(dataset_val):
+        raise ValueError("Training and validation splits must contain annotated images.")
 
     generator = None
     if args.seed is not None:
@@ -639,7 +642,7 @@ def main():
 
     # Training loop
     try:
-        best_score = 0.0
+        best_score = -float("inf")
         validations_without_improvement = 0
         best_metric_name = "AP@0.5" if args.best_metric == "ap50" else "mAP@0.5:0.95"
         for epoch in range(args.epochs):
@@ -733,6 +736,7 @@ def main():
     except Exception as e:
         print(f"Training error: {e}")
         torch.save(model.state_dict(), checkpoint_dir / 'emergency_save.pt')
+        raise
 
 if __name__ == "__main__":
     main()

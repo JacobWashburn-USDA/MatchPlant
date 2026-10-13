@@ -5,5 +5,6 @@ numpy>=1.24.0
 # GUI and visualization
 matplotlib>=3.7.0
 
-# System integration
-subprocess.run>=0.0.8  # For macOS system commands
+
+# File dialogs use Python tkinter on Windows and system AppleScript on macOS.
+# These are provided by Python/macOS, not installed through pip.

@@ -5,6 +5,19 @@ A Python utility for processing drone imagery and embedding GPS coordinates by m
 ### **Note**
 This tool is handy for drone imagery processing workflows where GPS data must be embedded post-flight or when working with systems that record position data separately from image capture.
 
+
+## Using the dashboard
+
+Open **GPS Embedder** in the [local dashboard](../dashboard/README.md). Install this module's requirements if prompted. Enter the UTM zone (1–60), select N or S, and use **Browse…** to choose the folder containing the JPG images and the tab-delimited `events.txt`. Click **Run** and follow the live log. The dashboard supplies these inputs as arguments; no separate GUI window opens.
+
+For a terminal run, provide all three arguments together:
+
+```bash
+python gps_embed.py --utm-zone 15 --hemisphere N --images-folder "path/to/images"
+```
+
+Use your dataset's actual zone and hemisphere. Running `python gps_embed.py` without arguments retains the interactive prompts. Partial argument sets are rejected. Outputs are `events_with_matches.csv` and `images_with_gps/` inside the selected folder; GPS-tagged images are written as copies.
+
 ## Table of Contents
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -20,7 +33,7 @@ This tool is handy for drone imagery processing workflows where GPS data must be
 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd Ortho_to_image/0_gps_embeder
+cd MatchPlant/0_gps_embeder
 ```
 
 2. Install dependencies:
@@ -30,7 +43,7 @@ pip install -r requirements.txt
 
 3. Run the script:
 ```bash
-python 0_gps_embed.py
+python gps_embed.py
 ```
 
 ## **Features**
@@ -104,7 +117,7 @@ Figure 1. Example of events.txt file
 
 - Run the script:
    ```bash
-   python 0_gps_embed.py
+   python gps_embed.py
    ```
 
 - Follow the interactive prompts:

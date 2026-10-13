@@ -6,6 +6,13 @@ A Python utility for extracting spatial statistics from raster data using CSV bo
 
 This tool is essential for analyzing spatial data in precision agriculture, environmental monitoring, and remote sensing workflows. It efficiently extracts statistical information from defined regions of interest in geospatial raster data, supporting better decision-making and data analysis.
 
+
+## Using the dashboard
+
+Open **Spatial Stats Extractor** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+
+The dashboard automatically selects `stat_extractor_win.py` on Windows and `stat_extractor_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+
 ## Table of Contents
 - [**Spatial Statistics Extractor Tool**](#spatial-statistics-extractor-tool)
     - [**Note**](#note)

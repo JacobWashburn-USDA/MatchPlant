@@ -2,6 +2,20 @@
 
 This module trains a Faster R-CNN object detector on COCO-format tiled imagery. It is designed for normal workstation, cloud, or HPC GPU use while keeping simple defaults for local runs.
 
+
+## Using the dashboard
+
+Open **Object Detection Trainer** in the [local dashboard](../dashboard/README.md). Install requirements if prompted. Use **Browse…** to select training/validation image folders and COCO annotation files. Help icons explain the fields; defaults remain visible. Click **Run** to follow the live training log.
+
+- **Experiment name (optional)** corresponds to `--run_name`. For example, `maize_test_01` saves to `runs/maize_test_01/` inside this module.
+- **Save results to folder (optional)** corresponds to `--output_dir`. It takes priority over the experiment name. Browse for an existing folder, or type a new path.
+- With both fields blank, checkpoints go to `checkpoints/` and validation results to `validation_results/` inside this module. Choose a distinct experiment name or output folder for each experiment.
+- Relative paths are resolved from this module's folder, not the dashboard folder.
+
+Current defaults: 150 epochs, batch size 1, learning rate 0.05, validation every epoch, and best metric `ap50`. The random seed is unset and early stopping is disabled. Data loading workers are chosen automatically from RAM/CPU on Windows/Linux and are 0 on macOS. CUDA mixed precision and pinned memory are enabled when applicable unless disabled; clearing the GPU cache after each step is off.
+
+Training uses torchvision’s default five-level FPN anchors, matching existing Module 6.1 checkpoints. Modules 6.1, 6.2, and 7 use the same pinned PyTorch/torchvision pair (2.6.0/0.21.0). For CUDA, install the corresponding build from the [official PyTorch selector](https://pytorch.org/get-started/locally/). Runtime requirements omit optional notebook tools. Training stops on failed batches, non-finite losses, or evaluation errors, and saves the first valid best checkpoint even when the validation score is zero.
+
 ## Features
 
 - Faster R-CNN with ResNet-50 FPN v2 backbone
@@ -87,6 +101,7 @@ The seed controls Python, NumPy, PyTorch CPU/CUDA randomness, DataLoader shuffli
 ## Useful Arguments
 
 ```text
+--run_name                   Experiment name; saves under runs/<run_name> unless output_dir is set
 --output_dir                 Folder for checkpoints and validation logs
 --seed                       Optional reproducibility seed
 --epochs                     Number of epochs, default 150
@@ -113,7 +128,7 @@ runs/my_training_run/
     training_summary.jsonl
 ```
 
-If `--output_dir` is not provided, outputs are saved to the legacy default folders:
+If `--output_dir` is blank but `--run_name` is supplied, outputs are saved to `runs/<run_name>/checkpoints/` and `runs/<run_name>/validation_results/`. Only when both are blank are outputs saved to the default folders:
 
 ```text
 checkpoints/

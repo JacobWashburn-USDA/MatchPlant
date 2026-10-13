@@ -28,7 +28,6 @@
     <aside class="flow-col" aria-label="Pipeline workflow">
       <div class="workflow-card">
         <div class="workflow-card-head">
-          <span class="workflow-eyebrow">Tools and workflow</span>
           <h2>Pipeline flow</h2>
           <p>Open any module directly and provide its required inputs. The connected path shows the full workflow.</p>
         </div>
@@ -53,10 +52,9 @@
           <a href="{{ url_for('static', filename='images/img.png') }}" target="_blank" rel="noopener">View full workflow diagram &rarr;</a>
           <details><summary>Module types</summary>
             <ul class="kind-legend">
-              <li><span class="card-kind kind-gui">gui</span><span>desktop app window</span></li>
-              <li><span class="card-kind kind-cli">cli</span><span>command-line form + log</span></li>
-              <li><span class="card-kind kind-config">config</span><span>YAML config file</span></li>
-              <li><span class="card-kind kind-shell">shell</span><span>shell / PowerShell script</span></li>
+              {% for key, info in module_types.items() %}
+                <li><span class="card-kind kind-{{ key }}">{{ info.label }}</span><span>{{ info.description }}</span></li>
+              {% endfor %}
             </ul>
           </details>
         </div>
@@ -70,7 +68,7 @@
           {% for m in modules %}
             <a class="card" href="{{ url_for('module_detail', module_id=m.id) }}">
               <div class="card-title"><span class="card-num">{{ m.id.split('_')[0] }}</span>{{ m.title }}</div>
-              <div class="card-kind kind-{{ m.kind }}">{{ m.kind }}</div>
+              <div class="card-kind kind-{{ m.display_kind }}">{{ m.type_label }}</div>
               <p class="card-desc">{{ m.description }}</p>
             </a>
           {% endfor %}

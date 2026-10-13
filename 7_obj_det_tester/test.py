@@ -4,6 +4,8 @@ from PIL import Image, ImageDraw
 import json
 import argparse
 import csv
+import matplotlib
+matplotlib.use("Agg")  # Save plots without requiring a desktop display.
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
@@ -18,10 +20,30 @@ from train import (MaizeDatasetCOCO, get_transform, build_model,
                   configure_device_and_resources, collate_fn, COCOeval)
 
 def load_model(model_path, device):
-    model = build_model(num_classes=2, pretrained=False)
-    checkpoint = torch.load(model_path, map_location=device, weights_only=False)
-    state_dict = checkpoint['model_state_dict'] if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint else checkpoint
-    model.load_state_dict(state_dict)
+    # Share the checkpoint-aware model construction used by transfer learning.
+    transfer_dir = Path(__file__).resolve().parents[1] / "6-2_obj_det_trans_learner"
+    if not (transfer_dir / "transfer_train.py").is_file():
+        raise ValueError("Keep Module 6.2 beside Module 7 in the MatchPlant repository.")
+    if str(transfer_dir) not in sys.path:
+        sys.path.insert(0, str(transfer_dir))
+    from transfer_train import build_transfer_model
+    from transfer_utils import read_checkpoint, load_pretrained_model
+    checkpoint, state = read_checkpoint(model_path)
+    classes = state.get("roi_heads.box_predictor.cls_score.weight")
+    if classes is None:
+        raise ValueError("Checkpoint has no Faster R-CNN class predictor.")
+    count = int(state["rpn.head.cls_logits.weight"].shape[0])
+    options = dict(num_classes=int(classes.shape[0]), min_size=980, max_size=1240,
+                   box_score_thresh=0.05, box_nms_thresh=0.5, box_detections_per_img=200,
+                   rpn_post_nms_top_n_test=500,
+                   anchor_sizes=[[32], [64], [128], [256], [512]],
+                   anchor_ratios=[[0.5, 1.0, 2.0]] * 5)
+    # New transfer checkpoints include their exact model options.
+    options.update(checkpoint.get("model_config", {}))
+    if count not in (3, 12, 40) and "model_config" not in checkpoint:
+        raise ValueError("Custom checkpoint needs model_config with its original anchor layout.")
+    model = build_transfer_model(options, state)
+    load_pretrained_model(model, model_path, checkpoint=checkpoint)
     model.to(device)
     model.eval()
     return model
@@ -37,7 +59,8 @@ def calculate_iou(box1, box2):
     box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
     box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
     
-    return intersection / (box1_area + box2_area - intersection)
+    union = box1_area + box2_area - intersection
+    return intersection / union if union > 0 else 0.0
 
 def analyze_detection_performance(pred_boxes, pred_scores, gt_boxes, iou_thresholds=[0.5, 0.75]):
     """Detailed analysis of detection performance"""
@@ -73,7 +96,7 @@ def analyze_detection_performance(pred_boxes, pred_scores, gt_boxes, iou_thresho
                     best_iou = iou
                     best_gt_idx = i
             
-            if best_iou > iou_thresh and best_gt_idx not in matched_gt:
+            if best_iou >= iou_thresh and best_gt_idx not in matched_gt:
                 true_positives += 1
                 matched_gt.add(best_gt_idx)
                 false_negatives -= 1
@@ -112,28 +135,28 @@ def analyze_size_performance(pred_boxes, pred_scores, gt_boxes):
             if min_area <= area < max_area:
                 size_results[size]['fn'] += 1
     
-    # Match predictions to ground truth
-    for pred_box, score in zip(pred_boxes, pred_scores):
+    matched_gt = set()
+    for index in torch.argsort(pred_scores, descending=True):
+        pred_box, score = pred_boxes[index], pred_scores[index]
         if score < 0.5:
             continue
-            
-        area = (pred_box[2] - pred_box[0]) * (pred_box[3] - pred_box[1])
-        matched = False
-        
-        for gt_box in gt_boxes:
-            if calculate_iou(pred_box, gt_box) > 0.5:
-                matched = True
-                for size, (min_area, max_area) in size_ranges.items():
-                    if min_area <= area < max_area:
-                        size_results[size]['tp'] += 1
-                        size_results[size]['fn'] -= 1
-                break
-        
-        if not matched:
-            for size, (min_area, max_area) in size_ranges.items():
-                if min_area <= area < max_area:
+        candidates = [(float(calculate_iou(pred_box, box)), i)
+                      for i, box in enumerate(gt_boxes) if i not in matched_gt]
+        overlap, match = max(candidates, default=(0.0, -1))
+        if overlap >= 0.5:
+            matched_gt.add(match)
+            box = gt_boxes[match]
+            area = (box[2] - box[0]) * (box[3] - box[1])
+            for size, (minimum, maximum) in size_ranges.items():
+                if minimum <= area < maximum:
+                    size_results[size]['tp'] += 1
+                    size_results[size]['fn'] -= 1
+        else:
+            area = (pred_box[2] - pred_box[0]) * (pred_box[3] - pred_box[1])
+            for size, (minimum, maximum) in size_ranges.items():
+                if minimum <= area < maximum:
                     size_results[size]['fp'] += 1
-    
+
     # Calculate metrics for each size
     for size in size_results:
         tp = size_results[size]['tp']
@@ -258,7 +281,7 @@ def main():
     start_time = time.time()
     device, _ = configure_device_and_resources()
     results_dir = Path(args.results_dir)
-    results_dir.mkdir(exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
     
     # Load test dataset and model
     dataset_test = MaizeDatasetCOCO(
@@ -267,6 +290,9 @@ def main():
         transforms=get_transform(train=False)
     )
     
+    if not len(dataset_test):
+        raise ValueError("The test split contains no annotated images.")
+
     test_loader = torch.utils.data.DataLoader(
         dataset_test, batch_size=1, shuffle=False,
         collate_fn=collate_fn, num_workers=0
@@ -351,7 +377,7 @@ def main():
     
     # Generate plots
     plot_confidence_distribution(all_scores, results_dir / 'confidence_distribution.png')
-    create_confusion_matrix(all_results[0], results_dir / 'confusion_matrix.png')
+    create_confusion_matrix({'iou_0.5': aggregate_iou_05}, results_dir / 'confusion_matrix.png')
     
     # Save results
     with open(results_dir / 'coco_predictions.json', 'w') as f:

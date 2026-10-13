@@ -6,6 +6,15 @@ This Python utility splits large images and their corresponding COCO format anno
 
 This tool is essential for preparing large-scale imagery datasets for deep-learning model training. It handles the complexities of splitting images and their annotations while maintaining proper object relationships and coordinates. The tool is handy for aerial photography and other large-format images.
 
+
+## Using the dashboard
+
+Open **Image Splitter** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+
+The dashboard automatically selects `img_splitter_win.py` on Windows and `img_spliter_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+
+Windows file dialogs use Python’s built-in `tkinter`; macOS dialogs use `osascript`. The module does not require the unrelated pip package `tk` or a Cocoa bridge. A custom Python build without tkinter needs an interpreter that includes it for Windows dialogs.
+
 ## Table of Contents
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -20,8 +29,8 @@ This tool is essential for preparing large-scale imagery datasets for deep-learn
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
-cd Ortho_to_image/5_img_splitter
+git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
+cd MatchPlant/5_img_splitter
 ```
 
 ### 2. Install dependencies:
@@ -45,7 +54,7 @@ cd Ortho_to_image/5_img_splitter
 
 - For macOS:
   ```bash
-  python img_splitter_mac.py
+  python img_spliter_mac.py
   ```
 
 ## **Features**
@@ -153,7 +162,7 @@ cd Ortho_to_image/5_img_splitter
 
 - Launch Application:
   ```python
-  python img_splitter_win.py  # or img_splitter_mac.py for macOS
+  python img_splitter_win.py  # or img_spliter_mac.py for macOS
   ```
 - Initial Setup:
    - Select an input image folder

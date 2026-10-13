@@ -1,17 +1,29 @@
 {% extends "base.html" %}
 {% block title %}{{ module.title }} · MatchPlant Dashboard{% endblock %}
+{% block container_class %}module-page{% endblock %}
 {% block content %}
   <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
-  <h1>{{ module.title }}</h1>
-  <p class="card-kind kind-{{ module.kind }}">{{ module.kind }}</p>
-  <p>{{ module.description }}</p>
-  <p class="meta">Directory: <code>{{ module.dir }}</code> &middot; Interpreter: <code>{{ python_exe }}</code></p>
+  <header class="module-header">
+    <h1>{{ module.title }}</h1>
+    <span class="card-kind kind-{{ module.display_kind }}">{{ module.type_label }}</span>
+    <p class="module-description">{{ module.description }}</p>
+  </header>
 
+  {% if has_requirements or docker_status %}
+  <section class="module-info-section requirements-section" aria-label="Requirements">
+    {% if req_text %}
+      <details class="requirements-details">
+        <summary><h2>Requirements <span class="requirements-filename">({{ req_name }})</span></h2></summary>
+        <pre class="box">{{ req_text }}</pre>
+      </details>
+    {% else %}
+      <h2>Requirements</h2>
+    {% endif %}
   {% if has_requirements %}
     {% if missing_packages %}
-      <p class="dep-status dep-missing">Missing: {{ missing_packages|join(', ') }}. Click <strong>Install requirements</strong> below.</p>
+      <p class="dep-status dep-missing">Missing or incompatible package versions: {{ missing_packages|join(', ') }}. Click <strong>Install requirements</strong> below.</p>
     {% else %}
-      <p class="dep-status dep-ready">Requirements installed for this interpreter.</p>
+      <p class="dep-status dep-ready">Required package versions are installed for this module.</p>
     {% endif %}
   {% endif %}
 
@@ -22,31 +34,34 @@
   {% elif docker_status == "not_running" %}
     <p class="dep-status dep-missing">Docker is installed but not running. Start Docker Desktop, then reload this page.</p>
   {% endif %}
-
-  {% if req_text %}
-    <details>
-      <summary>Requirements ({{ req_name }})</summary>
-      <pre class="box">{{ req_text }}</pre>
-    </details>
+  </section>
   {% endif %}
 
+  <section class="module-info-section instructions-section" aria-labelledby="instructions-heading">
+  <h2 id="instructions-heading">Instructions and source</h2>
+  {% for label, url in source_links %}
+    {% if label == "README" %}
+      <p class="module-instructions">Before running this step, read the <a href="{{ url }}" target="_blank" rel="noopener">README instructions</a> for the method, required inputs, and processing steps.</p>
+    {% endif %}
+  {% endfor %}
   <p class="source-links">
     View on GitHub:
-    {% for label, url in source_links %}
+    {% for label, url in source_links if label != "README" %}
       <a href="{{ url }}" target="_blank" rel="noopener">{{ label }}</a>{{ ", " if not loop.last }}
     {% endfor %}
   </p>
-
-  {% if module.kind == "config" %}
-    <h2>{{ module.config_file }}</h2>
-    <form method="post" action="{{ url_for('save_config', module_id=module.id) }}">
-      <textarea name="config_text" rows="20" class="config-editor">{{ config_text }}</textarea>
-      <button type="submit" class="btn secondary">Save config</button>
-    </form>
-  {% endif %}
+  </section>
 
   <h2>Run</h2>
+  {% if module.id == "6-1_obj_det_trainer" %}
+    <p>Select your training and validation images and their COCO annotation files. Blank fields use the defaults shown below. Relative paths are resolved inside the training module folder.</p>
+  {% endif %}
+  {% if module.id == "6-2_obj_det_trans_learner" %}
+    <p>Select your pretrained model and new dataset, then adjust the fine-tuning settings. Run saves these settings before training. Relative paths are resolved inside the transfer-learning module folder.</p>
+    {% if config_error %}<p class="dep-status dep-missing">{{ config_error }}</p>{% endif %}
+  {% endif %}
   <form id="run-form" data-module="{{ module.id }}">
+    <div class="form-fields">
     {% if module.script.mac and module.script.win %}
       <label>Operating system
         <select name="variant">
@@ -57,24 +72,44 @@
     {% endif %}
 
     {% for f in module.fields %}
-      <label class="field field-{{ f.kind }}">
-        {{ f.label or f.name.replace('_', ' ') }}
+      <div class="field field-{{ f.kind }}{{ ' field-path' if f.picker else '' }}">
+        <div class="field-label-row">
+          {% if f.kind == "checkbox" %}<input type="checkbox" id="{{ f.name }}-input" name="{{ f.name }}" {{ "checked" if f.value }}{% if f.help %} aria-describedby="{{ f.name }}-help"{% endif %}>{% endif %}
+          <label for="{{ f.name }}-input">{{ f.label or f.name.replace('_', ' ') }}</label>
+          {% if f.help %}
+            <span class="field-help">
+              <button type="button" class="field-help-button" aria-label="Help for {{ f.label or f.name.replace('_', ' ') }}" aria-expanded="false" aria-controls="{{ f.name }}-help">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 9v5" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="6" r="1" fill="currentColor"/></svg>
+              </button>
+              <span id="{{ f.name }}-help" class="field-help-popup" role="note" hidden>{{ f.help }}</span>
+            </span>
+          {% endif %}
+        </div>
+        {% if f.picker %}<div class="folder-field-controls">{% endif %}
         {% if f.kind == "checkbox" %}
-          <input type="checkbox" name="{{ f.name }}">
         {% elif f.kind == "select" %}
-          <select name="{{ f.name }}">
-            <option value="">(default: {{ f.default }})</option>
-            {% for c in f.choices %}
-              <option value="{{ c }}">{{ c }}</option>
-            {% endfor %}
+          <select id="{{ f.name }}-input" name="{{ f.name }}" {{ "required" if f.required }}{% if f.help %} aria-describedby="{{ f.name }}-help"{% endif %}>
+            <option value="">{{ "Choose an option" if f.required else "(default: " ~ f.default ~ ")" }}</option>
+            {% for c in f.choices %}<option value="{{ c }}" {{ "selected" if f.value is defined and f.value == c }}>{{ c }}</option>{% endfor %}
           </select>
         {% else %}
-          <input type="text" name="{{ f.name }}" placeholder="{{ f.default or '' }}">
+          <input type="{{ 'number' if f.kind in ('int', 'float') else 'text' }}" id="{{ f.name }}-input" name="{{ f.name }}"{% if f.kind == "float" %} step="any"{% endif %} placeholder="{{ f.default or '' }}"{% if f.value is defined %} value="{{ f.value }}"{% endif %} {{ "required" if f.required }}{% if f.min is defined %} min="{{ f.min }}"{% endif %}{% if f.max is defined %} max="{{ f.max }}"{% endif %}{% if f.help %} aria-describedby="{{ f.name }}-help"{% endif %}>
         {% endif %}
-        {% if f.help %}<small>{{ f.help }}</small>{% endif %}
-      </label>
+        {% if f.picker %}
+          <button type="button" class="btn secondary folder-browse-btn" data-input="{{ f.name }}-input" data-picker="{{ f.picker }}" aria-label="Browse for {{ f.label or f.name }}">Browse...</button>
+          </div>
+          <small class="folder-picker-status" role="status" aria-live="polite"></small>
+        {% endif %}
+        {% if f.default_hint %}<small>{{ f.default_hint }}</small>{% endif %}
+      </div>
     {% endfor %}
 
+    </div>
+    <div class="form-actions">
+    {% if module.id == "6-2_obj_det_trans_learner" %}
+      <button type="button" id="save-transfer-btn" class="btn secondary">Save settings</button>
+      <span id="transfer-save-status" role="status" aria-live="polite"></span>
+    {% endif %}
     <button type="submit" class="btn">
       {{ "Launch" if module.kind == "gui" else "Run" }}
     </button>
@@ -82,6 +117,7 @@
     {% if has_requirements %}
       <button type="button" id="install-btn" class="btn secondary">Install requirements</button>
     {% endif %}
+    </div>
   </form>
 
   {% if has_requirements %}
@@ -91,14 +127,34 @@
     </p>
   {% endif %}
 
-  <pre id="log" class="log-box"></pre>
+  <div class="output-heading">
+    <h2>Output</h2>
+    <p id="run-status" class="run-status" role="status" aria-live="polite">Ready to {{ 'launch the desktop app' if module.kind == 'gui' else 'run' }}.</p>
+  </div>
+  <pre id="log" class="log-box" aria-label="Module output" tabindex="0"></pre>
+  {% if module.kind == "config" %}
+    <details class="advanced-config">
+      <summary>Advanced YAML settings</summary>
+      <p>Edit less common model and resource settings here. Save YAML changes separately; refresh to load them into the form.</p>
+      <form method="post" action="{{ url_for('save_config', module_id=module.id) }}">
+        <label for="advanced-config-text">{{ module.config_file }}</label>
+        <textarea id="advanced-config-text" name="config_text" rows="20" class="config-editor">{{ config_text }}</textarea>
+        <button type="submit" class="btn secondary">Save YAML settings</button>
+      </form>
+    </details>
+  {% endif %}
+
 
   {% if runs %}
     <h2>Previous runs</h2>
     <ul class="run-list">
       {% for r in runs %}
-        <li><span class="{{ 'run-live' if not r.done else 'run-done' }}">{{ 'running' if not r.done else 'exit ' ~ r.returncode }}</span> <code>{{ r.command|join(' ') }}</code></li>
+        <li><span class="{{ 'run-live' if not r.done else 'run-done' }}">{{ 'running' if not r.done else 'exit ' ~ r.returncode }}</span> <button type="button" class="btn secondary view-run-btn" data-run="{{ r.run_id }}">View log</button> <code>{{ r.command|join(' ') }}</code></li>
       {% endfor %}
     </ul>
   {% endif %}
 {% endblock %}
+
+
+
+

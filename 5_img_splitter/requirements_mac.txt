@@ -4,4 +4,6 @@ numpy>=1.24.0
 
 # GUI and visualization
 matplotlib>=3.7.0
-pyobjc-framework-Cocoa>=9.2  # For macOS system dialogs
+
+# File dialogs use Python tkinter on Windows and system AppleScript on macOS.
+# These are provided by Python/macOS, not installed through pip.

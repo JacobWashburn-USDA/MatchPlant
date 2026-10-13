@@ -22,12 +22,12 @@ import tkinter as tk
 from tkinter import filedialog
 
 def maximize_window(fig):
-    """Windows-specific window maximization"""
-    backend = plt.get_backend()
-    if backend in ['TkAgg', 'Qt5Agg']:
-        fig.canvas.manager.window.state('zoomed')
-    else:
-        fig.canvas.manager.window.showMaximized()
+    """Maximize supported GUI windows without depending on backend spelling."""
+    window = getattr(fig.canvas.manager, "window", None)
+    if isinstance(window, tk.Misc):
+        window.state("zoomed")
+    elif window is not None and callable(getattr(window, "showMaximized", None)):
+        window.showMaximized()
 
 class InitialWindow:
     """Initial configuration window"""

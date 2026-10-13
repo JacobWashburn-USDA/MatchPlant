@@ -2,9 +2,18 @@
 
 This module evaluates a trained Faster R-CNN checkpoint on a fixed COCO-format test set. It is intended to run once per trained model and save machine-readable summaries for reporting or downstream projection.
 
+
+## Using the dashboard
+
+Open **Object Detection Tester** in the [local dashboard](../dashboard/README.md). Install requirements if prompted. Browse for the held-out test images folder, its COCO annotations, and the model checkpoint. Select a results folder or type a new output path. Click **Run** and follow the live log.
+
+Default paths are `data/test`, `annotations/test.json`, `checkpoints/best_model.pt`, and `paper_results`, relative to this module's folder. A checkpoint from Module 6.1 usually lives elsewhere; browse to the actual file rather than assuming its relative path is shared between modules.
+
+The tester accepts compatible checkpoints from **Module 6.1 or Module 6.2**, detects v1/v2 architectures and known MatchPlant anchor layouts, and honors `model_config` saved by transfer training. Keep both sibling modules beside Module 7. It rejects incompatible weights. Plots use a display-independent backend, output folders can be created recursively, and the confusion plot aggregates all test images. Size-based counts match each ground-truth object at most once.
+
 ## Features
 
-- Loads a trained checkpoint from module `6-1_obj_det_trainer`
+- Loads a trained checkpoint from Module 6.1 or 6.2
 - Evaluates on a fixed held-out test set
 - Computes COCO metrics:
   - `mAP_50_95` = COCO mAP at IoU 0.50:0.95
@@ -98,3 +107,12 @@ coco_predictions.json
 ## License
 
 This project is licensed under the MIT License. See the repository `LICENSE` file.
+
+## Developer checks
+
+```sh
+python -m unittest discover -s tests
+python tests/smoke_training_handoff.py
+```
+
+The smoke check trains a small CPU batch in Module 6.1, fine-tunes its checkpoint in Module 6.2, and runs the Module 7 command to produce metrics, predictions, and plots using temporary synthetic data. It verifies execution rather than model accuracy.

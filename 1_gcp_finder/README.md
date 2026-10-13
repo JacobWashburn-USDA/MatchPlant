@@ -6,6 +6,13 @@ A Python utility for identifying and marking Ground Control Points (GCPs) in dro
 
 This tool is handy for drone imagery processing workflows where the orthomosaic software, [OpenDroneMap open-source software](https://github.com/OpenDroneMap/ODM/tree/master), needs the GCP file to increase the precision of the orthomosaic images.
 
+
+## Using the dashboard
+
+Open **GCP Finder** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+
+The dashboard automatically selects `gcp_finder_win.py` on Windows and `gcp_finder_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+
 ## Table of Contents
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -22,7 +29,7 @@ This tool is handy for drone imagery processing workflows where the orthomosaic 
 ### 1. Clone the repository:
 ```bash
 git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd Ortho_to_image/1_gcp_finder
+cd MatchPlant/1_gcp_finder
 ```
 
 ### 2. Install dependencies:

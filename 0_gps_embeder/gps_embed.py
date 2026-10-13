@@ -1,6 +1,7 @@
 # Developed: Worasit Sangjan
 # Date: 13 January 2025
 
+import argparse
 import csv 
 import os 
 import shutil
@@ -353,19 +354,37 @@ def get_user_utm_input() -> tuple:
             print("Error: Please enter a valid number for zone")
             continue
 
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="Embed GPS coordinates into image EXIF metadata.")
+    parser.add_argument("--utm-zone", type=int, choices=range(1, 61), metavar="1-60")
+    parser.add_argument("--hemisphere", type=str.upper, choices=["N", "S"])
+    parser.add_argument("--images-folder")
+    args = parser.parse_args(argv)
+    supplied = [args.utm_zone is not None, args.hemisphere is not None, args.images_folder is not None]
+    if any(supplied) and not all(supplied):
+        parser.error("Provide --utm-zone, --hemisphere and --images-folder together.")
+    if args.images_folder is not None and not args.images_folder.strip():
+        parser.error("--images-folder cannot be empty.")
+    return args
+
+
 def main():
     """Main execution function implementing the processing pipeline"""
+    args = parse_args()
     # 1. Initialize matcher
     matcher = TimestampMatcher()
 
     # 2. Setup: Get UTM zone from user
-    print("Please specify the UTM zone for your coordinates:")
-    zone, hemisphere = get_user_utm_input()
+    if args.utm_zone is None:
+        print("Please specify the UTM zone for your coordinates:")
+        zone, hemisphere = get_user_utm_input()
+    else:
+        zone, hemisphere = args.utm_zone, args.hemisphere
     matcher.set_utm_zone(zone, hemisphere)
 
     # 3. Setup path
-    base_folder = input("\nEnter the path to your images folder: ")
-    if not os.path.exists(base_folder):
+    base_folder = args.images_folder if args.images_folder is not None else input("\nEnter the path to your images folder: ")
+    if not os.path.isdir(base_folder):
         raise ValueError(f"Folder not found: {base_folder}")
     
     events_file = os.path.join(base_folder, 'events.txt')

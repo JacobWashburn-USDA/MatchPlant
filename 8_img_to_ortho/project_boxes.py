@@ -17,6 +17,7 @@ import rasterio
 import numpy as np
 import numpy.ma as ma
 import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
 from skimage.draw import line
 import cv2
 import json
@@ -51,7 +52,7 @@ output_dir = "orthorectified2"  # Folder name for output (created inside dataset
 dem_filename = "odm_dem/dsm.tif"  # Path to DSM relative to dataset_path
 
 # Processing settings
-num_threads = multiprocessing.cpu_count()  # Use all CPU cores (change if needed)
+num_threads = 1  # Safe default; increase explicitly for larger projects.
 interpolation_method = 'bilinear'  # Options: 'bilinear' or 'nearest'
 skip_visibility_test = True  # Set to False for more accurate (but slower) results
 
@@ -94,7 +95,9 @@ image_list_path = ARGS.image_list
 tile_metadata_path = ARGS.tile_metadata
 output_dir = ARGS.output_dir
 dem_filename = ARGS.dem_filename
-num_threads = max(1, ARGS.num_threads)
+if ARGS.num_threads < 1:
+    raise ValueError("--num-threads must be at least 1")
+num_threads = ARGS.num_threads
 interpolation_method = ARGS.interpolation
 skip_visibility_test = not ARGS.visibility_test
 
@@ -363,8 +366,7 @@ def main():
             print("DEM has a CRS: %s" % str(crs))
             coords_file = os.path.join(dataset_path, "odm_georeferencing", "coords.txt")
             if not os.path.exists(coords_file):
-                print("ERROR: Cannot find %s (we need that!)" % coords_file)
-                return
+                raise FileNotFoundError(f"Missing ODM coordinate file: {coords_file}")
             
             with open(coords_file) as f:
                 l = f.readline()
@@ -603,40 +605,22 @@ def main():
                     
                     return (imgout, (minx, miny, maxx, maxy))
                 
-                # Run processing (multiprocessing)
                 if num_threads > 1:
-                    with multiprocessing.Pool(num_threads) as p:
-                        try:
-                            results = p.map(process_pixels, range(num_threads))
-                        except:
-                            logging.info(f"Multithreading error for {box_fname}")
-                            continue
+                    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+                        worker_results = list(executor.map(process_pixels, range(num_threads)))
                 else:
-                    results = [process_pixels(0)]
-                
-                results = list(filter(lambda r: r[1][0] <= r[1][2] and r[1][1] <= r[1][3], results))
-                
-                if len(results) == 0:
+                    worker_results = [process_pixels(0)]
+                results = [result for result in worker_results
+                           if result[1][0] <= result[1][2] and result[1][1] <= result[1][3]]
+                if not results:
                     print(f"    WARNING: No valid pixels found for detection {detection_id}")
                     continue
-                
-                # Merge results
-                try:
-                    imgout, _ = results[0]
-                except:
-                    logging.info(f"imgout error for {box_fname}")
-                    continue
-                
+                imgout = np.zeros_like(worker_results[0][0])
                 for j in range(dem_bbox_miny, dem_bbox_maxy + 1):
-                    try:
-                        im_j = j - dem_bbox_miny
-                        resimg, _ = results[j % num_threads]
-                        for b in range(num_bands):
-                            imgout[b][im_j] = resimg[b][im_j]
-                    except:
-                        logging.info(f"res_img merge error for {box_fname}")
-                        continue
-                
+                    im_j = j - dem_bbox_miny
+                    resimg, _ = worker_results[j % num_threads]
+                    imgout[:, im_j] = resimg[:, im_j]
+
                 # Merge bounds
                 minx = dem_bbox_w
                 miny = dem_bbox_h
@@ -719,3 +703,4 @@ if __name__ == "__main__":
         print("4. All required files are in the correct locations")
         import traceback
         traceback.print_exc()
+        sys.exit(1)

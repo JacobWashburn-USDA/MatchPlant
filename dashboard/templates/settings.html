@@ -33,10 +33,16 @@
 
   <form method="post">
     {% for m in modules %}
-      <label class="field">
-        {{ m.title }} <code>({{ m.id }})</code>
-        <input type="text" name="python_{{ m.id }}" value="{{ get_python(m.id) }}">
-      </label>
+      {% if m.kind != "shell" %}
+      <div class="field">
+        <label for="python-{{ m.id }}">{{ m.title }} <code>({{ m.id }})</code></label>
+        <div class="folder-field-controls">
+          <input type="text" id="python-{{ m.id }}" name="python_{{ m.id }}" value="{{ get_python(m.id) }}">
+          <button type="button" class="btn secondary folder-browse-btn" data-input="python-{{ m.id }}" data-picker="file" aria-label="Browse for {{ m.title }} Python interpreter">Browse...</button>
+        </div>
+        <small class="folder-picker-status" role="status" aria-live="polite"></small>
+      </div>
+      {% endif %}
     {% endfor %}
     <button type="submit" class="btn">Save</button>
   </form>

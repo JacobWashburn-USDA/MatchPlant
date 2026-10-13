@@ -4,75 +4,79 @@
   <a class="back-link" href="{{ url_for('index') }}">&larr; All modules</a>
   <h1>How to Use</h1>
   <p class="lede">
-    Reference for using the dashboard: a quick walkthrough, hardware requirements, the module
-    types you'll encounter, and a few tips for less common situations.
+    Choose a module, provide its inputs, and check its output. This guide explains how to
+    run a step and move to the next one when you are ready.
   </p>
 
-  <h2>1. Quick walkthrough</h2>
+  <h2>Run a module</h2>
   <ol class="workflow">
     <li class="workflow-step">
       <div class="workflow-num">1</div>
       <div class="workflow-body">
-        <h3>Look at the homepage</h3>
-        <p>All 10 modules, grouped into 4 stages, plus the pipeline flow sidebar for quick navigation.</p>
-        <a class="btn" href="{{ url_for('index') }}">Go to the dashboard home</a>
+        <h3>Choose the step you need</h3>
+        <p>Open the dashboard home and select a module card. The 11 modules are grouped into four stages; the pipeline flow shows how they connect. You can start at a later step if you already have its required inputs.</p>
+        <a class="btn" href="{{ url_for('index') }}">Choose a module</a>
       </div>
     </li>
     <li class="workflow-step">
       <div class="workflow-num">2</div>
       <div class="workflow-body">
-        <h3>Open a module</h3>
-        <p>Select any card to view its description, dependency status, and Run/Launch controls.</p>
+        <h3>Read the instructions and prepare your inputs</h3>
+        <p>On the module page, open <strong>README instructions</strong> before running. Check which images, annotations, model files, or other inputs it needs, and where it saves its results.</p>
       </div>
     </li>
     <li class="workflow-step">
       <div class="workflow-num">3</div>
       <div class="workflow-body">
         <h3>Install requirements, if needed</h3>
-        <p>If the page shows a "Missing" banner, select <strong>Install requirements</strong>. This creates a dedicated environment for the module and configures the dashboard to use it automatically.</p>
+        <p>If the page reports missing or incompatible packages, select <strong>Install requirements</strong> and wait for installation to finish successfully in the Output panel. The dashboard creates a Python environment for that module and selects it automatically. For ODM Runner, also check that Docker Desktop is installed and running.</p>
       </div>
     </li>
     <li class="workflow-step">
       <div class="workflow-num">4</div>
       <div class="workflow-body">
-        <h3>Launch or Run</h3>
-        <p>GUI modules open a native window. CLI modules provide a form and a live log.</p>
+        <h3>Provide inputs and start the module</h3>
+        <p>For a form or training module, select files and folders with <strong>Browse...</strong>, review the settings, then select <strong>Run</strong>. Help icons explain each field; optional blank fields use the displayed defaults.</p>
+        <p>For a desktop app, select <strong>Launch</strong>, then choose inputs and start processing in the separate app window. The dashboard Output panel shows process messages and errors.</p>
       </div>
     </li>
     <li class="workflow-step">
       <div class="workflow-num">5</div>
       <div class="workflow-body">
-        <h3>Repeat for each module needed</h3>
-        <p>Proceed through the MatchPlant pipeline from the dashboard home, in order.</p>
-        <a class="btn" href="{{ url_for('index') }}">Go to the dashboard home</a>
+        <h3>Check the results, then choose your next step</h3>
+        <p>Wait for processing to finish and check the saved results described in the module's README. If an error appears, resolve it before using those results in another module.</p>
+        <p>Return to the dashboard home and choose the next module you need. Select the previous step's saved files or folders as its inputs. The dashboard does not automatically pass results between modules or run the whole pipeline.</p>
+        <p>You do not need to run every module. Skip a step when you already have the inputs needed for the next one. Choose <strong>6-1 Object Detection Trainer</strong> or <strong>6-2 Transfer Learning</strong> as your training route; both can provide a model for <strong>7 Object Detection Tester</strong>.</p>
+        <a class="btn" href="{{ url_for('index') }}">Choose your next module</a>
       </div>
     </li>
   </ol>
 
-  <h2>2. Hardware requirements</h2>
-  <div class="hint">
-    <p>Everything runs on your own computer's hardware, not a remote server:</p>
+  <h2>Your computer and prerequisites</h2>
+  <div class="info-note">
+    <p>Modules run on the computer hosting this dashboard. Processing time, memory, and disk space depend on your dataset and settings.</p>
     <ul>
-      <li>GPS embedding, GCP marking, annotation, and image splitting run fine on a normal laptop.</li>
-      <li>For OpenDroneMap (orthomosaic generation) and training or testing the detection model, a GPU is recommended for higher-quality results and faster processing, along with at least 16 GB of RAM. Free disk space needed depends on the size of your UAV image dataset.</li>
+      <li><strong>Desktop apps:</strong> their windows open on that computer, so run the dashboard locally when using them.</li>
+      <li><strong>ODM Runner:</strong> requires Docker Desktop in addition to the module's Python packages.</li>
+      <li><strong>Training and testing:</strong> check the module README for dataset, model, and device settings before starting a long run.</li>
+      <li><strong>While working:</strong> keep the MatchPlant Dashboard server window open. Closing it stops the dashboard.</li>
     </ul>
   </div>
 
-  <h2>3. Module types</h2>
+  <h2>Module types</h2>
   <p>Every module card is tagged with one of the following:</p>
   <ul class="guide-list">
-    <li><span class="card-kind kind-gui">gui</span> Opens a native desktop window (Tkinter) on this computer.</li>
-    <li><span class="card-kind kind-cli">cli</span> Runs from a form on the module's page, with output streamed to a live log.</li>
-    <li><span class="card-kind kind-config">config</span> Configured by editing a YAML file on the page before running.</li>
-    <li><span class="card-kind kind-shell">shell</span> Runs a shell or PowerShell script rather than Python.</li>
+    {% for key, info in module_types.items() %}
+      <li><span class="card-kind kind-{{ key }}">{{ info.label }}</span> {{ info.description }}</li>
+    {% endfor %}
   </ul>
 
-  <h2>4. Tips</h2>
+  <h2>Useful controls</h2>
   <ul class="guide-list">
-    <li><strong>Dependency status.</strong> Each module page indicates whether its required packages are installed, checked automatically against that module's own <code>requirements*.txt</code>. If anything is missing, <strong>Install requirements</strong> creates a dedicated environment for that module and configures the dashboard to use it.</li>
-    <li><strong>Live output.</strong> Launch, Run, and Install requirements all stream their output to a log panel on the page. <strong>Stop</strong> cancels an active process. Each module page also retains a short history of recent runs.</li>
+    <li><strong>Dependency status.</strong> Each module page indicates whether its required package versions are installed, checked automatically against that module's own <code>requirements*.txt</code>. If anything is missing, <strong>Install requirements</strong> creates a dedicated environment for that module and configures the dashboard to use it.</li>
+    <li><strong>Output and Stop.</strong> Launch, Run, and Install requirements stream process messages to the Output panel. <strong>Stop</strong> cancels an active process. Use <strong>View log</strong> to inspect a recent run while the dashboard server is still running. Only one process per module runs at a time.</li>
     <li><strong>Source code.</strong> Each module page links to its folder, README, script, and requirements file on GitHub, so the underlying code can be reviewed before running it.</li>
-    <li><strong>Pipeline order.</strong> The homepage sidebar lists all modules in pipeline order. Steps 6-1 and 6-2 are alternative paths to a trained model, training from scratch or fine-tuning a pretrained checkpoint, and both lead into step 7.</li>
+    <li><strong>Pipeline flow.</strong> Follow the connections on the homepage to find the next relevant step. For example, Image Splitter prepares datasets for a training route, and Object Detection Tester evaluates the resulting model.</li>
     <li><strong>Custom environments.</strong> The <a href="{{ url_for('settings_page') }}">Settings</a> page allows a module to be pointed at an existing Python environment instead of a newly created one. This is only needed if a compatible environment (for example, an existing PyTorch or GDAL setup) already exists.</li>
   </ul>
 {% endblock %}

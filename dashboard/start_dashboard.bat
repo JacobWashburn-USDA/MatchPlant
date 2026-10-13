@@ -1,23 +1,36 @@
 @echo off
-REM Double-click this file to start the dashboard and open it in your
-REM browser. No terminal typing required.
+setlocal
 cd /d "%~dp0"
-
-if not exist .venv\Scripts\python.exe (
-    echo Setup hasn't been run yet.
-    echo Double-click setup.bat first, then try this again.
-    echo.
+if /i "%~1"=="--server" goto :server
+if not exist ".venv\Scripts\python.exe" goto :missing_setup
+".venv\Scripts\python.exe" -c "import flask, yaml, packaging" >nul 2>&1
+if errorlevel 1 goto :missing_setup
+start "MatchPlant Dashboard" "%ComSpec%" /d /c ""%~f0" --server"
+powershell -NoProfile -Command "$ready=$false; for ($i=0; $i -lt 30; $i++) { try { $response=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:5050/' -TimeoutSec 1; if ($response.StatusCode -eq 200) { $ready=$true; break } } catch {}; Start-Sleep -Seconds 1 }; if ($ready) { Start-Process 'http://127.0.0.1:5050/'; exit 0 }; exit 1"
+if errorlevel 1 (
+    echo The dashboard did not become ready. Check the MatchPlant Dashboard window for errors.
     pause
     exit /b 1
 )
+exit /b 0
 
+:server
+title MatchPlant Dashboard
 echo Starting MatchPlant Dashboard...
-start "MatchPlant Dashboard" .venv\Scripts\python app.py
-
-timeout /t 3 /nobreak >nul
-start http://127.0.0.1:5050
-
+echo Keep this window open while using the dashboard.
+echo Close this window or press Ctrl+C to stop it.
 echo.
-echo The dashboard is running in a separate window titled "MatchPlant Dashboard".
-echo Close that window to stop the dashboard.
+".venv\Scripts\python.exe" -u app.py
+if errorlevel 1 (
+    echo.
+    echo Dashboard startup failed. Review the error above.
+    pause
+    exit /b 1
+)
+exit /b 0
+
+:missing_setup
+echo Dashboard setup is missing or incomplete.
+echo Double-click setup.bat first, then run start_dashboard.bat again.
 pause
+exit /b 1

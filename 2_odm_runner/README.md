@@ -1,119 +1,57 @@
-# ODM Process Runners
+# ODM Process Runner
 
-Scripts to automate OpenDroneMap (ODM) processing for both Windows (PowerShell) and Linux/Unix (Bash) environments.
+Runs OpenDroneMap and orthorectification for a local drone-image project. The dashboard uses [run_ODM_process.py](run_ODM_process.py) on Windows, macOS, and Linux. Python calls Docker directly; this workflow does not use PowerShell or Bash execution policies.
 
-## Note for Deep Learning - Object Detection
+## Requirements
 
-The ODM is particularly valuable for preparing drone imagery for object detection model training. The ODM software:
-- Generates undistorted images, removing lens distortion that could affect model accuracy
-- Helps create higher-quality training datasets for computer vision tasks
+- Python 3.9+; the runner uses only the Python standard library.
+- Docker installed and running with access to the project folder. For typical Windows/macOS desktop use, start Docker Desktop before running.
+- Drone images in an `images/` subfolder. Optional ground control points belong in `images/gcp_list.txt`.
 
-**Key Benefits:**
-- Reduced noise in training data by removing camera lens distortion
-- More consistent object appearance across images
-- Better model generalization due to standardized image geometry
-- Improved accuracy in object size and position predictions
+## Project structure
 
-## Table of Contents
+```text
+your_drone_project/
+  images/
+    IMG_0001.JPG
+    IMG_0002.JPG
+    gcp_list.txt       # optional
+```
 
-- [ODM Process Runners](#odm-process-runners)
-  - [Note for Deep Learning - Object Detection](#note-for-deep-learning---object-detection)
-  - [Table of Contents](#table-of-contents)
-  - [Prerequisites](#prerequisites)
-  - [Important: Working Directory](#important-working-directory)
-  - [Usage](#usage)
-    - [For Windows Users](#for-windows-users)
-    - [For Linux/Unix Users](#for-linuxunix-users)
-  - [Output](#output)
-  - [Script Parameters](#script-parameters)
-  - [Error Handling](#error-handling)
-  - [Common Issues](#common-issues)
+Select `your_drone_project`, not its `images` subfolder. There is no need to copy the runner into the project folder. GCP data can be prepared with [GCP Finder](../1_gcp_finder/README.md).
 
-## Prerequisites
+## Using the dashboard
 
-- OpenDroneMap installed using Docker: Installation guide [here](https://github.com/OpenDroneMap/ODM)
-- For Windows system: PowerShell
-- For Linux/Unix system: Bash shell
-  
-## Important: Working Directory
+Open **ODM Runner** in the [local dashboard](../dashboard/README.md). Confirm that Docker is installed and running. Click **Browse…**, select your project folder, then click **Run**. The folder is required and must contain `images/`. Follow progress and errors in the live log.
 
-**The scripts must be run from the directory containing your drone images!**
+## Using the terminal
 
-- Example of directory structure:
-  ```
-  your_drone_project/         # This is where your images are
-  ├── images/                 # Your drone images
-  │   ├── IMG_0001.JPG
-  │   ├── IMG_0002.JPG
-  │   └── gcp_list.txt        # Optional: GCP file if you have ground control points
-  ├── run_ODM_process.ps1 (Copy a script here if Using Window) Or run_ODM_process.sh (Copy a script here if using Linux/Unix shell)
-  ```
-- `gcp_list.txt` can be created by [1_gcp_finder](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/1_gcp_finder)
+From this module's folder:
 
-## Usage
+```bash
+python run_ODM_process.py --project-folder "path/to/your_drone_project"
+```
 
-### For Windows Users
+On systems where Python is named `python3`, use that command instead. Without `--project-folder`, the runner uses the current working directory. Paths containing spaces are supported by passing arguments directly to Docker.
 
-- Copy `run_ODM_process.ps1` to your image directory
-- Place your `gcp_list.txt` in the `images` folder
-- Navigate to your image directory:
-  ```PowerShell
-  cd path\to\your\drone_project
-  ```
-- Run the script:
-  ```PowerShell
-  .\run_ODM_process.ps1 
-  ```
+## Processing and outputs
 
-### For Linux/Unix Users
+1. Validate the project and check Docker readiness.
+2. Run `opendronemap/odm` with `--orthophoto-resolution=0.5` and `--dsm`; add `--gcp images/gcp_list.txt` when that file exists.
+3. Write a sorted `img_list.txt` from files in `opensfm/undistorted/images/`.
+4. Run `/code/contrib/orthorectify/run.sh` in the ODM container using the project and image list.
 
-- Copy `run_ODM_process.sh` to your image directory
-- Place your `gcp_list.txt` in the `images` folder
-- Navigate to your image directory:
-  ```bash
-  cd path/to/your/drone_project
-  ```
-- Make the script executable:
-  ```bash
-  chmod +x run_ODM_process.sh
-  ```
-- Run the script:
-  ```bash
-  ./run_ODM_process.sh
-  ```
+Outputs are written inside the project, including `odm_orthophoto/`, `odm_dem/`, `odm_texturing/`, `opensfm/`, `odm_meshing/`, `odm_filterpoints/`, `odm_report/`, and `odm_georeferencing/`. Docker output is streamed without interactive terminal flags. The runner returns a nonzero exit status if a Docker stage fails and does not continue to orthorectification after failed ODM processing or missing undistorted images.
 
-## Output
+## Troubleshooting
 
-The script will create several output directories:
-- `odm_orthophoto/`: Contains the orthomosaic results
-- `odm_dem/`: Contains Digital Elevation Model
-- `odm_texturing/`: Contains the textured mesh
-- `odm_georeferencing/`: Contains georeferenced results
-- And other ODM-specific output folders
+- **Docker not found/not ready:** install or start Docker and ensure its command is available on PATH.
+- **Missing images folder:** choose the project folder containing `images/`.
+- **Mount or permissions error:** ensure Docker can access the selected location and that you can write output files there.
+- **Processing error:** inspect the live Docker log. Requirements and resource needs depend on the dataset.
 
-## Script Parameters
+The Python runner's integration and error paths have been tested with mocked Docker execution. A complete real ODM run and native macOS execution still need verification.
 
-The scripts use these default parameters:
-- Orthomosaic resolution: 0.5 cm
-- DSM generation enabled
-- Uses GCP if `gcp_list.txt` is present in the images folder
+## Legacy shell scripts
 
-## Error Handling
-
-- The scripts will check for the presence of the GCP file and notify you
-- Docker commands are executed with error-checking
-- Progress messages are displayed during processing
-
-## Common Issues
-
-- Wrong Working Directory
-   - Make sure you are running the script from the directory containing your images
-   - The script uses the current directory path for all operations
-- Docker not running
-   - Ensure the Docker daemon is running before executing the scripts
-- Permission Issues
-   - Windows: Ensure PowerShell has the necessary permissions
-   - Linux: Make sure the script is executable (`chmod +x`)
-- Path Issues
-   - Avoid spaces in folder and file names
-   - Use the scripts from the directory containing your images
+[run_ODM_process.ps1](run_ODM_process.ps1) and [run_ODM_process.sh](run_ODM_process.sh) remain for existing standalone workflows. They use the current working directory as the project folder. They are not launched by the dashboard; their platform-specific permissions and interactive Docker flags are separate from the Python runner. Prefer the Python runner for dashboard use.

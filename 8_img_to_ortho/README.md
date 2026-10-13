@@ -6,6 +6,15 @@ A Python utility for projecting detected bounding boxes from undistorted UAV ima
 
 This tool is designed for the MatchPlant pipeline. It takes predictions from trained object detection models and projects them onto orthomosaics using camera parameters and terrain elevation data from OpenDroneMap. The output provides spatially accurate bounding box locations for downstream phenotypic analysis.
 
+
+## Using the dashboard
+
+Open **Image-to-Ortho Projector** in the [local dashboard](../dashboard/README.md). Install requirements if prompted. Browse for the ODM project folder, Module 7 predictions JSON, and any optional annotation JSON, image-list, or tile-metadata files. The DSM field also offers a file picker. Enter other options, then click **Run** to follow the live log.
+
+The dataset folder must contain the relevant ODM outputs, including `opensfm/`, `odm_dem/`, and `odm_georeferencing/`. The DSM defaults to `odm_dem/dsm.tif` relative to that dataset; an absolute path selected by Browse is also accepted. A relative output folder is created inside the dataset folder; an absolute output folder is used directly. Other relative file paths are resolved from this module's working directory.
+
+The default is **1 worker thread**. Larger counts use thread workers so the pixel-processing closure works on Windows and macOS. Worker results retain their row assignments when a worker has no valid pixels. Failures return a nonzero exit code. For Module 7’s flat `coco_predictions.json`, select the corresponding test annotation JSON (or an image list) to map image IDs to filenames.
+
 ## Table of Contents
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -257,3 +266,11 @@ Module 7 (predictions.json) → Module 8 (projected_boxes.csv) → Module 9 (tra
 **Related Modules:**
 - ← [Module 7: Object Detection Testing](../7_obj_det_tester/README.md)
 - → [Module 9: Spatial Statistics Extraction](../9_spatial_stats_extractor/README.md)
+
+## Developer check
+
+```sh
+python tests/smoke_projection.py
+```
+
+This creates a small synthetic raster/camera fixture and checks identical CSV outputs with 1, 2, and 8 threads, including empty worker partitions. It also checks a nonzero exit for missing inputs. Real ODM camera/georeferencing accuracy still needs validation on field data.

@@ -55,3 +55,8 @@ data:
 resources:
   memory_config: "max_split_size_mb:32"
   cuda_benchmark: true
+# Output paths are relative to this YAML file unless absolute.
+training:
+  checkpoint_dir: "checkpoints"
+  validation_dir: "validation_results"
+  save_freq: 5

@@ -6,6 +6,13 @@ This is a Python utility for creating optimal drone image datasets for object de
 
 This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
 
+
+## Using the dashboard
+
+Open **Minimum Image Finder** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+
+The dashboard automatically selects `min_img_finder_win.py` on Windows and `min_img_finder_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+
 ## Table of Contents
 - [**Minimum Image Finder Tool**](#minimum-image-finder-tool)
     - [**Note**](#note)
@@ -28,8 +35,8 @@ This tool is handy for deep learning workflows that require creating efficient d
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
-cd Ortho_to_image/3_min_img_finder
+git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
+cd MatchPlant/3_min_img_finder
 ```
 
 ### 2. Install dependencies:

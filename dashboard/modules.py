@@ -17,45 +17,150 @@ GITHUB_BRANCH = "main"
 
 
 def _train_fields():
-    return [
-        {"name": "seed", "flag": "--seed", "kind": "int", "help": "Seed for one independent training run."},
-        {"name": "run_name", "flag": "--run_name", "kind": "text", "help": "Run name. Used as runs/<run_name> when Output dir is not set."},
-        {"name": "output_dir", "flag": "--output_dir", "kind": "text", "help": "Run output directory for checkpoints and validation logs."},
-        {"name": "train_data_dir", "flag": "--train-data-dir", "kind": "text", "default": "data/train", "help": "Fixed training tile directory."},
-        {"name": "val_data_dir", "flag": "--val-data-dir", "kind": "text", "default": "data/val", "help": "Fixed validation tile directory."},
-        {"name": "train_annotation_file", "flag": "--train-annotation-file", "kind": "text", "default": "annotations/train.json", "help": "Fixed training COCO JSON."},
-        {"name": "val_annotation_file", "flag": "--val-annotation-file", "kind": "text", "default": "annotations/val.json", "help": "Fixed validation COCO JSON."},
-        {"name": "epochs", "flag": "--epochs", "kind": "int", "help": "Number of training epochs."},
-        {"name": "batch_size", "flag": "--batch-size", "kind": "int", "help": "Images per training batch."},
-        {"name": "num_workers", "flag": "--num-workers", "kind": "int", "help": "DataLoader workers. Defaults to an automatic value."},
-        {"name": "val_frequency", "flag": "--val-frequency", "kind": "int", "default": "1", "help": "Run validation every N epochs."},
-        {"name": "early_stopping_patience", "flag": "--early-stopping-patience", "kind": "int", "help": "Stop after this many validations without improvement. Disabled by default."},
-        {"name": "lr", "flag": "--lr", "kind": "float", "default": "0.05", "help": "SGD learning rate."},
-        {"name": "no_amp", "flag": "--no-amp", "kind": "checkbox", "help": "Disable CUDA mixed precision training."},
-        {"name": "no_pin_memory", "flag": "--no-pin-memory", "kind": "checkbox", "help": "Disable pinned-memory DataLoader transfer on CUDA."},
-        {"name": "clear_cache_each_step", "flag": "--clear-cache-each-step", "kind": "checkbox", "help": "Clear CUDA cache each step. Slower, but can help debug memory pressure."},
-        {"name": "best_metric", "flag": "--best-metric", "kind": "select", "choices": ["ap50", "map50_95"], "default": "ap50", "help": "Validation metric used for best checkpoint selection."},
-    ]
+    return [{'name': 'seed',
+      'flag': '--seed',
+      'kind': 'int',
+      'help': 'Controls random choices during training. Use the same seed when comparing experiments; exact '
+              'results can still depend on hardware.',
+      'label': 'Random seed (optional)',
+      'default_hint': 'No fixed seed. Leave blank, or enter an integer such as 42.'},
+     {'name': 'run_name',
+      'flag': '--run_name',
+      'kind': 'text',
+      'help': 'Name this training experiment, for example maize_test_01. Results are saved in '
+              'runs/maize_test_01/ inside the training module. If you choose a results folder below, that folder '
+              'takes priority. If both fields are blank, results go into checkpoints/ and validation_results/ '
+              'inside the training module.',
+      'label': 'Experiment name (optional)',
+      'default_hint': 'Example: maize_test_01'},
+     {'name': 'output_dir',
+      'picker': 'folder',
+      'flag': '--output_dir',
+      'kind': 'text',
+      'help': 'Choose where to save model checkpoints and validation results. This folder takes priority over '
+              'the experiment name. Browse for an existing folder, or type a new folder path. If both fields are '
+              'blank, results go into checkpoints/ and validation_results/ inside the training module.',
+      'label': 'Save results to folder (optional)',
+      'default_hint': 'Choose this instead of an experiment name to set a specific save location.'},
+     {'name': 'train_data_dir',
+      'picker': 'folder',
+      'flag': '--train-data-dir',
+      'kind': 'text',
+      'default': 'data/train',
+      'help': 'Folder containing the training image tiles.',
+      'label': 'Training images folder',
+      'default_hint': 'Default: data/train.'},
+     {'name': 'val_data_dir',
+      'picker': 'folder',
+      'flag': '--val-data-dir',
+      'kind': 'text',
+      'default': 'data/val',
+      'help': 'Folder containing the validation image tiles, used to evaluate training progress.',
+      'label': 'Validation images folder',
+      'default_hint': 'Default: data/val.'},
+     {'name': 'train_annotation_file',
+      'picker': 'file',
+      'flag': '--train-annotation-file',
+      'kind': 'text',
+      'default': 'annotations/train.json',
+      'help': 'COCO JSON annotations describing the training images and bounding boxes.',
+      'label': 'Training annotations file',
+      'default_hint': 'Default: annotations/train.json.'},
+     {'name': 'val_annotation_file',
+      'picker': 'file',
+      'flag': '--val-annotation-file',
+      'kind': 'text',
+      'default': 'annotations/val.json',
+      'help': 'COCO JSON annotations describing the validation images and bounding boxes.',
+      'label': 'Validation annotations file',
+      'default_hint': 'Default: annotations/val.json.'},
+     {'name': 'epochs',
+      'flag': '--epochs',
+      'kind': 'int',
+      'help': 'Maximum number of passes through the training dataset.',
+      'label': 'Training epochs',
+      'default': '150',
+      'default_hint': 'Default: 150.'},
+     {'name': 'batch_size',
+      'flag': '--batch-size',
+      'kind': 'int',
+      'help': 'Images processed per training batch. Larger values require more memory.',
+      'label': 'Batch size',
+      'default': '1',
+      'default_hint': 'Default: 1.'},
+     {'name': 'num_workers',
+      'flag': '--num-workers',
+      'kind': 'int',
+      'help': 'Number of processes loading images. Set 0 if multiprocessing causes problems.',
+      'label': 'Data loading workers (optional)',
+      'default_hint': 'Automatic based on RAM and CPU; 0 on macOS.'},
+     {'name': 'val_frequency',
+      'flag': '--val-frequency',
+      'kind': 'int',
+      'default': '1',
+      'help': 'Evaluate the model after this many epochs. 1 means every epoch.',
+      'label': 'Validation interval (epochs)',
+      'default_hint': 'Default: 1.'},
+     {'name': 'early_stopping_patience',
+      'flag': '--early-stopping-patience',
+      'kind': 'int',
+      'help': 'Stop after this many validation checks without improvement.',
+      'label': 'Early stopping patience (optional)',
+      'default_hint': 'Disabled. Leave blank to run up to the maximum epochs.'},
+     {'name': 'lr',
+      'flag': '--lr',
+      'kind': 'float',
+      'default': '0.05',
+      'help': 'Step size for the SGD optimizer.',
+      'label': 'Learning rate',
+      'default_hint': 'Default: 0.05.'},
+     {'name': 'no_amp',
+      'flag': '--no-amp',
+      'kind': 'checkbox',
+      'help': 'Turn off CUDA mixed precision. Usually leave unchecked.',
+      'label': 'Disable mixed precision',
+      'default_hint': 'Unchecked; mixed precision is used on CUDA.'},
+     {'name': 'no_pin_memory',
+      'flag': '--no-pin-memory',
+      'kind': 'checkbox',
+      'help': 'Turn off pinned memory for data loading. Usually leave unchecked.',
+      'label': 'Disable pinned memory',
+      'default_hint': 'Unchecked; pinned memory is used on CUDA.'},
+     {'name': 'clear_cache_each_step',
+      'flag': '--clear-cache-each-step',
+      'kind': 'checkbox',
+      'help': 'Can help diagnose memory issues but slows training.',
+      'label': 'Clear GPU cache after each step',
+      'default_hint': 'Unchecked.'},
+     {'name': 'best_metric',
+      'flag': '--best-metric',
+      'kind': 'select',
+      'choices': ['ap50', 'map50_95'],
+      'default': 'ap50',
+      'help': 'ap50 measures average precision at IoU 0.5; map50_95 averages across IoU thresholds from 0.5 to '
+              '0.95.',
+      'label': 'Best model selection metric',
+      'default_hint': 'Default: ap50.'}]
 
 
 def _test_fields():
     return [
-        {"name": "data_dir", "flag": "--data-dir", "kind": "text", "default": "data/test", "help": "Directory containing test tiles."},
-        {"name": "annotation_file", "flag": "--annotation-file", "kind": "text", "default": "annotations/test.json", "help": "COCO annotation JSON for the test split."},
-        {"name": "checkpoint", "flag": "--checkpoint", "kind": "text", "default": "checkpoints/best_model.pt", "help": "Model checkpoint to evaluate."},
-        {"name": "results_dir", "flag": "--results-dir", "kind": "text", "default": "paper_results", "help": "Directory for output metrics and plots."},
+        {"name": "data_dir", "picker": "folder", "flag": "--data-dir", "kind": "text", "default": "data/test", "help": "Directory containing test tiles."},
+        {"name": "annotation_file", "picker": "file", "flag": "--annotation-file", "kind": "text", "default": "annotations/test.json", "help": "COCO annotation JSON for the test split."},
+        {"name": "checkpoint", "picker": "file", "flag": "--checkpoint", "kind": "text", "default": "checkpoints/best_model.pt", "help": "Model checkpoint to evaluate."},
+        {"name": "results_dir", "picker": "folder", "flag": "--results-dir", "kind": "text", "default": "paper_results", "help": "Directory for output metrics and plots."},
     ]
 
 
 def _project_boxes_fields():
     return [
-        {"name": "dataset_path", "flag": "--dataset-path", "kind": "text", "help": "ODM project folder containing opensfm/, odm_dem/, and odm_georeferencing/."},
-        {"name": "predictions_json", "flag": "--predictions-json", "kind": "text", "help": "Module 7 prediction JSON (full COCO dict or flat COCO prediction list)."},
-        {"name": "annotation_json", "flag": "--annotation-json", "kind": "text", "help": "Optional Module 7 COCO test annotation JSON for image_id to filename mapping."},
-        {"name": "image_list", "flag": "--image-list", "kind": "text", "help": "Optional text file with one image filename per line, matching image_id order."},
-        {"name": "tile_metadata", "flag": "--tile-metadata", "kind": "text", "help": "Optional tile metadata JSON from Module 5."},
-        {"name": "output_dir", "flag": "--output-dir", "kind": "text", "help": "Output folder name, created inside dataset path unless absolute."},
-        {"name": "dem_filename", "flag": "--dem-filename", "kind": "text", "help": "DSM path relative to dataset path."},
+        {"name": "dataset_path", "picker": "folder", "flag": "--dataset-path", "kind": "text", "help": "ODM project folder containing opensfm/, odm_dem/, and odm_georeferencing/."},
+        {"name": "predictions_json", "picker": "file", "flag": "--predictions-json", "kind": "text", "help": "Module 7 prediction JSON (full COCO dict or flat COCO prediction list)."},
+        {"name": "annotation_json", "picker": "file", "flag": "--annotation-json", "kind": "text", "help": "Optional Module 7 COCO test annotation JSON for image_id to filename mapping."},
+        {"name": "image_list", "picker": "file", "flag": "--image-list", "kind": "text", "help": "Optional text file with one image filename per line, matching image_id order."},
+        {"name": "tile_metadata", "picker": "file", "flag": "--tile-metadata", "kind": "text", "help": "Optional tile metadata JSON from Module 5."},
+        {"name": "output_dir", "picker": "folder", "flag": "--output-dir", "kind": "text", "help": "Output folder name, created inside dataset path unless absolute."},
+        {"name": "dem_filename", "picker": "file", "flag": "--dem-filename", "kind": "text", "help": "DSM path relative to dataset path."},
         {"name": "num_threads", "flag": "--num-threads", "kind": "int", "help": "CPU worker count. Use 1 if multiprocessing causes platform issues."},
         {"name": "interpolation", "flag": "--interpolation", "kind": "select", "choices": ["bilinear", "nearest"], "default": "bilinear", "help": "Pixel interpolation method."},
         {"name": "visibility_test", "flag": "--visibility-test", "kind": "checkbox", "help": "Enable visibility testing. More accurate but slower."},
@@ -69,9 +174,13 @@ MODULES = [
         "title": "GPS Embedder",
         "dir": "0_gps_embeder",
         "description": "Embed GPS coordinates into UAV image EXIF metadata before orthomosaic generation.",
-        "kind": "gui",
+        "kind": "cli",
         "script": {"any": "gps_embed.py"},
-        "fields": [],
+        "fields": [
+            {"name": "utm_zone", "label": "UTM zone", "flag": "--utm-zone", "kind": "int", "required": True, "min": 1, "max": 60, "help": "Enter the zone for your event coordinates, from 1 to 60."},
+            {"name": "hemisphere", "label": "Hemisphere", "flag": "--hemisphere", "kind": "select", "choices": ["N", "S"], "required": True, "help": "N for Northern Hemisphere; S for Southern Hemisphere."},
+            {"name": "images_folder", "picker": "folder", "label": "Images folder", "flag": "--images-folder", "kind": "text", "required": True, "help": "Full path to the folder containing JPG images and events.txt. Outputs are saved in this folder."},
+        ],
     },
     {
         "id": "1_gcp_finder",
@@ -90,9 +199,9 @@ MODULES = [
         "dir": "2_odm_runner",
         "description": "Runs OpenDroneMap (via Docker) on a project folder to generate the orthomosaic and DSM. Requires Docker Desktop.",
         "kind": "shell",
-        "script": {"mac": "run_ODM_process.sh", "win": "run_ODM_process.ps1"},
+        "script": {"any": "run_ODM_process.py"},
         "fields": [
-            {"name": "project_folder", "kind": "cwd", "label": "ODM project folder", "help": "Folder containing an images/ subfolder (and optional gcp_list.txt). The script is run with this as its working directory."},
+            {"name": "project_folder", "picker": "folder", "required": True, "kind": "cwd", "label": "ODM project folder", "help": "Folder containing an images/ subfolder (and optional images/gcp_list.txt). The script is run with this as its working directory."},
         ],
     },
     {
@@ -177,6 +286,51 @@ MODULES = [
         "fields": [],
     },
 ]
+
+# User-facing labels describe the workflow; kind still controls execution.
+MODULE_TYPES = {
+    "desktop": {"label": "Desktop app", "description": "Opens a separate desktop window on this computer."},
+    "form": {"label": "Form", "description": "Enter inputs on the page, then run and follow the live log."},
+    "training": {"label": "Training", "description": "Train or fine-tune a model using a settings form and live log. Transfer Learning also offers advanced YAML settings."},
+    "docker": {"label": "Docker", "description": "Processes a project through Docker, launched by Python. Requires Docker Desktop running."},
+}
+for module in MODULES:
+    if module["id"] in ("6-1_obj_det_trainer", "6-2_obj_det_trans_learner"):
+        module["display_kind"] = "training"
+    else:
+        module["display_kind"] = {"gui": "desktop", "cli": "form", "shell": "docker"}[module["kind"]]
+    module["type_label"] = MODULE_TYPES[module["display_kind"]]["label"]
+
+# Shared field guidance and validation rules for every command-line form.
+for module in MODULES:
+    for field in module['fields']:
+        field.setdefault('label', field['name'].replace('_', ' ').capitalize())
+        if field.get('default') is not None:
+            field.setdefault('default_hint', f"Default: {field['default']}.")
+        if field['kind'] == 'int' and field['name'] != 'seed':
+            field.setdefault('min', 0 if field['name'] == 'num_workers' else 1)
+        if field['kind'] == 'float':
+            field['positive'] = True
+        if field['name'] in ('output_dir', 'results_dir'):
+            field['path_role'] = 'output'
+
+projection = next(module for module in MODULES if module['id'] == '8_img_to_ortho')
+for field in projection['fields']:
+    if field['name'] in ('dataset_path', 'predictions_json'):
+        field['required'] = True
+    if field['name'] in ('output_dir', 'dem_filename'):
+        field['path_base'] = 'dataset'
+    defaults = {'output_dir': 'orthorectified2', 'dem_filename': 'odm_dem/dsm.tif', 'num_threads': '1'}
+    if field['name'] in defaults:
+        field['default'] = defaults[field['name']]
+        field['default_hint'] = f"Default: {field['default']}."
+    if field['name'] == 'num_threads':
+        field['label'] = 'Worker threads'
+        field['help'] = 'Parallel pixel-processing threads. Start with 1; increase only if it improves performance.'
+    if field['name'] in ('annotation_json', 'image_list', 'tile_metadata'):
+        field['label'] += ' (optional)'
+    if field['name'] == 'annotation_json':
+        field['help'] = 'Use the test COCO annotations from Module 7 to map prediction image IDs to filenames. Required for a flat prediction list unless an image list is provided.'
 
 MODULES_BY_ID = {m["id"]: m for m in MODULES}
 

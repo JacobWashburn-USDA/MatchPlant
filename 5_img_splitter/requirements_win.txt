@@ -4,4 +4,6 @@ numpy>=1.24.0
 
 # GUI and visualization
 matplotlib>=3.7.0
-tk>=0.1.0  # For Windows file dialogs
+
+# File dialogs use Python tkinter on Windows and system AppleScript on macOS.
+# These are provided by Python/macOS, not installed through pip.

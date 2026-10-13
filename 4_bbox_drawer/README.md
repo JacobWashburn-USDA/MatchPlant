@@ -6,6 +6,15 @@ This Python utility creates annotated image datasets for object detection models
 
 This tool is essential for deep learning workflows that require creating annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
 
+
+## Using the dashboard
+
+Open **BBox Drawer** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+
+The dashboard automatically selects `bbox_drawer_win.py` on Windows and `bbox_drawer_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+
+Windows file dialogs use `tkinter`, included in a standard Python installation. macOS dialogs use the system `osascript` command. Neither requires a pip package named `tk` or `subprocess.run`. If tkinter is absent from a custom Python build, select an interpreter that includes it.
+
 ## Table of Contents
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -20,8 +29,8 @@ This tool is essential for deep learning workflows that require creating annotat
 
 ### 1. Clone the repository:
 ```bash
-git clone https://github.com/JacobWashburn-USDA/Ortho_to_image.git
-cd Ortho_to_image/4_bbox_drawer
+git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
+cd MatchPlant/4_bbox_drawer
 ```
 
 ### 2. Install dependencies:
