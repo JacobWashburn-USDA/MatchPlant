@@ -21,6 +21,8 @@ details, or to use MatchPlant from the command line instead.
 
 The dashboard is included in this download; start with [dashboard setup and usage](dashboard/README.md). Its badges describe **Desktop app**, **Form**, **Training**, and **Docker** workflows. It provides file/folder Browse buttons, field help, live logs, and separate module environments. Modules 6.1 and 6.2 are alternative training routes.
 
+The Windows and macOS setup launchers check for Python and guide you to a download if it is missing. If macOS blocks `setup.command` before it starts, follow the [macOS installation help](https://matchplant-dashboard.github.io/#get-started).
+
 ODM now uses a Python runner that calls Docker directly. Transfer Learning has a settings form backed by YAML and directly reuses Module 6.1 dataset/evaluation helpers; see its [setup and checkpoint requirements](6-2_obj_det_trans_learner/README.md#quick-start). Shared changes are available to both desktop platforms; Windows GUI fixes do not change the separate macOS scripts, and native macOS workflows still need testing.
 
 ## Authors

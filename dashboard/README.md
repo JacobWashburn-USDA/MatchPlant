@@ -44,7 +44,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-## Windows setup and download guidance
+## Python setup and first-run help
 
 The Windows launchers are included in this folder. Run `setup.bat` once, then use `start_dashboard.bat` to start the dashboard.
 
@@ -52,11 +52,13 @@ The Windows launchers are included in this folder. Run `setup.bat` once, then us
 
 On macOS, `setup.command` also checks a working dashboard environment, Python commands, and common Python, Homebrew, and Conda locations. If none has Python 3.9+ with `venv`, press **P** to open the official macOS Python downloads, **A** for Anaconda downloads, or **C** to close. Finish installing, then double-click `setup.command` again. The setup script does not install Python without your action. On Linux, `setup.sh` prints the download links for manual installation.
 
+If macOS shows “setup.command” Not Opened before setup starts, follow the [macOS installation help](https://matchplant-dashboard.github.io/#get-started). The Python download choices appear only after the script is allowed to open.
+
 The dashboard installs Flask, PyYAML, and packaging from `requirements.txt`; module dependencies are installed separately. If updating an existing dashboard, rerun setup to install added dependencies.
 
 ## Forms and guidance
 
-Use **Browseâ€¦** to select local folders and files, or paste/type paths. Output folders can be typed before they exist. Help icons show field explanations on hover, click, or keyboard focus; Escape closes them. Defaults remain visible. Read each module's README before running. These pickers select locations on the computer running the dashboard; they do not upload data.
+Use **Browse…** to select local folders and files, or paste/type paths. Output folders can be typed before they exist. Help icons show field explanations on hover, click, or keyboard focus; Escape closes them. Defaults remain visible. Read each module's README before running. These pickers select locations on the computer running the dashboard; they do not upload data.
 
 ## Connecting to the MatchPlant pipeline
 
