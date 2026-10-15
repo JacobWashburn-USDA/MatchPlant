@@ -8,6 +8,7 @@ Version: 1.1
 """
 
 import os
+import webbrowser
 import glob
 import shutil
 import numpy as np
@@ -28,6 +29,8 @@ def maximize_window(fig):
         window.state("zoomed")
     elif window is not None and callable(getattr(window, "showMaximized", None)):
         window.showMaximized()
+
+PARAMETER_GUIDE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md"
 
 class InitialWindow:
     """Initial configuration window"""
@@ -58,6 +61,8 @@ class InitialWindow:
         self._setup_path_section()
         self._setup_parameters_section()
         self._setup_start_button()
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), "Exit")
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
         
         # Error message area
         self.error_ax = self.fig.add_axes([0.15, 0.02, 0.7, 0.06])
@@ -114,10 +119,21 @@ class InitialWindow:
     def _setup_parameters_section(self):
         """Setup the optimization parameters section"""
         # Section title
-        self.ax.text(0.5, 0.625, "Optimization Parameters",
-                     ha='center', va='center',
+        self.ax.text(0.575, 0.625, "Optimization Parameters",
+                     ha='right', va='center',
                      fontsize=14, fontweight='bold',
                      transform=self.ax.transAxes)
+
+        guide_ax = self.fig.add_axes([0.575, 0.585, 0.13, 0.04])
+        self.parameter_guide_button = Button(
+            guide_ax, 'Parameter guide', color='white', hovercolor='#eaf3ff'
+        )
+        self.parameter_guide_button.label.set_color('#005a9c')
+        for spine in guide_ax.spines.values():
+            spine.set_visible(False)
+        self.parameter_guide_button.on_clicked(
+            lambda _event: webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
+        )
 
         self.param_inputs = {}
         parameters = [
@@ -743,6 +759,8 @@ class ResultWindow:
         self._setup_axes_labels()
         self._setup_message_area()
         self._setup_save_button()
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), "Exit")
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
 
     def _calculate_uncovered_area(self):
         """Calculate uncovered area once for reuse"""
@@ -860,12 +878,16 @@ class ResultWindow:
                     
         # Use the optimizer's save function for all files
         save_dir = os.path.dirname(self.optimizer.image_folder)
-        csv_path, images_dir, plot_path = self.optimizer.save_results_and_copy_images(
-            self.results_df, 
-            self.undistorted_folder,
-            save_dir,
-            figure=self.fig
-        )
+        self.exit_button.ax.set_visible(False)
+        try:
+            csv_path, images_dir, plot_path = self.optimizer.save_results_and_copy_images(
+                self.results_df, 
+                self.undistorted_folder,
+                save_dir,
+                figure=self.fig
+            )
+        finally:
+            self.exit_button.ax.set_visible(True)
                     
         if csv_path and images_dir:
         # Update message to show success

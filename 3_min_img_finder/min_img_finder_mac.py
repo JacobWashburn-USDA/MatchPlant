@@ -8,6 +8,7 @@ Version: 1.1
 """
 
 import os
+import webbrowser
 import glob
 import subprocess
 import shutil
@@ -18,13 +19,35 @@ import matplotlib
 matplotlib.use('MacOSX')
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, TextBox
+from matplotlib.text import Text
 from shapely.geometry import box, Polygon, MultiPolygon
 from dataclasses import dataclass
 from datetime import datetime
+from weakref import WeakKeyDictionary
 
 def maximize_window(fig):
-    """Mac-specific window maximization"""
-    fig.set_size_inches(14, 8, forward=True)
+    """Fit the native window and its labels to the current display."""
+    original_sizes = WeakKeyDictionary()
+
+    def fit_text(_event):
+        width, height = fig.canvas.get_width_height()
+        scale = max(0.6, min(1.5, width / 1050, height / 780))
+        changed = False
+        for label in fig.findobj(match=Text):
+            base_size = original_sizes.setdefault(label, label.get_fontsize())
+            target_size = base_size * scale
+            if abs(label.get_fontsize() - target_size) > 0.05:
+                label.set_fontsize(target_size)
+                changed = True
+        return changed
+
+    def fit_after_draw(event):
+        if fit_text(event):
+            fig.canvas.draw_idle()
+
+    fig.canvas.mpl_connect("resize_event", fit_text)
+    fig.canvas.mpl_connect("draw_event", fit_after_draw)
+    fig.canvas.manager.full_screen_toggle()
 
 class FileDialogHandler:
     """Mac-specific file dialog handler"""
@@ -49,6 +72,8 @@ class FileDialogHandler:
         )
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
+
+PARAMETER_GUIDE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md"
 
 class InitialWindow:
     """Initial configuration window"""
@@ -80,6 +105,8 @@ class InitialWindow:
         self._setup_path_section()
         self._setup_parameters_section()
         self._setup_start_button()
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), "Exit")
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
         
         # Error message area
         self.error_ax = self.fig.add_axes([0.15, 0.02, 0.7, 0.06])
@@ -135,10 +162,21 @@ class InitialWindow:
     def _setup_parameters_section(self):
         """Setup the optimization parameters section"""
         # Section title
-        self.ax.text(0.5, 0.625, "Optimization Parameters",
-                    ha='center', va='center',
+        self.ax.text(0.575, 0.625, "Optimization Parameters",
+                    ha='right', va='center',
                     fontsize=14, fontweight='bold',
                     transform=self.ax.transAxes)
+
+        guide_ax = self.fig.add_axes([0.575, 0.585, 0.13, 0.04])
+        self.parameter_guide_button = Button(
+            guide_ax, 'Parameter guide', color='white', hovercolor='#eaf3ff'
+        )
+        self.parameter_guide_button.label.set_color('#005a9c')
+        for spine in guide_ax.spines.values():
+            spine.set_visible(False)
+        self.parameter_guide_button.on_clicked(
+            lambda _event: webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
+        )
 
         self.param_inputs = {}
         parameters = [
@@ -740,6 +778,7 @@ class ResultWindow:
         self.undistorted_folder = undistorted_folder
 
         self.fig = plt.figure(figsize=(14, 8))
+        maximize_window(self.fig)
         
         self.save_button = None
         self.save_button_ax = None
@@ -764,6 +803,8 @@ class ResultWindow:
         self._setup_axes_labels()
         self._setup_message_area()
         self._setup_save_button()
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), "Exit")
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
 
     def _calculate_uncovered_area(self):
         """Calculate uncovered area once for reuse"""
@@ -877,12 +918,16 @@ class ResultWindow:
                     
         # Use the optimizer's save function for all files
         save_dir = os.path.dirname(self.optimizer.image_folder)
-        csv_path, images_dir, plot_path = self.optimizer.save_results_and_copy_images(
-            self.results_df, 
-            self.undistorted_folder,
-            save_dir,
-            figure=self.fig
-        )
+        self.exit_button.ax.set_visible(False)
+        try:
+            csv_path, images_dir, plot_path = self.optimizer.save_results_and_copy_images(
+                self.results_df, 
+                self.undistorted_folder,
+                save_dir,
+                figure=self.fig
+            )
+        finally:
+            self.exit_button.ax.set_visible(True)
                     
         if csv_path and images_dir:
         # Update message to show success

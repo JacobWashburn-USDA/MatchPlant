@@ -214,6 +214,9 @@ class InitialWindow:
         self.button.on_clicked(self.validate_and_start)
         self.button.label.set_fontsize(12)           
 
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), 'Exit')
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
+
     def validate_and_start(self, event):
         paths = {
             'img_dir': self.img_input.text.strip(),
@@ -594,7 +597,7 @@ class ResultsWindow:
 
         # Create close button
         button_ax = self.fig.add_axes([0.35, 0.025, 0.3, 0.05])
-        self.close_button = Button(button_ax, 'Close',
+        self.close_button = Button(button_ax, 'Exit',
                                  color='#90EE90',
                                  hovercolor='#7CCD7C')
         self.close_button.on_clicked(self._close_window)

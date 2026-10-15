@@ -17,15 +17,37 @@ import matplotlib
 matplotlib.use('MacOSX')  # For MacOSX backend 
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, TextBox
+from matplotlib.text import Text
 import subprocess
 import threading
 import time
 from shapely.geometry import box
 from shapely.geometry import Polygon
+from weakref import WeakKeyDictionary
 
 def maximize_window(fig):
-    """Set the figure to a reasonable size"""
-    fig.set_size_inches(14, 8, forward=True)
+    """Fit the native window and its labels to the current display."""
+    original_sizes = WeakKeyDictionary()
+
+    def fit_text(_event):
+        width, height = fig.canvas.get_width_height()
+        scale = max(0.6, min(1.5, width / 1050, height / 780))
+        changed = False
+        for label in fig.findobj(match=Text):
+            base_size = original_sizes.setdefault(label, label.get_fontsize())
+            target_size = base_size * scale
+            if abs(label.get_fontsize() - target_size) > 0.05:
+                label.set_fontsize(target_size)
+                changed = True
+        return changed
+
+    def fit_after_draw(event):
+        if fit_text(event):
+            fig.canvas.draw_idle()
+
+    fig.canvas.mpl_connect("resize_event", fit_text)
+    fig.canvas.mpl_connect("draw_event", fit_after_draw)
+    fig.canvas.manager.full_screen_toggle()
 
 class FileDialogHandler:
     """Handler for file dialogs using macOS native dialogs"""
@@ -365,6 +387,7 @@ class ZonalStatsWorker(threading.Thread):
     """Worker thread for running zonal statistics calculations"""
     def __init__(self, bounds_file, raster_file, output_file, stats_to_calculate, callback):
         super().__init__()
+        self.cancel_event = threading.Event()
         self.bounds_file = bounds_file
         self.raster_file = raster_file
         self.output_file = output_file
@@ -375,17 +398,24 @@ class ZonalStatsWorker(threading.Thread):
         self.error = None
         self.percentile_value = 90  # Default value
             
+    def cancel(self):
+        self.cancel_event.set()
+
     def run(self):
         # Emit initial progress
         self.progress = 5
         
         # Load bounds file
         bounds_df = pd.read_csv(self.bounds_file)
+        if self.cancel_event.is_set():
+            return
         self.progress = 15
         
         # Load raster
         with rasterio.open(self.raster_file) as src:
             raster_data = src.read(1)
+            if self.cancel_event.is_set():
+                return
             
             # Transform bounds to pixel coordinates
             box_lim_list, box_lim_pixel_list = self.find_box_limits(bounds_df, src)
@@ -394,6 +424,8 @@ class ZonalStatsWorker(threading.Thread):
             # Calculate statistics for each box 
             results = []
             for i, (box_lim, box_pixels) in enumerate(zip(box_lim_list, box_lim_pixel_list)):
+                if self.cancel_event.is_set():
+                    return
                 # Update progress proportionally
                 self.progress = 40 + int((i / len(box_lim_list)) * 50)
                 
@@ -457,6 +489,8 @@ class ZonalStatsWorker(threading.Thread):
         self.progress = 98
 
         # Save results automatically to CSV
+        if self.cancel_event.is_set():
+            return
         results_df.to_csv(self.output_file, index=False)
         
         # Ensure progress reaches 100% before completion
@@ -467,7 +501,7 @@ class ZonalStatsWorker(threading.Thread):
         self.result = results_df
         
         # Call the callback to signal completion
-        if self.callback:
+        if self.callback and not self.cancel_event.is_set():
             self.callback(self)
             
     def find_box_limits(self, box_df, ortho_dataset):
@@ -509,6 +543,7 @@ class SpatialStatsExtractorGUI:
         self.output_path = None
         self.results_df = None
         self.worker = None
+        self._closed = False
         self.file_dialog = FileDialogHandler()
         
         # Create figure and UI
@@ -521,6 +556,7 @@ class SpatialStatsExtractorGUI:
         
         # Setup UI components
         self._setup_ui()
+        self.fig.canvas.mpl_connect('close_event', self._on_close)
         
     def _setup_ui(self):
         """Setup the main UI components"""
@@ -531,6 +567,8 @@ class SpatialStatsExtractorGUI:
         self._setup_left_panel()
         self._setup_preview_panel()
         self._setup_status_section()
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), 'Exit')
+        self.exit_button.on_clicked(self.exit_gui)
         
     def _setup_left_panel(self):
         """Setup the left panel with inputs and stats"""
@@ -670,6 +708,21 @@ class SpatialStatsExtractorGUI:
         self.calc_button.color = '#cccccc'
         self.preview_button.set_active(False)
         self.preview_button.color = '#cccccc'
+
+    def exit_gui(self, _event):
+        """Close the window and cancel work that has not been saved."""
+        self._on_close(None)
+        plt.close(self.fig)
+
+    def _on_close(self, _event):
+        if self._closed:
+            return
+        self._closed = True
+        timer = getattr(self, 'timer', None)
+        if timer is not None:
+            timer.stop()
+        if self.worker is not None:
+            self.worker.cancel()
 
     def _setup_preview_panel(self):
         """Setup the preview panel on the right"""
@@ -877,6 +930,8 @@ class SpatialStatsExtractorGUI:
     
     def update_progress_from_worker(self):
         """Update progress from worker thread"""
+        if self._closed:
+            return
         if self.worker:
             # Update progress bar
             progress_value = self.worker.progress
@@ -891,6 +946,8 @@ class SpatialStatsExtractorGUI:
     
     def on_calculation_complete(self, worker):
         """Handle calculation completion"""
+        if self._closed:
+            return
         # Stop the timer
         self.timer.stop()
         

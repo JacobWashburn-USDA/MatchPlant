@@ -13,16 +13,38 @@ from pathlib import Path
 import numpy as np
 from typing import Tuple, List, Dict, Optional
 from dataclasses import dataclass
+from weakref import WeakKeyDictionary
 import os
 import subprocess
 import matplotlib
 matplotlib.use('MacOSX')
 from matplotlib.widgets import Button, TextBox
 from matplotlib import pyplot as plt
+from matplotlib.text import Text
 
 def maximize_window(fig):
-    """Mac-specific window maximization"""
-    fig.set_size_inches(14, 8, forward=True)
+    """Fit the native window and its labels to the current display."""
+    original_sizes = WeakKeyDictionary()
+
+    def fit_text(_event):
+        width, height = fig.canvas.get_width_height()
+        scale = max(0.6, min(1.5, width / 1050, height / 780))
+        changed = False
+        for label in fig.findobj(match=Text):
+            base_size = original_sizes.setdefault(label, label.get_fontsize())
+            target_size = base_size * scale
+            if abs(label.get_fontsize() - target_size) > 0.05:
+                label.set_fontsize(target_size)
+                changed = True
+        return changed
+
+    def fit_after_draw(event):
+        if fit_text(event):
+            fig.canvas.draw_idle()
+
+    fig.canvas.mpl_connect("resize_event", fit_text)
+    fig.canvas.mpl_connect("draw_event", fit_after_draw)
+    fig.canvas.manager.full_screen_toggle()
 
 class FileDialogHandler:
     """Mac-specific file dialog handler"""
@@ -221,6 +243,9 @@ class InitialWindow:
                            hovercolor='#7CCD7C')
         self.button.on_clicked(self.validate_and_start)           
         self.button.label.set_fontsize(12)  
+
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), 'Exit')
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
 
     def validate_and_start(self, event):
         paths = {
@@ -600,7 +625,7 @@ class ResultsWindow:
 
         # Create close button
         button_ax = self.fig.add_axes([0.35, 0.025, 0.3, 0.05])
-        self.close_button = Button(button_ax, 'Close',
+        self.close_button = Button(button_ax, 'Exit',
                                  color='#90EE90',
                                  hovercolor='#7CCD7C')
         self.close_button.on_clicked(self._close_window)
@@ -686,4 +711,3 @@ if __name__ == "__main__":
     results_window = ResultsWindow()
     results_window.display_results(results)
     results_window.show()
-        

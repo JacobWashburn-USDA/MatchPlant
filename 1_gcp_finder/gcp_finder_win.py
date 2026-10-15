@@ -7,6 +7,7 @@ Version: 1.1
 """
 
 import os
+import webbrowser
 import cv2
 import glob
 import math
@@ -40,6 +41,8 @@ DEFAULT_CONFIG = {
     'distance_threshold': 10  # meters
 }
 
+CAMERA_SENSOR_REFERENCE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/camera_sensor_dimension.md"
+
 class InitialWindow:
     """Initial configuration window"""   
     def __init__(self):
@@ -70,6 +73,8 @@ class InitialWindow:
         self._setup_camera_section()
         self._setup_threshold_section()
         self._setup_start_button()
+        self.exit_button = Button(self.fig.add_axes([0.87, 0.025, 0.10, 0.05]), "Exit")
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
 
         # Error message area
         self.error_ax = self.fig.add_axes([0.15, 0.02, 0.7, 0.06])
@@ -137,6 +142,18 @@ class InitialWindow:
                      transform=self.ax.transAxes)
         height_box = self.fig.add_axes([0.59, 0.5, 0.15, 0.03])
         self.height_input = TextBox(height_box, '', initial='')
+
+        reference_ax = self.fig.add_axes([0.385, 0.43, 0.23, 0.04])
+        self.sensor_reference_button = Button(
+            reference_ax, 'Check camera sensor sizes',
+            color='white', hovercolor='#eaf3ff'
+        )
+        self.sensor_reference_button.label.set_color('#005a9c')
+        for spine in reference_ax.spines.values():
+            spine.set_visible(False)
+        self.sensor_reference_button.on_clicked(
+            lambda _event: webbrowser.open_new_tab(CAMERA_SENSOR_REFERENCE_URL)
+        )
 
     def _setup_threshold_section(self):
         """Setup the threshold configuration section with fixed positioning"""
@@ -960,10 +977,12 @@ class ImageExtractor:
             spine.set_visible(False)
         
         self.event_manager = EventManager(self) # Initialize event manager
+        self.exit_button = Button(self.fig.add_axes([0.875, 0.025, 0.10, 0.05]), "Exit")
+        self.exit_button.on_clicked(lambda _event: plt.close(self.fig))
 
     def setup_gcp_radio(self):
         """Create radio buttons for GCP selection showing only available IDs"""        
-        rax = self.fig.add_axes([0.005, 0.52, 0.14, 0.36])
+        rax = self.fig.add_axes([0.01, 0.52, 0.13, 0.36])
         gcp_tuple = tuple(sorted(self.gcp_df['id'].unique()))
 
         rax.set_title('GCP ID', pad=10, fontsize=15, fontweight='bold')
@@ -981,12 +1000,12 @@ class ImageExtractor:
 
         # Remove existing axes
         for ax in self.fig.axes:
-            if ax.get_position().bounds[0] == 0.005 and ax.get_position().bounds[1] == 0.10:
+            if ax.get_position().bounds[0] == 0.01 and ax.get_position().bounds[1] == 0.10:
                 self.fig.delaxes(ax)
 
         # Create new axes
-        rax = self.fig.add_axes([0.005, 0.10, 0.14, 0.36])
-        rax.set_title('Images with GCP', pad=10, fontsize=15, fontweight='bold')
+        rax = self.fig.add_axes([0.01, 0.10, 0.13, 0.36])
+        rax.set_title('GCP images', pad=10, fontsize=15, fontweight='bold')
         
         img_list = self.get_nearby_images(int(gcp_id)) # Get nearby images
 
@@ -1022,6 +1041,8 @@ class ImageExtractor:
         
         if img_name_tuple:
             self.radio2 = RadioButtons(rax, img_name_tuple)
+            for label in self.radio2.labels:
+                label.set_fontsize(9)
             rax.set_xticks([])
             rax.set_yticks([])
             for spine in rax.spines.values():

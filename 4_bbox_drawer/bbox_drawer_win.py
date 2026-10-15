@@ -213,6 +213,14 @@ class InitialWindow:
         self.button.on_clicked(self.validate_and_start)
         self.button.label.set_fontsize(12)
 
+        exit_ax = self.fig.add_axes([0.87, 0.025, 0.10, 0.05])
+        self.exit_button = Button(exit_ax, 'Exit')
+        self.exit_button.on_clicked(self.exit_setup)
+
+    def exit_setup(self, _event):
+        self.image_folder = None
+        plt.close(self.fig)
+
     def validate_and_start(self, event):
         """Validate inputs and start the application"""
         image_folder = self.dir_input.text.strip()
@@ -465,76 +473,78 @@ class InteractiveBoxProcessor:
                 json.dump(box_annotation, f, indent=2)
 
     def overlay_text(self, image, drawing_mode=False, hide_center_text=False):
-        """Add instruction text overlay"""
+        """Show readable controls in the top-left of the annotation image."""
+        lines = [
+            f"Help: T to hide/show   |   Category: {self.current_category_index + 1} "
+            f"{self.current_category} (keys 1-{len(self.categories)})   |   Esc: exit"
+        ]
+        if self.show_instructions and drawing_mode:
+            lines.extend([
+                "Draw: right-click and drag",
+                "Delete last box: D   |   Next image: Enter",
+                f"Image: {self.current_image_name}",
+            ])
+
+        height, width = image.shape[:2]
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 2.0
-        text_color = (0, 0, 0)
-        thickness = 4
-        glow_color = (255, 255, 255)
-        glow_thickness = 15
+        margin = max(12, round(min(width, height) * 0.009))
+        pad = max(12, round(min(width, height) * 0.012))
+        scale = min(2.0, max(0.55, width / 1500))
+        thickness = max(1, round(scale * 2))
+        while scale > 0.45 and max(
+            cv2.getTextSize(line, font, scale, thickness)[0][0] for line in lines
+        ) > width - 2 * (margin + pad):
+            scale *= 0.9
+            thickness = max(1, round(scale * 2))
 
-        # Calculate positions for both texts in the same row
-        y_offset = 75  # Starting y position
-        
-        # Draw toggle instruction on the left
-        toggle_instruction = "Press 'T' to toggle instructions on/off |"
-        (toggle_width, toggle_height), _ = cv2.getTextSize(toggle_instruction, font, font_scale, thickness)
-        
-        # Draw toggle instruction with padding from left
-        toggle_x = 20
-        self.draw_glowing_text(image, toggle_instruction, (toggle_x, y_offset), font, 
-                            font_scale, thickness, text_color, glow_color, glow_thickness)
-        
-        # Draw category text after toggle instruction with some padding
-        category_text = f"Current Category: {self.current_category_index+1}-{self.current_category} (Press numbers 1-{len(self.categories)} to switch)"
-        padding = 50  # Space between the two texts
-        category_x = toggle_x + toggle_width + padding
-        
-        # Add background rectangle for category text
-        (cat_width, cat_height), _ = cv2.getTextSize(category_text, font, font_scale, thickness)
-        cv2.rectangle(image, 
-                    (category_x - 5, y_offset - cat_height - 5),
-                    (category_x + cat_width + 10, y_offset + 5),
-                    self.get_category_color(self.category_to_id[self.current_category]),
-                    -1)
-        
-        # Draw category text
-        self.draw_glowing_text(image, category_text, (category_x, y_offset), font, 
-                            font_scale, thickness, text_color, glow_color, glow_thickness)
-        
-        if not self.show_instructions:  # Skip other instructions if hidden
-            return
+        line_height = round(34 * scale)
+        text_height = cv2.getTextSize("Ag", font, scale, thickness)[0][1]
+        panel_width = min(width - 2 * margin, max(
+            cv2.getTextSize(line, font, scale, thickness)[0][0] for line in lines
+        ) + 2 * pad)
+        panel_height = min(height - 2 * margin, 2 * pad + text_height + line_height * (len(lines) - 1))
+        x1, y1 = margin, margin
+        x2, y2 = x1 + panel_width, y1 + panel_height
+        shaded = image[y1:y2, x1:x2].copy()
+        shaded[:] = (22, 30, 34)
+        cv2.addWeighted(shaded, 0.78, image[y1:y2, x1:x2], 0.22, 0,
+                        image[y1:y2, x1:x2])
+        for index, line in enumerate(lines):
+            baseline = y1 + pad + text_height + index * line_height
+            if baseline <= y2 - pad:
+                cv2.putText(image, line, (x1 + pad, baseline), font, scale,
+                            (255, 255, 255), thickness, cv2.LINE_AA)
 
-        if drawing_mode:
-            instructions = [
-                "+ Draw: Right Click and drag to draw boxes",
-                "+ Zoom: Use a mouse wheel to zoom in/out and Left click to move",
-                "+ Delete: Press 'D' to delete the last box and its files",
-                "+ Next: Press 'Enter' when finished with current image",
-                "+ Exit: Press 'ESC' to stop completely",
-                f"Current image: {self.current_image_name}"
+        # Keep the opening guidance until the first box is started.
+        if self.first_time_center_text and self.show_instructions and drawing_mode and not hide_center_text:
+            center_lines = [
+                "Draw boxes around plants",
+                "Instructions: top left | T to hide/show",
             ]
-
-            # Start other instructions below the header row
-            y_offset += 60
-            for text in instructions:
-                self.draw_glowing_text(image, text, (20, y_offset), font, 
-                                    font_scale, thickness, text_color, glow_color, glow_thickness)
-                y_offset += 60
-
-        if self.first_time_center_text:
-            text1 = "Draw boundary boxes to cover plants"
-            text2 = "[Instructions are provided at the right corner]"
-            (text1_width, text1_height), _ = cv2.getTextSize(text1, font, 3.5, thickness)
-            (text2_width, text2_height), _ = cv2.getTextSize(text2, font, 3.5, thickness)
-            text1_x = (image.shape[1] - text1_width) // 2
-            text2_x = (image.shape[1] - text2_width) // 2
-            text1_y = (image.shape[0] - (text1_height + text2_height + 50)) // 2 + text1_height
-            text2_y = text1_y + text2_height + 50
-            self.draw_glowing_text(image, text1, (text1_x, text1_y), font, 3.5, 
-                                thickness, text_color, glow_color, glow_thickness)
-            self.draw_glowing_text(image, text2, (text2_x, text2_y), font, 3.5, 
-                                thickness, text_color, glow_color, glow_thickness)
+            center_scale = min(1.8, max(0.65, width / 1800))
+            center_thickness = max(1, round(center_scale * 2))
+            while max(cv2.getTextSize(line, font, center_scale, center_thickness)[0][0]
+                      for line in center_lines) > width - 4 * margin:
+                center_scale *= 0.9
+                center_thickness = max(1, round(center_scale * 2))
+            sizes = [cv2.getTextSize(line, font, center_scale, center_thickness)[0]
+                     for line in center_lines]
+            gap = max(12, round(18 * center_scale))
+            center_width = max(size[0] for size in sizes) + 2 * pad
+            center_height = sum(size[1] for size in sizes) + gap + 2 * pad
+            left = (width - center_width) // 2
+            top = (height - center_height) // 2
+            right, bottom = left + center_width, top + center_height
+            shaded = image[top:bottom, left:right].copy()
+            shaded[:] = (22, 30, 34)
+            cv2.addWeighted(shaded, 0.78, image[top:bottom, left:right], 0.22, 0,
+                            image[top:bottom, left:right])
+            baseline = top + pad
+            for line, (text_width, text_height) in zip(center_lines, sizes):
+                baseline += text_height
+                cv2.putText(image, line, ((width - text_width) // 2, baseline), font,
+                            center_scale, (255, 255, 255), center_thickness, cv2.LINE_AA)
+                baseline += gap
 
     def draw_glowing_text(self, image, text, position, font, font_scale, thickness, text_color, glow_color, glow_thickness):
         """Draw text with glow effect"""
