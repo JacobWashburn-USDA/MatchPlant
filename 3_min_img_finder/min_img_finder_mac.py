@@ -9,6 +9,7 @@ Version: 1.1
 
 import os
 import webbrowser
+from pathlib import Path
 import glob
 import subprocess
 import shutil
@@ -72,8 +73,6 @@ class FileDialogHandler:
         )
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
-
-PARAMETER_GUIDE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md"
 
 class InitialWindow:
     """Initial configuration window"""
@@ -167,16 +166,15 @@ class InitialWindow:
                     fontsize=14, fontweight='bold',
                     transform=self.ax.transAxes)
 
-        guide_ax = self.fig.add_axes([0.575, 0.585, 0.13, 0.04])
+        # Place the guide on the same visual line, immediately after the heading.
+        guide_ax = self.fig.add_axes([0.565, 0.58, 0.12, 0.04])
         self.parameter_guide_button = Button(
             guide_ax, 'Parameter guide', color='white', hovercolor='#eaf3ff'
         )
         self.parameter_guide_button.label.set_color('#005a9c')
         for spine in guide_ax.spines.values():
             spine.set_visible(False)
-        self.parameter_guide_button.on_clicked(
-            lambda _event: webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
-        )
+        self.parameter_guide_button.on_clicked(self.open_parameter_guide)
 
         self.param_inputs = {}
         parameters = [
@@ -197,6 +195,15 @@ class InitialWindow:
             # Add input box
             input_box = self.fig.add_axes([0.415, y_pos_box, 0.15 , 0.03])
             self.param_inputs[label] = TextBox(input_box, '', initial=default)
+
+    def open_parameter_guide(self, _event):
+        """Open the guide included beside this script, without internet."""
+        guide = Path(__file__).resolve().with_name('configuration_parameters_guide.md')
+        if guide.is_file():
+            if not webbrowser.open_new_tab(guide.as_uri()):
+                self.show_error_message("Could not open the local guide. Find it in 3_min_img_finder.")
+        else:
+            self.show_error_message("Guide missing from the downloaded 3_min_img_finder folder.")
 
     def browse_orthomosaic(self, event):
         """Handle orthomosaic file selection"""
