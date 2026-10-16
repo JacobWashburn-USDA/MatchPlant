@@ -60,6 +60,19 @@ class FileDialogHandler:
         result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
+    @staticmethod
+    def ask_open_filename(title='Select File', filetypes=None):
+        # Show all files; a selected file can identify its containing folder.
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
+            'activate\n'
+            f'set filePath to POSIX path of (choose file with prompt "{prompt}")\n'
+            'end tell'
+        )
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
+        return result.stdout.strip() if result.returncode == 0 else None
+
 class InitialWindow:
     """Initial configuration window for image annotation settings"""
     def __init__(self):
@@ -120,9 +133,12 @@ class InitialWindow:
         img_box = self.fig.add_axes([0.3, 0.78, 0.4, 0.035])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.72, 0.78, 0.1, 0.035])
+        img_button_ax = self.fig.add_axes([0.81, 0.78, 0.08, 0.035])
         self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(self.browse_img_folder)
+        image_browse_ax = self.fig.add_axes([0.72, 0.78, 0.08, 0.035])
+        self.image_browse_button = Button(image_browse_ax, 'Browse...')
+        self.image_browse_button.on_clicked(self.browse_file_in_img_folder)
 
         # Annotation folder
         self.ax.text(0.225, 0.795, "Annotation Folder:",
@@ -132,9 +148,12 @@ class InitialWindow:
         ann_box = self.fig.add_axes([0.3, 0.715, 0.4, 0.035])
         self.ann_input = TextBox(ann_box, '', initial='')
         
-        ann_button_ax = self.fig.add_axes([0.72, 0.715, 0.1, 0.035])
+        ann_button_ax = self.fig.add_axes([0.81, 0.715, 0.08, 0.035])
         self.ann_button = Button(ann_button_ax, 'Folder...')
         self.ann_button.on_clicked(self.browse_ann_folder)
+        ann_browse_ax = self.fig.add_axes([0.72, 0.715, 0.08, 0.035])
+        self.ann_browse_button = Button(ann_browse_ax, 'Browse...')
+        self.ann_browse_button.on_clicked(self.browse_file_in_ann_folder)
 
         # Output folder
         self.ax.text(0.225, 0.705, "Output Folder:",
@@ -214,6 +233,19 @@ class InitialWindow:
                     transform=self.ax.transAxes)
         size_box = self.fig.add_axes([0.65, 0.205, 0.2, 0.035])
         self.min_size = TextBox(size_box, '', initial='10')
+
+    def browse_file_in_img_folder(self, _event):
+        self.browse_file_in_folder(self.img_input, 'Choose any file in the image folder')
+
+    def browse_file_in_ann_folder(self, _event):
+        self.browse_file_in_folder(self.ann_input, 'Choose any file in the annotation folder')
+
+    def browse_file_in_folder(self, target, title):
+        """Use a visible file to select its containing folder."""
+        file_path = self.file_dialog.ask_open_filename(title=title)
+        if file_path:
+            target.set_val(os.path.dirname(os.path.abspath(file_path)))
+            self.fig.canvas.draw_idle()
 
     def browse_img_folder(self, event):
         """Browse for image directory"""

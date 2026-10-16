@@ -99,9 +99,12 @@ class InitialWindow:
         img_box = self.fig.add_axes([0.325, 0.765, 0.35, 0.03])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
+        img_button_ax = self.fig.add_axes([0.775, 0.765, 0.08, 0.03])
         self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
+        image_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
+        self.image_button = Button(image_button_ax, 'Browse...')
+        self.image_button.on_clicked(self.browse_image_in_folder)
 
         # GCP file
         self.ax.text(0.265, 0.78, "GCP File:",
@@ -176,6 +179,20 @@ class InitialWindow:
                      transform=self.ax.transAxes)
         threshold_box = self.fig.add_axes([0.325, 0.285, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
+
+    def browse_image_in_folder(self, _event):
+        """Select an image and use its containing folder."""
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            image_path = filedialog.askopenfilename(
+                parent=root, title='Choose any file in the image folder',
+                filetypes=[('All files', '*'), ('Supported images', '*.jpg *.jpeg *.tif *.tiff')]
+            )
+        finally:
+            root.destroy()
+        if image_path:
+            self.img_input.set_val(os.path.dirname(image_path))
 
     def browse_file(self, type_):
         """Handle image and GCP folder selection"""

@@ -95,9 +95,27 @@ class InitialWindow:
         dir_box = self.fig.add_axes([0.325, 0.745, 0.35, 0.03])
         self.dir_input = TextBox(dir_box, '', initial='')
         
-        dir_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
+        dir_button_ax = self.fig.add_axes([0.775, 0.745, 0.08, 0.03])
         self.dir_button = Button(dir_button_ax, 'Folder...')
         self.dir_button.on_clicked(self.browse_directory)
+        image_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
+        self.image_button = Button(image_button_ax, 'Browse...')
+        self.image_button.on_clicked(self.browse_image_in_folder)
+
+    def browse_image_in_folder(self, _event):
+        """Select an image and use its containing folder."""
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            image_path = filedialog.askopenfilename(
+                parent=root, title='Choose any file in the image folder',
+                filetypes=[('All files', '*'), ('Supported images', '*.jpg *.jpeg *.png *.tif *.tiff')]
+            )
+        finally:
+            root.destroy()
+        if image_path:
+            self.image_folder = os.path.dirname(os.path.abspath(image_path))
+            self.dir_input.set_val(self.image_folder)
 
     def browse_directory(self, event):
         """Handle directory selection"""

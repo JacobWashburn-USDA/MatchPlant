@@ -99,9 +99,12 @@ class InitialWindow:
         rect_box = self.fig.add_axes([0.325, 0.73, 0.35, 0.03])
         self.img_input = TextBox(rect_box, '', initial='')
         
-        rect_button_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
+        rect_button_ax = self.fig.add_axes([0.775, 0.73, 0.08, 0.03])
         self.img_button = Button(rect_button_ax, 'Folder...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
+        rect_image_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
+        self.rect_image_button = Button(rect_image_ax, 'Browse...')
+        self.rect_image_button.on_clicked(lambda x: self.browse_image_in_folder('img'))
 
         # Undistorted Images
         self.ax.text(0.265, 0.735, "Undistorted Image Folder:",
@@ -111,9 +114,12 @@ class InitialWindow:
         undist_box = self.fig.add_axes([0.325, 0.675, 0.35, 0.03])
         self.undist_input = TextBox(undist_box, '', initial='')
         
-        undist_button_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
+        undist_button_ax = self.fig.add_axes([0.775, 0.675, 0.08, 0.03])
         self.undist_button = Button(undist_button_ax, 'Folder...')
         self.undist_button.on_clicked(lambda x: self.browse_file('undist'))
+        undist_image_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
+        self.undist_image_button = Button(undist_image_ax, 'Browse...')
+        self.undist_image_button.on_clicked(lambda x: self.browse_image_in_folder('undist'))
 
 
     def _setup_parameters_section(self):
@@ -157,6 +163,21 @@ class InitialWindow:
     def open_parameter_guide(self, _event):
         """Open the parameter guide on GitHub."""
         webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
+
+    def browse_image_in_folder(self, type_):
+        """Select an image and use its containing folder."""
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            image_path = filedialog.askopenfilename(
+                parent=root, title='Choose any file in the image folder',
+                filetypes=[('All files', '*'), ('Supported images', '*.tif *.tiff' if type_ == 'img' else '*.tif *.tiff *.jpg *.jpeg')]
+            )
+        finally:
+            root.destroy()
+        if image_path:
+            target = self.img_input if type_ == 'img' else self.undist_input
+            target.set_val(os.path.dirname(image_path))
 
     def browse_file(self, type_):
         """Handle file and folder selection using tkinter"""
@@ -304,7 +325,11 @@ class MinimumCoverageOptimizer:
         self.ortho_dataset = rasterio.open(self.orthomosaic_path)
         self.ortho_bounds = self.ortho_dataset.bounds
         
-        rectified_path_list = glob.glob(os.path.join(self.image_folder, '*.tif'))
+        rectified_path_list = sorted(
+            path for path in glob.glob(os.path.join(self.image_folder, '*'))
+            if os.path.isfile(path) and not os.path.basename(path).startswith('._')
+            and os.path.splitext(path)[1].lower() in {'.tif', '.tiff'}
+        )
         if not rectified_path_list:
             return False
         
@@ -687,8 +712,7 @@ class MinimumCoverageOptimizer:
         # Get list of actual files in undistorted folder
         available_files = [f for f in os.listdir(undistorted_folder) 
                         if not f.startswith('._') and 
-                        (f.endswith('.tif') or f.endswith('.TIF') or 
-                        f.endswith('.jpg') or f.endswith('.JPG'))]
+                        os.path.splitext(f)[1].lower() in {'.tif', '.tiff', '.jpg', '.jpeg'}]
                 
         # Create mapping of base names to actual files
         file_mapping = {}

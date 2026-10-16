@@ -87,9 +87,12 @@ class InitialWindow:
         img_box = self.fig.add_axes([0.3, 0.78, 0.4, 0.035])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.72, 0.78, 0.1, 0.035])
+        img_button_ax = self.fig.add_axes([0.81, 0.78, 0.08, 0.035])
         self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
+        image_button_ax = self.fig.add_axes([0.72, 0.78, 0.08, 0.035])
+        self.image_button = Button(image_button_ax, 'Browse...')
+        self.image_button.on_clicked(self.browse_image_in_folder)
 
         # Annotation folder
         self.ax.text(0.225, 0.795, "Annotation Folder:",
@@ -99,9 +102,12 @@ class InitialWindow:
         ann_box = self.fig.add_axes([0.3, 0.715, 0.4, 0.035])
         self.ann_input = TextBox(ann_box, '', initial='')
         
-        ann_button_ax = self.fig.add_axes([0.72, 0.715, 0.1, 0.035])
+        ann_button_ax = self.fig.add_axes([0.81, 0.715, 0.08, 0.035])
         self.ann_button = Button(ann_button_ax, 'Folder...')
         self.ann_button.on_clicked(lambda x: self.browse_file('ann'))
+        annotation_file_ax = self.fig.add_axes([0.72, 0.715, 0.08, 0.035])
+        self.annotation_file_button = Button(annotation_file_ax, 'Browse...')
+        self.annotation_file_button.on_clicked(self.browse_annotation_in_folder)
 
         # Output folder
         self.ax.text(0.225, 0.705, "Output Folder:", 
@@ -181,6 +187,33 @@ class InitialWindow:
                      transform=self.ax.transAxes)
         size_box = self.fig.add_axes([0.65, 0.205, 0.2, 0.035])
         self.min_size = TextBox(size_box, '', initial='10')
+
+    def browse_image_in_folder(self, _event):
+        """Select an image and use its containing folder."""
+        self.browse_file_in_folder(
+            self.img_input, 'Choose any file in the image folder',
+            [('All files', '*'), ('Supported images', '*.tif *.tiff *.jpg *.jpeg *.png')]
+        )
+
+    def browse_annotation_in_folder(self, _event):
+        """Select an annotation file and use its containing folder."""
+        self.browse_file_in_folder(
+            self.ann_input, 'Choose any file in the annotation folder',
+            [('All files', '*'), ('JSON annotations', '*.json')]
+        )
+
+    def browse_file_in_folder(self, target, title, filetypes):
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            file_path = filedialog.askopenfilename(
+                parent=root, title=title, filetypes=filetypes
+            )
+        finally:
+            root.destroy()
+        if file_path:
+            target.set_val(os.path.dirname(file_path))
+            self.fig.canvas.draw_idle()
 
     def browse_file(self, type_):
         "Handle image, annotation, and output selection"
@@ -478,7 +511,7 @@ def process_dataset(
         img_base = json_file.stem.replace('_annotations', '')
         # Search for the image file 
         for img_file in original_img_dir.glob(f"{img_base}*"):
-            if img_file.suffix.lower() in ['.tif', '.jpg', '.png']:
+            if img_file.suffix.lower() in ['.tif', '.tiff', '.jpg', '.jpeg', '.png']:
                 image_pairs.append((img_file, json_file))
                 break
     

@@ -65,13 +65,15 @@ class FileDialogHandler:
 
     @staticmethod
     def ask_open_filename(title='Select File', filetypes=None):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
+        # Show all files; a selected file can identify its containing folder.
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
             'activate\n'
-            'set filePath to POSIX path of (choose file)\n'
-            'end tell\''
+            f'set filePath to POSIX path of (choose file with prompt "{prompt}")\n'
+            'end tell'
         )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
 PARAMETER_GUIDE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md"
@@ -144,9 +146,12 @@ class InitialWindow:
         rect_box = self.fig.add_axes([0.325, 0.73, 0.35, 0.03])
         self.img_input = TextBox(rect_box, '', initial='')
         
-        rect_button_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
+        rect_button_ax = self.fig.add_axes([0.775, 0.73, 0.08, 0.03])
         self.img_button = Button(rect_button_ax, 'Folder...')
         self.img_button.on_clicked(self.browse_image_folder)
+        rect_browse_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
+        self.rect_browse_button = Button(rect_browse_ax, 'Browse...')
+        self.rect_browse_button.on_clicked(lambda _event: self.browse_file_in_image_folder('img'))
 
         # Undistorted folder selection
         self.ax.text(0.265, 0.735, "Undistorted Image Folder:",
@@ -156,9 +161,12 @@ class InitialWindow:
         undist_box = self.fig.add_axes([0.325, 0.675, 0.35, 0.03])
         self.undist_input = TextBox(undist_box, '', initial='')
         
-        undist_button_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
+        undist_button_ax = self.fig.add_axes([0.775, 0.675, 0.08, 0.03])
         self.undist_button = Button(undist_button_ax, 'Folder...')
         self.undist_button.on_clicked(self.browse_undistorted_folder)
+        undist_browse_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
+        self.undist_browse_button = Button(undist_browse_ax, 'Browse...')
+        self.undist_browse_button.on_clicked(lambda _event: self.browse_file_in_image_folder('undist'))
 
     def _setup_parameters_section(self):
         """Setup the optimization parameters section"""
@@ -211,6 +219,16 @@ class InitialWindow:
             
         if file_path:
             self.ortho_input.set_val(os.path.abspath(file_path))
+            self.fig.canvas.draw_idle()
+
+    def browse_file_in_image_folder(self, type_):
+        """Use a visible file to select its containing image folder."""
+        file_path = self.file_dialog.ask_open_filename(
+            title='Choose any file in the image folder'
+        )
+        if file_path:
+            target = self.img_input if type_ == 'img' else self.undist_input
+            target.set_val(os.path.dirname(os.path.abspath(file_path)))
             self.fig.canvas.draw_idle()
 
     def browse_image_folder(self, event):

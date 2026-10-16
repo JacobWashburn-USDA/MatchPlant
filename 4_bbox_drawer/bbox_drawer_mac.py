@@ -59,6 +59,19 @@ class FileDialogHandler:
         result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
+    @staticmethod
+    def ask_open_filename(title='Select File', filetypes=None):
+        # Show all files; a selected file can identify its containing folder.
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
+            'activate\n'
+            f'set filePath to POSIX path of (choose file with prompt "{prompt}")\n'
+            'end tell'
+        )
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
+        return result.stdout.strip() if result.returncode == 0 else None
+
 class InitialWindow:
     """Initial configuration window for path selection"""
     def __init__(self):
@@ -127,9 +140,22 @@ class InitialWindow:
         dir_box = self.fig.add_axes([0.325, 0.745, 0.35, 0.03])
         self.dir_input = TextBox(dir_box, '', initial='')
         
-        dir_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
+        dir_button_ax = self.fig.add_axes([0.775, 0.745, 0.08, 0.03])
         self.dir_button = Button(dir_button_ax, 'Folder...')
         self.dir_button.on_clicked(self.browse_directory)
+        browse_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
+        self.image_browse_button = Button(browse_ax, 'Browse...')
+        self.image_browse_button.on_clicked(self.browse_file_in_image_folder)
+
+    def browse_file_in_image_folder(self, _event):
+        """Use a visible file to select its containing image folder."""
+        file_path = self.file_dialog.ask_open_filename(
+            title='Choose any file in the image folder'
+        )
+        if file_path:
+            self.image_folder = os.path.dirname(os.path.abspath(file_path))
+            self.dir_input.set_val(self.image_folder)
+            self.fig.canvas.draw_idle()
 
     def browse_directory(self, event):
         """Handle directory selection"""

@@ -69,13 +69,15 @@ class FileDialogHandler:
 
     @staticmethod
     def ask_open_filename(title='Select File', filetypes=None):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
+        # Show all files; a selected file can identify its containing folder.
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
             'activate\n'
-            'set filePath to POSIX path of (choose file)\n'
-            'end tell\''
+            f'set filePath to POSIX path of (choose file with prompt "{prompt}")\n'
+            'end tell'
         )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
 # Global Configuration
@@ -144,9 +146,12 @@ class InitialWindow:
         img_box = self.fig.add_axes([0.325, 0.765, 0.35, 0.03])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
+        img_button_ax = self.fig.add_axes([0.775, 0.765, 0.08, 0.03])
         self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(self.browse_image_folder)
+        browse_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
+        self.image_browse_button = Button(browse_ax, 'Browse...')
+        self.image_browse_button.on_clicked(self.browse_file_in_image_folder)
 
         # GCP file 
         self.ax.text(0.265, 0.78, "GCP File:",
@@ -221,6 +226,15 @@ class InitialWindow:
                     transform=self.ax.transAxes)
         threshold_box = self.fig.add_axes([0.325, 0.285, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
+
+    def browse_file_in_image_folder(self, _event):
+        """Use a visible file to select its containing image folder."""
+        file_path = self.file_dialog.ask_open_filename(
+            title='Choose any file in the image folder'
+        )
+        if file_path:
+            self.img_input.set_val(os.path.dirname(os.path.abspath(file_path)))
+            self.fig.canvas.draw_idle()
 
     def browse_image_folder(self, event):
         """Handle image folder selection"""
