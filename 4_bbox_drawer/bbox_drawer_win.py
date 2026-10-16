@@ -96,7 +96,7 @@ class InitialWindow:
         self.dir_input = TextBox(dir_box, '', initial='')
         
         dir_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
-        self.dir_button = Button(dir_button_ax, 'Browse')
+        self.dir_button = Button(dir_button_ax, 'Folder...')
         self.dir_button.on_clicked(self.browse_directory)
 
     def browse_directory(self, event):
@@ -104,7 +104,7 @@ class InitialWindow:
         root = tk.Tk()
         root.withdraw()  # Hide the main window
 
-        folder_path = filedialog.askdirectory(title='Select Image Folder')
+        folder_path = filedialog.askdirectory(title='Select image folder (files are not shown)')
         if folder_path:
             self.image_folder = os.path.abspath(folder_path)
             self.dir_input.set_val(self.image_folder)

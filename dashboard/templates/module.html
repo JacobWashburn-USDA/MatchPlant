@@ -96,7 +96,7 @@
           <input type="{{ 'number' if f.kind in ('int', 'float') else 'text' }}" id="{{ f.name }}-input" name="{{ f.name }}"{% if f.kind == "float" %} step="any"{% endif %} placeholder="{{ f.default or '' }}"{% if f.value is defined %} value="{{ f.value }}"{% endif %} {{ "required" if f.required }}{% if f.min is defined %} min="{{ f.min }}"{% endif %}{% if f.max is defined %} max="{{ f.max }}"{% endif %}{% if f.help %} aria-describedby="{{ f.name }}-help"{% endif %}>
         {% endif %}
         {% if f.picker %}
-          <button type="button" class="btn secondary folder-browse-btn" data-input="{{ f.name }}-input" data-picker="{{ f.picker }}" aria-label="Browse for {{ f.label or f.name }}">Browse...</button>
+          <button type="button" class="btn secondary folder-browse-btn" data-input="{{ f.name }}-input" data-picker="{{ f.picker }}" aria-label="Choose {{ f.picker }} for {{ f.label or f.name }}">Choose {{ f.picker }}</button>
           </div>
           <small class="folder-picker-status" role="status" aria-live="polite"></small>
         {% endif %}

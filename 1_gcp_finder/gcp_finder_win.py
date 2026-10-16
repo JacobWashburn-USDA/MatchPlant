@@ -100,7 +100,7 @@ class InitialWindow:
         self.img_input = TextBox(img_box, '', initial='')
         
         img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
-        self.img_button = Button(img_button_ax, 'Browse')
+        self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
         # GCP file
@@ -112,7 +112,7 @@ class InitialWindow:
         self.gcp_input = TextBox(gcp_box, '', initial='')
         
         gcp_button_ax = self.fig.add_axes([0.685, 0.71, 0.08, 0.03])
-        self.gcp_button = Button(gcp_button_ax, 'Browse')
+        self.gcp_button = Button(gcp_button_ax, 'File...')
         self.gcp_button.on_clicked(lambda x: self.browse_file('gcp'))
 
     def _setup_camera_section(self):
@@ -184,7 +184,7 @@ class InitialWindow:
 
         if type_ == 'img':
             folder_path = filedialog.askdirectory(
-                title='Select Image Folder'
+                title='Select image folder (files are not shown)'
             )
             if folder_path:
                 self.img_input.set_val(folder_path)

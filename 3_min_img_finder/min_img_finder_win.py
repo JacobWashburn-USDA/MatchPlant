@@ -9,7 +9,6 @@ Version: 1.1
 
 import os
 import webbrowser
-from pathlib import Path
 import glob
 import shutil
 import numpy as np
@@ -30,6 +29,8 @@ def maximize_window(fig):
         window.state("zoomed")
     elif window is not None and callable(getattr(window, "showMaximized", None)):
         window.showMaximized()
+
+PARAMETER_GUIDE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md"
 
 class InitialWindow:
     """Initial configuration window"""
@@ -87,7 +88,7 @@ class InitialWindow:
         self.ortho_input = TextBox(ortho_box, '', initial='')
         
         ortho_button_ax = self.fig.add_axes([0.685, 0.785, 0.08, 0.03])
-        self.ortho_button = Button(ortho_button_ax, 'Browse')
+        self.ortho_button = Button(ortho_button_ax, 'File...')
         self.ortho_button.on_clicked(lambda x: self.browse_file('ortho'))
 
         # Orthorectified Images
@@ -99,7 +100,7 @@ class InitialWindow:
         self.img_input = TextBox(rect_box, '', initial='')
         
         rect_button_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
-        self.img_button = Button(rect_button_ax, 'Browse')
+        self.img_button = Button(rect_button_ax, 'Folder...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
         # Undistorted Images
@@ -111,7 +112,7 @@ class InitialWindow:
         self.undist_input = TextBox(undist_box, '', initial='')
         
         undist_button_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
-        self.undist_button = Button(undist_button_ax, 'Browse')
+        self.undist_button = Button(undist_button_ax, 'Folder...')
         self.undist_button.on_clicked(lambda x: self.browse_file('undist'))
 
 
@@ -154,13 +155,8 @@ class InitialWindow:
             self.param_inputs[label] = TextBox(input_box, '', initial=default)
         
     def open_parameter_guide(self, _event):
-        """Open the guide included beside this script, without internet."""
-        guide = Path(__file__).resolve().with_name('configuration_parameters_guide.md')
-        if guide.is_file():
-            if not webbrowser.open_new_tab(guide.as_uri()):
-                self.show_error_message("Could not open the local guide. Find it in 3_min_img_finder.")
-        else:
-            self.show_error_message("Guide missing from the downloaded 3_min_img_finder folder.")
+        """Open the parameter guide on GitHub."""
+        webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
 
     def browse_file(self, type_):
         """Handle file and folder selection using tkinter"""
@@ -170,13 +166,13 @@ class InitialWindow:
         if type_ == 'ortho':
             file_path = filedialog.askopenfilename(
                 title='Select Orthomosaic',
-                filetypes=[('TIF files', '*.tif')]
+                filetypes=[('GeoTIFF files', '*.tif *.tiff')]
             )
             if file_path:
                 self.ortho_input.set_val(file_path)
         elif type_ in ['img', 'undist']:
             folder_path = filedialog.askdirectory(
-                title=f'Select {"Image" if type_ == "img" else "Undistorted Images"} Folder'
+                title=f'Select {"Image" if type_ == "img" else "Undistorted Images"} Folder (files are not shown)'
             )
             if folder_path:
                 if type_ == 'img':

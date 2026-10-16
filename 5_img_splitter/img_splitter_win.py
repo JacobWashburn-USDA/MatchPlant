@@ -88,7 +88,7 @@ class InitialWindow:
         self.img_input = TextBox(img_box, '', initial='')
         
         img_button_ax = self.fig.add_axes([0.72, 0.78, 0.1, 0.035])
-        self.img_button = Button(img_button_ax, 'Browse')
+        self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
 
         # Annotation folder
@@ -100,7 +100,7 @@ class InitialWindow:
         self.ann_input = TextBox(ann_box, '', initial='')
         
         ann_button_ax = self.fig.add_axes([0.72, 0.715, 0.1, 0.035])
-        self.ann_button = Button(ann_button_ax, 'Browse')
+        self.ann_button = Button(ann_button_ax, 'Folder...')
         self.ann_button.on_clicked(lambda x: self.browse_file('ann'))
 
         # Output folder
@@ -112,7 +112,7 @@ class InitialWindow:
         self.out_input = TextBox(out_box, '', initial='')
         
         out_button_ax = self.fig.add_axes([0.72, 0.645, 0.1, 0.035])
-        self.out_button = Button(out_button_ax, 'Browse')
+        self.out_button = Button(out_button_ax, 'Folder...')
         self.out_button.on_clicked(lambda x: self.browse_file('out'))
 
     def _setup_split_section(self):
@@ -189,13 +189,13 @@ class InitialWindow:
 
         if type_ == 'img':
             folder_path = filedialog.askdirectory(
-                title='Select Image Folder'
+                title='Select image folder (files are not shown)'
             )
             if folder_path:
                 self.img_input.set_val(folder_path)
         elif type_ in ['ann', 'out']:
             folder_path = filedialog.askdirectory(
-                title=f'Select {"Annotation" if type_ == "ann" else "Output"} Folder'
+                title=f'Select {"Annotation" if type_ == "ann" else "Output"} Folder (files are not shown)'
             )
             if folder_path:
                 if type_ == 'ann':

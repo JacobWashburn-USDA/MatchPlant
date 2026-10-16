@@ -57,13 +57,14 @@ class FileDialogHandler:
     """Mac-specific file dialog handler"""
     @staticmethod
     def ask_directory(title='Select Directory'):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
             'activate\n'
-            'set folderPath to POSIX path of (choose folder)\n'
-            'end tell\''
+            f'set folderPath to POSIX path of (choose folder with prompt "{prompt}")\n'
+            'end tell'
         )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
     @staticmethod
@@ -144,7 +145,7 @@ class InitialWindow:
         self.img_input = TextBox(img_box, '', initial='')
         
         img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
-        self.img_button = Button(img_button_ax, 'Browse')
+        self.img_button = Button(img_button_ax, 'Folder...')
         self.img_button.on_clicked(self.browse_image_folder)
 
         # GCP file 
@@ -156,7 +157,7 @@ class InitialWindow:
         self.gcp_input = TextBox(gcp_box, '', initial='')
         
         gcp_button_ax = self.fig.add_axes([0.685, 0.71, 0.08, 0.03])
-        self.gcp_button = Button(gcp_button_ax, 'Browse')
+        self.gcp_button = Button(gcp_button_ax, 'File...')
         self.gcp_button.on_clicked(self.browse_gcp_file)
 
     def _setup_camera_section(self):
@@ -223,7 +224,7 @@ class InitialWindow:
 
     def browse_image_folder(self, event):
         """Handle image folder selection"""
-        folder_path = self.file_dialog.ask_directory(title='Select Image Folder')
+        folder_path = self.file_dialog.ask_directory(title='Select the folder containing your images')
         if folder_path:
             self.img_input.set_val(os.path.abspath(folder_path))
             self.fig.canvas.draw_idle()

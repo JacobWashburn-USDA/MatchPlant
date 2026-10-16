@@ -49,13 +49,14 @@ class FileDialogHandler:
     """Mac-specific file dialog handler"""
     @staticmethod
     def ask_directory(title='Select Directory'):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
             'activate\n'
-            'set folderPath to POSIX path of (choose folder)\n'
-            'end tell\''
+            f'set folderPath to POSIX path of (choose folder with prompt "{prompt}")\n'
+            'end tell'
         )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
 class InitialWindow:
@@ -127,12 +128,12 @@ class InitialWindow:
         self.dir_input = TextBox(dir_box, '', initial='')
         
         dir_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
-        self.dir_button = Button(dir_button_ax, 'Browse')
+        self.dir_button = Button(dir_button_ax, 'Folder...')
         self.dir_button.on_clicked(self.browse_directory)
 
     def browse_directory(self, event):
         """Handle directory selection"""
-        folder_path = self.file_dialog.ask_directory(title='Select Image Folder')
+        folder_path = self.file_dialog.ask_directory(title='Select the folder containing your images')
         if folder_path:
             self.image_folder = os.path.abspath(folder_path)
             self.dir_input.set_val(self.image_folder)

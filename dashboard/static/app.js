@@ -4,7 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const status = button.closest(".field").querySelector(".folder-picker-status");
       button.disabled = true;
       const picker = button.dataset.picker || "folder";
-      status.textContent = `Choose a ${picker} in the picker window.`;
+      status.textContent = picker === "file"
+        ? "Choose a file in the picker window."
+        : "Choose the containing folder. Files are not shown in this picker.";
       try {
         const response = await fetch(`/api/browse-${picker}`, { method: "POST" });
         const data = await response.json();
@@ -18,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
           status.textContent = "Selection cancelled. You can also paste a path.";
         }
       } catch (error) {
-        status.textContent = "Could not open the picker. Paste the path instead.";
+        status.textContent = `Could not open the picker. Paste the ${picker} path instead.`;
       } finally {
         button.disabled = false;
       }
@@ -48,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         status.textContent = "Could not open the picker. Paste the folder path instead.";
       } finally {
         browseBtn.disabled = false;
-        browseBtn.textContent = "Browse...";
+        browseBtn.textContent = "Choose folder";
       }
     });
   }

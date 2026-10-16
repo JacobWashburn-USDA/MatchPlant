@@ -9,7 +9,6 @@ Version: 1.1
 
 import os
 import webbrowser
-from pathlib import Path
 import glob
 import subprocess
 import shutil
@@ -54,13 +53,14 @@ class FileDialogHandler:
     """Mac-specific file dialog handler"""
     @staticmethod
     def ask_directory(title='Select Directory'):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
+        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
+        script = (
+            'tell application "SystemUIServer"\n'
             'activate\n'
-            'set folderPath to POSIX path of (choose folder)\n'
-            'end tell\''
+            f'set folderPath to POSIX path of (choose folder with prompt "{prompt}")\n'
+            'end tell'
         )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
 
     @staticmethod
@@ -73,6 +73,8 @@ class FileDialogHandler:
         )
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
+
+PARAMETER_GUIDE_URL = "https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md"
 
 class InitialWindow:
     """Initial configuration window"""
@@ -131,7 +133,7 @@ class InitialWindow:
         self.ortho_input = TextBox(ortho_box, '', initial='')
         
         ortho_button_ax = self.fig.add_axes([0.685, 0.785, 0.08, 0.03])
-        self.ortho_button = Button(ortho_button_ax, 'Browse')
+        self.ortho_button = Button(ortho_button_ax, 'File...')
         self.ortho_button.on_clicked(self.browse_orthomosaic)
 
         # Orthorectified folder selection
@@ -143,7 +145,7 @@ class InitialWindow:
         self.img_input = TextBox(rect_box, '', initial='')
         
         rect_button_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
-        self.img_button = Button(rect_button_ax, 'Browse')
+        self.img_button = Button(rect_button_ax, 'Folder...')
         self.img_button.on_clicked(self.browse_image_folder)
 
         # Undistorted folder selection
@@ -155,7 +157,7 @@ class InitialWindow:
         self.undist_input = TextBox(undist_box, '', initial='')
         
         undist_button_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
-        self.undist_button = Button(undist_button_ax, 'Browse')
+        self.undist_button = Button(undist_button_ax, 'Folder...')
         self.undist_button.on_clicked(self.browse_undistorted_folder)
 
     def _setup_parameters_section(self):
@@ -197,13 +199,8 @@ class InitialWindow:
             self.param_inputs[label] = TextBox(input_box, '', initial=default)
 
     def open_parameter_guide(self, _event):
-        """Open the guide included beside this script, without internet."""
-        guide = Path(__file__).resolve().with_name('configuration_parameters_guide.md')
-        if guide.is_file():
-            if not webbrowser.open_new_tab(guide.as_uri()):
-                self.show_error_message("Could not open the local guide. Find it in 3_min_img_finder.")
-        else:
-            self.show_error_message("Guide missing from the downloaded 3_min_img_finder folder.")
+        """Open the parameter guide on GitHub."""
+        webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
 
     def browse_orthomosaic(self, event):
         """Handle orthomosaic file selection"""
@@ -218,14 +215,14 @@ class InitialWindow:
 
     def browse_image_folder(self, event):
         """Handle image folder selection"""
-        folder_path = self.file_dialog.ask_directory(title='Select Image Folder')
+        folder_path = self.file_dialog.ask_directory(title='Select the folder containing orthorectified images')
         if folder_path:
             self.img_input.set_val(os.path.abspath(folder_path))
             self.fig.canvas.draw_idle()
             
     def browse_undistorted_folder(self, event):
         """Handle undistorted image folder selection"""
-        folder_path = self.file_dialog.ask_directory(title='Select Undistorted Images Folder')
+        folder_path = self.file_dialog.ask_directory(title='Select the folder containing undistorted images')
         if folder_path:
             self.undist_input.set_val(os.path.abspath(folder_path))
             self.fig.canvas.draw_idle()

@@ -24,7 +24,7 @@
       MatchPlant folder path
       <input type="text" name="repo_path" id="repo-path-input" value="{{ current_path }}">
     </label>
-    <button type="button" id="browse-btn" class="btn secondary">Browse...</button>
+    <button type="button" id="browse-btn" class="btn secondary">Choose folder</button>
     <button type="submit" class="btn">Save</button>
   </form>
 
@@ -38,7 +38,7 @@
         <label for="python-{{ m.id }}">{{ m.title }} <code>({{ m.id }})</code></label>
         <div class="folder-field-controls">
           <input type="text" id="python-{{ m.id }}" name="python_{{ m.id }}" value="{{ get_python(m.id) }}">
-          <button type="button" class="btn secondary folder-browse-btn" data-input="python-{{ m.id }}" data-picker="file" aria-label="Browse for {{ m.title }} Python interpreter">Browse...</button>
+          <button type="button" class="btn secondary folder-browse-btn" data-input="python-{{ m.id }}" data-picker="file" aria-label="Choose file for {{ m.title }} Python interpreter">Choose file</button>
         </div>
         <small class="folder-picker-status" role="status" aria-live="polite"></small>
       </div>
