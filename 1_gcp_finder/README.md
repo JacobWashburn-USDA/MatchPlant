@@ -11,6 +11,8 @@ This tool is handy for drone imagery processing workflows where the orthomosaic 
 
 Open **GCP Finder** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
 
+The **Image Folder** row has one **Browse...** button that opens the standard system folder picker. Select a folder and confirm; Cancel keeps the previous value. On Windows, the native folder-only dialog may hide individual files. The **GCP File** control opens the system file picker and accepts CSV files.
+
 The dashboard automatically selects `gcp_finder_win.py` on Windows and `gcp_finder_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
 
 ## Table of Contents
@@ -186,3 +188,7 @@ Figure 2. Example of gcp_marking_window
 ## **License**
 
 This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
+
+## File and folder selection
+
+Both desktop variants use the shared [picker rules](../matchplant_ui/README.md). Each folder field has one Browse button using the standard system folder picker. It accepts folders only; Windows may hide individual files in this dialog. File pickers show all file types and check the required format before returning a path. Output CSV controls allow new file names. Cancel leaves the existing input unchanged. Keep the repository-level `matchplant_ui/` folder when copying or distributing these scripts. Native macOS picker behavior still needs testing on a Mac.

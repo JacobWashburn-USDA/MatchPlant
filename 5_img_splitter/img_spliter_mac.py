@@ -6,6 +6,11 @@ Date Created: 31 January 2025
 Version: 1.0
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+from matchplant_ui.dialogs import FileDialogHandler
+
 import cv2
 import json
 import math
@@ -46,32 +51,6 @@ def maximize_window(fig):
     fig.canvas.mpl_connect("draw_event", fit_after_draw)
     fig.canvas.manager.full_screen_toggle()
 
-class FileDialogHandler:
-    """Mac-specific file dialog handler"""
-    @staticmethod
-    def ask_directory(title='Select Directory'):
-        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
-        script = (
-            'tell application "SystemUIServer"\n'
-            'activate\n'
-            f'set folderPath to POSIX path of (choose folder with prompt "{prompt}")\n'
-            'end tell'
-        )
-        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
-
-    @staticmethod
-    def ask_open_filename(title='Select File', filetypes=None):
-        # Show all files; a selected file can identify its containing folder.
-        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
-        script = (
-            'tell application "SystemUIServer"\n'
-            'activate\n'
-            f'set filePath to POSIX path of (choose file with prompt "{prompt}")\n'
-            'end tell'
-        )
-        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
 
 class InitialWindow:
     """Initial configuration window for image annotation settings"""
@@ -134,11 +113,8 @@ class InitialWindow:
         self.img_input = TextBox(img_box, '', initial='')
         
         img_button_ax = self.fig.add_axes([0.81, 0.78, 0.08, 0.035])
-        self.img_button = Button(img_button_ax, 'Folder...')
+        self.img_button = Button(img_button_ax, 'Browse...')
         self.img_button.on_clicked(self.browse_img_folder)
-        image_browse_ax = self.fig.add_axes([0.72, 0.78, 0.08, 0.035])
-        self.image_browse_button = Button(image_browse_ax, 'Browse...')
-        self.image_browse_button.on_clicked(self.browse_file_in_img_folder)
 
         # Annotation folder
         self.ax.text(0.225, 0.795, "Annotation Folder:",
@@ -149,11 +125,8 @@ class InitialWindow:
         self.ann_input = TextBox(ann_box, '', initial='')
         
         ann_button_ax = self.fig.add_axes([0.81, 0.715, 0.08, 0.035])
-        self.ann_button = Button(ann_button_ax, 'Folder...')
+        self.ann_button = Button(ann_button_ax, 'Browse...')
         self.ann_button.on_clicked(self.browse_ann_folder)
-        ann_browse_ax = self.fig.add_axes([0.72, 0.715, 0.08, 0.035])
-        self.ann_browse_button = Button(ann_browse_ax, 'Browse...')
-        self.ann_browse_button.on_clicked(self.browse_file_in_ann_folder)
 
         # Output folder
         self.ax.text(0.225, 0.705, "Output Folder:",
@@ -164,7 +137,7 @@ class InitialWindow:
         self.out_input = TextBox(out_box, '', initial='')
         
         out_button_ax = self.fig.add_axes([0.72, 0.645, 0.1, 0.035])
-        self.out_button = Button(out_button_ax, 'Folder...')
+        self.out_button = Button(out_button_ax, 'Browse...')
         self.out_button.on_clicked(self.browse_out_folder)
 
     def _setup_split_section(self):
@@ -234,36 +207,26 @@ class InitialWindow:
         size_box = self.fig.add_axes([0.65, 0.205, 0.2, 0.035])
         self.min_size = TextBox(size_box, '', initial='10')
 
-    def browse_file_in_img_folder(self, _event):
-        self.browse_file_in_folder(self.img_input, 'Choose any file in the image folder')
 
-    def browse_file_in_ann_folder(self, _event):
-        self.browse_file_in_folder(self.ann_input, 'Choose any file in the annotation folder')
 
-    def browse_file_in_folder(self, target, title):
-        """Use a visible file to select its containing folder."""
-        file_path = self.file_dialog.ask_open_filename(title=title)
-        if file_path:
-            target.set_val(os.path.dirname(os.path.abspath(file_path)))
-            self.fig.canvas.draw_idle()
 
     def browse_img_folder(self, event):
         """Browse for image directory"""
-        path = self.file_dialog.ask_directory(title='Select the folder containing your images')
+        path = self.file_dialog.ask_directory(title='Select the folder containing your images', initialdir=self.img_input.text.strip())
         if path:
             self.img_input.set_val(os.path.abspath(path))
             self.fig.canvas.draw_idle()
 
     def browse_ann_folder(self, event):
         """Browse for annotation directory"""
-        path = self.file_dialog.ask_directory(title='Select the folder containing annotations')
+        path = self.file_dialog.ask_directory(title='Select the folder containing annotations', initialdir=self.ann_input.text.strip())
         if path:
             self.ann_input.set_val(os.path.abspath(path))
             self.fig.canvas.draw_idle()
 
     def browse_out_folder(self, event):
         """Browse for output directory"""
-        path = self.file_dialog.ask_directory(title='Select the output folder')
+        path = self.file_dialog.ask_directory(title='Select the output folder', initialdir=self.out_input.text.strip())
         if path:
             self.out_input.set_val(os.path.abspath(path))
             self.fig.canvas.draw_idle()

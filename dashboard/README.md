@@ -16,21 +16,27 @@ Landing page: **[matchplant-dashboard.github.io](https://matchplant-dashboard.gi
 
 ## Setup
 
-**No terminal experience? Double-click these files** in this folder, in order:
+**Double-click the files for your operating system, in this order:**
 
-1. `setup.command` (Windows: `setup.bat`): checks for Python, tells you what to install if it's missing, and sets everything up. One-time only.
-2. `start_dashboard.command` (Windows: `start_dashboard.bat`): starts the dashboard and opens it in your browser automatically. Run this every time you want to use the dashboard; On Windows, the launcher closes automatically; keep the separate "MatchPlant Dashboard" server window open. On macOS, keep the launcher terminal open while using the dashboard.
+| System | First-time setup | Start the dashboard |
+| --- | --- | --- |
+| Windows | **1_Setup_Windows.bat** | **2_Start_Windows.bat** |
+| macOS | **1_Setup_macOS.command** | **2_Start_macOS.command** |
+
+The platform names stay visible even when the file browser hides extensions. Run setup once, then use Start each time. Keep the MatchPlant Dashboard server window open while working.
+
+The `_internal/` folder contains application code, assets, requirements, and helper scripts. Users do not need to open or run its files directly. Keep that folder alongside the four launchers. Existing `.venv/` and `instance/` folders stay at the dashboard root so installed environments and saved settings keep their paths.
 
 **Prefer the terminal?** Run the setup script. It checks for Python, tells you what to install if it's missing, and does the rest for you:
 
 ```bash
-./setup.sh          # Windows: setup.bat
+bash _internal/setup.sh          # Windows: 1_Setup_Windows.bat
 ```
 
 Then start the dashboard:
 
 ```bash
-./.venv/bin/python app.py     # Windows: .venv\Scripts\python app.py
+./.venv/bin/python _internal/app.py     # Windows: .venv\Scripts\python _internal/app.py
 ```
 
 Then open http://127.0.0.1:5050
@@ -40,21 +46,21 @@ Then open http://127.0.0.1:5050
 ```bash
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
+pip install -r _internal/requirements.txt
+python _internal/app.py
 ```
 
 ## Python setup and first-run help
 
-The Windows launchers are included in this folder. Run `setup.bat` once, then use `start_dashboard.bat` to start the dashboard.
+The Windows launchers are included in this folder. Run `1_Setup_Windows.bat` once, then use `2_Start_Windows.bat` to start the dashboard.
 
-`setup.bat` checks a working dashboard environment, Python commands, an active Conda environment, common Anaconda/Miniconda locations, and conventional per-user Python installations. Candidates must actually run Python 3.9+ with `venv`. If it misses an existing installation, press **E** and paste the full path to `python.exe`; setup will check it and continue. Or press **P** for Python downloads, **A** for Anaconda downloads, or **C** to close. The download options open the official websites; finish installation and run setup again. Clickable terminal links depend on the terminal, so the keyboard menu is the reliable option.
+`1_Setup_Windows.bat` checks a working dashboard environment, active virtual/Conda environments, common Python and Anaconda/Miniconda/Miniforge locations, and Python commands on PATH. An optional embedded PowerShell helper also searches Windows Python registrations, registered installation locations, Python launcher entries, Python install-manager runtimes, and known Conda environments, including custom locations recorded in `.conda/environments.txt`. No username or personal installation path is hardcoded. Each candidate must actually run Python 3.9+ with `venv`; inherited `PYTHONHOME` and `PYTHONPATH` overrides are cleared for setup. Portable or custom installations that are not registered or discoverable can be selected by pressing **E** and entering their executable path. Or press **P** for Python downloads, **A** for Anaconda downloads, or **C** to close. The download options open the official websites; finish installation and run setup again. Clickable terminal links depend on the terminal, so the keyboard menu is the reliable option. The discovery helper is embedded in `_internal/setup_windows.bat`, called by the Windows setup launcher.
 
-On macOS, `setup.command` also checks a working dashboard environment, Python commands, and common Python, Homebrew, and Conda locations. If it misses an existing Python 3.9+ with `venv`, press **E** and paste the full path to its executable; setup will check it and continue. You can find that path by running `command -v python3` in a separate Terminal window. Press **P** to open the official macOS Python downloads, **A** for Anaconda downloads, or **C** to close. Finish installing, then double-click `setup.command` again. The setup script does not install Python without your action. On Linux, `setup.sh` prints the download links for manual installation.
+On macOS, `1_Setup_macOS.command` calls `_internal/setup.sh`. Discovery checks a working dashboard environment, active virtual/Conda environments, Python framework versions, standard and custom Homebrew prefixes, pyenv versions, Conda environment records and common named-environment folders, and multiple Python versions across PATH. Candidates must run Python 3.9+ with `venv`; setup clears inherited `PYTHONHOME` and `PYTHONPATH` overrides and reports why a discovered executable fails validation. If it misses a portable or custom installation, press **E** and paste its executable path. You can find that path by running `command -v python3` in a separate Terminal window. Press **P** to open the official macOS Python downloads, **A** for Anaconda downloads, or **C** to close. Finish installing, then double-click `1_Setup_macOS.command` again. The setup script does not install Python without your action. On Linux, `_internal/setup.sh` prints the download links for manual installation.
 
-If macOS shows “setup.command” Not Opened before setup starts, follow the [macOS installation help](https://matchplant-dashboard.github.io/#get-started). The Python download choices appear only after the script is allowed to open.
+If macOS shows “1_Setup_macOS.command” Not Opened before setup starts, follow the [macOS installation help](https://matchplant-dashboard.github.io/#get-started). The Python download choices appear only after the script is allowed to open.
 
-The dashboard installs Flask, PyYAML, and packaging from `requirements.txt`; module dependencies are installed separately. If updating an existing dashboard, rerun setup to install added dependencies.
+The dashboard installs Flask, PyYAML, and packaging from `_internal/requirements.txt`; module dependencies are installed separately. If updating an existing dashboard, rerun setup to install added dependencies.
 
 ## Forms and guidance
 
@@ -84,7 +90,7 @@ Browse buttons accept existing input files/folders; output fields also accept ty
 
 Only one process per module runs at a time. **View log** reopens previous output without consuming another viewer’s log. A dropped log connection reconnects; **Stop** stops the launched process tree. Installing requirements uses the selected operating-system variant. Installed package versions are checked against requirements, but this is not a full runtime/hardware test.
 
-The dashboard binds to localhost and starts with Flask debug/reloader disabled, avoiding extra development processes. Update an existing dashboard environment with `python -m pip install -r requirements.txt` to install the added `packaging` dependency.
+The dashboard binds to localhost and starts with Flask debug/reloader disabled, avoiding extra development processes. Update an existing dashboard environment with `python -m pip install -r _internal/requirements.txt` to install the added `packaging` dependency.
 
 ## How it works
 
@@ -109,14 +115,14 @@ flowchart LR
     ProcMgr -->|"stdout / stderr"| Script
 ```
 
-- `modules.py`: manifest of all pipeline modules, script location(s), kind (`gui`, `cli`, `config`, `shell`), and for CLI tools, the argparse-derived form fields. Resolves each module's folder against the MatchPlant pipeline location configured in Settings, not this dashboard's own folder.
-- `process_manager.py`: launches each run as a subprocess and streams its stdout/stderr through a queue.
-- `transfer_form.py`: reads and validates transfer-learning form values, updating the existing YAML configuration while retaining advanced values.
-- `app.py`: Flask routes for the dashboard, module detail/form, run (`POST`), live log (`GET`, Server-Sent Events), and stop.
-- `settings.py`: persists the MatchPlant pipeline location and per-module interpreter paths to `instance/settings.json` (not committed).
-- `docker_check.py`: live Docker install/running check, used on the ODM Runner module page.
-- `venv_manager.py`: creates a dedicated virtual environment per module (used by the **Install requirements** button), so one module's dependencies never collide with another's.
-- `static/logo.png`, `static/images/img.png`: the dashboard's own bundled branding and pipeline-diagram assets (independent of wherever the MatchPlant pipeline is located).
+- `_internal/modules.py`: manifest of all pipeline modules, script location(s), kind (`gui`, `cli`, `config`, `shell`), and for CLI tools, the argparse-derived form fields. Resolves each module's folder against the MatchPlant pipeline location configured in Settings, not this dashboard's own folder.
+- `_internal/process_manager.py`: launches each run as a subprocess and retains its stdout/stderr for live streaming and log replay.
+- `_internal/transfer_form.py`: reads and validates transfer-learning form values, updating the existing YAML configuration while retaining advanced values.
+- `_internal/app.py`: Flask routes for the dashboard, module detail/form, run (`POST`), live log (`GET`, Server-Sent Events), and stop.
+- `_internal/settings.py`: persists the MatchPlant pipeline location and per-module interpreter paths to `instance/settings.json` (not committed).
+- `_internal/docker_check.py`: live Docker install/running check, used on the ODM Runner module page.
+- `_internal/venv_manager.py`: creates a dedicated virtual environment per module (used by the **Install requirements** button), so one module's dependencies never collide with another's.
+- `_internal/static/logo.png`, `_internal/static/images/img.png`: the dashboard's own bundled branding and pipeline-diagram assets (independent of wherever the MatchPlant pipeline is located).
 
 ## Dashboard module badges
 
@@ -126,3 +132,11 @@ flowchart LR
 - **Docker:** ODM Runner calls Docker through Python.
 
 These user-facing badges are separate from the internal execution categories.
+
+## Developer checks
+
+From the dashboard folder, run `python -m unittest discover -s _internal/tests` using the dashboard environment. The Flask app is `_internal/app.py`; templates and static assets live beside it. Keep `.venv/`, `instance/`, caches, and generated data out of commits. When updating an existing checkout, record the file moves and remove the old root-level launchers and application files rather than leaving duplicate copies.
+
+## Native file and folder pickers
+
+Browse uses the repository-level `matchplant_ui/` package, also used by all five native GUI modules. Folder pickers use the standard system dialog and select folders only. Windows may hide individual files in this dialog. Desktop file fields retain their own CSV/raster requirements while showing all file types. Keep `matchplant_ui/` alongside the pipeline folders when distributing the dashboard.

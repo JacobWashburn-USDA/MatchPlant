@@ -6,6 +6,10 @@ Date Created: 2 February 2025
 Version: 1.1
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+
 import os
 import webbrowser
 import cv2
@@ -24,7 +28,7 @@ from matplotlib import pyplot as plt
 from pyproj import Transformer
 from itertools import groupby
 import tkinter as tk
-from tkinter import filedialog
+from matchplant_ui import dialogs as filedialog
 
 def maximize_window(fig):
     """Maximize supported GUI windows without depending on backend spelling."""
@@ -99,12 +103,9 @@ class InitialWindow:
         img_box = self.fig.add_axes([0.325, 0.765, 0.35, 0.03])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.775, 0.765, 0.08, 0.03])
-        self.img_button = Button(img_button_ax, 'Folder...')
+        img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
+        self.img_button = Button(img_button_ax, 'Browse...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
-        image_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
-        self.image_button = Button(image_button_ax, 'Browse...')
-        self.image_button.on_clicked(self.browse_image_in_folder)
 
         # GCP file
         self.ax.text(0.265, 0.78, "GCP File:",
@@ -115,7 +116,7 @@ class InitialWindow:
         self.gcp_input = TextBox(gcp_box, '', initial='')
         
         gcp_button_ax = self.fig.add_axes([0.685, 0.71, 0.08, 0.03])
-        self.gcp_button = Button(gcp_button_ax, 'File...')
+        self.gcp_button = Button(gcp_button_ax, 'Browse...')
         self.gcp_button.on_clicked(lambda x: self.browse_file('gcp'))
 
     def _setup_camera_section(self):
@@ -180,38 +181,31 @@ class InitialWindow:
         threshold_box = self.fig.add_axes([0.325, 0.285, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
 
-    def browse_image_in_folder(self, _event):
-        """Select an image and use its containing folder."""
-        root = tk.Tk()
-        root.withdraw()
-        try:
-            image_path = filedialog.askopenfilename(
-                parent=root, title='Choose any file in the image folder',
-                filetypes=[('All files', '*'), ('Supported images', '*.jpg *.jpeg *.tif *.tiff')]
-            )
-        finally:
-            root.destroy()
-        if image_path:
-            self.img_input.set_val(os.path.dirname(image_path))
 
     def browse_file(self, type_):
-        """Handle image and GCP folder selection"""
-        root = tk.Tk()
-        root.withdraw()
-
+        """Use the system dialog to choose an image folder or a GCP file."""
         if type_ == 'img':
+            window = getattr(self.fig.canvas.manager, 'window', None)
             folder_path = filedialog.askdirectory(
-                title='Select image folder (files are not shown)'
+                title='Select image folder', initialdir=self.img_input.text.strip(),
+                parent=window if isinstance(window, tk.Misc) else None,
             )
             if folder_path:
                 self.img_input.set_val(folder_path)
-        else:
+                self.fig.canvas.draw_idle()
+            return
+        root = tk.Tk()
+        root.withdraw()
+        try:
             file_path = filedialog.askopenfilename(
-                title='Select GCP File',
+                parent=root, title='Select GCP File',
                 filetypes=[('CSV files', '*.csv'), ('All files', '*.*')]
             )
-            if file_path:
-                self.gcp_input.set_val(file_path)
+        finally:
+            root.destroy()
+        if file_path:
+            self.gcp_input.set_val(file_path)
+
 
     def _setup_start_button(self):
         """Setup the start button"""

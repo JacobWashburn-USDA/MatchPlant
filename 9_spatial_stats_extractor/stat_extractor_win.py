@@ -6,6 +6,10 @@ Date Created: March 15, 2025
 Version: 3.0
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+
 import os
 import sys
 import numpy as np
@@ -20,7 +24,7 @@ import time
 from shapely.geometry import box
 from shapely.geometry import Polygon
 import tkinter as tk
-from tkinter import filedialog
+from matchplant_ui import dialogs as filedialog
 
 def maximize_window(fig):
     """Maximize supported GUI windows without depending on backend spelling."""
@@ -525,7 +529,7 @@ class SpatialStatsExtractorGUI:
         self.bounds_input = TextBox(bounds_ax, '', initial='')
         
         bounds_button_ax = self.fig.add_axes([0.26, 0.81, 0.08, 0.03])
-        self.bounds_button = Button(bounds_button_ax, 'Browse')
+        self.bounds_button = Button(bounds_button_ax, 'Browse...')
         self.bounds_button.on_clicked(self.browse_bounds)
         
         # Raster file input
@@ -534,7 +538,7 @@ class SpatialStatsExtractorGUI:
         self.raster_input = TextBox(raster_ax, '', initial='')
         
         raster_button_ax = self.fig.add_axes([0.26, 0.74, 0.08, 0.03])
-        self.raster_button = Button(raster_button_ax, 'Browse')
+        self.raster_button = Button(raster_button_ax, 'Browse...')
         self.raster_button.on_clicked(self.browse_raster)
 
         # CRS input
@@ -639,7 +643,7 @@ class SpatialStatsExtractorGUI:
         self.output_input = TextBox(output_ax, '', initial='')
         
         output_button_ax = self.fig.add_axes([0.26, 0.215, 0.08, 0.03])
-        self.output_button = Button(output_button_ax, 'Browse')
+        self.output_button = Button(output_button_ax, 'Save As...')
         self.output_button.on_clicked(self.browse_output)
         
         # Calculate button
@@ -700,8 +704,6 @@ class SpatialStatsExtractorGUI:
 
     def browse_bounds(self, event):
         """Open file dialog to select bounds CSV file"""
-        root = tk.Tk()
-        root.withdraw()
         
         file_path = filedialog.askopenfilename(
             title="Select Bounds CSV File",
@@ -722,8 +724,6 @@ class SpatialStatsExtractorGUI:
         
     def browse_raster(self, event):
         """Open file dialog to select raster file"""
-        root = tk.Tk()
-        root.withdraw()
         
         file_path = filedialog.askopenfilename(
             title="Select Raster File",
@@ -748,8 +748,6 @@ class SpatialStatsExtractorGUI:
         
     def browse_output(self, event):
         """Open file dialog to select output file"""
-        root = tk.Tk()
-        root.withdraw()
         
         file_path = filedialog.asksaveasfilename(
             title="Select Output CSV File",

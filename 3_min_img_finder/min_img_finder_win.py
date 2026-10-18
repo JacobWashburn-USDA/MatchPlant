@@ -7,6 +7,10 @@ Date Created: 31 January 2025
 Version: 1.1
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+
 import os
 import webbrowser
 import glob
@@ -20,7 +24,7 @@ from shapely.geometry import box, Polygon, MultiPolygon
 from dataclasses import dataclass
 from datetime import datetime
 import tkinter as tk
-from tkinter import filedialog
+from matchplant_ui import dialogs as filedialog
 
 def maximize_window(fig):
     """Maximize supported GUI windows without depending on backend spelling."""
@@ -88,7 +92,7 @@ class InitialWindow:
         self.ortho_input = TextBox(ortho_box, '', initial='')
         
         ortho_button_ax = self.fig.add_axes([0.685, 0.785, 0.08, 0.03])
-        self.ortho_button = Button(ortho_button_ax, 'File...')
+        self.ortho_button = Button(ortho_button_ax, 'Browse...')
         self.ortho_button.on_clicked(lambda x: self.browse_file('ortho'))
 
         # Orthorectified Images
@@ -99,12 +103,9 @@ class InitialWindow:
         rect_box = self.fig.add_axes([0.325, 0.73, 0.35, 0.03])
         self.img_input = TextBox(rect_box, '', initial='')
         
-        rect_button_ax = self.fig.add_axes([0.775, 0.73, 0.08, 0.03])
-        self.img_button = Button(rect_button_ax, 'Folder...')
+        rect_button_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
+        self.img_button = Button(rect_button_ax, 'Browse...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
-        rect_image_ax = self.fig.add_axes([0.685, 0.73, 0.08, 0.03])
-        self.rect_image_button = Button(rect_image_ax, 'Browse...')
-        self.rect_image_button.on_clicked(lambda x: self.browse_image_in_folder('img'))
 
         # Undistorted Images
         self.ax.text(0.265, 0.735, "Undistorted Image Folder:",
@@ -114,12 +115,9 @@ class InitialWindow:
         undist_box = self.fig.add_axes([0.325, 0.675, 0.35, 0.03])
         self.undist_input = TextBox(undist_box, '', initial='')
         
-        undist_button_ax = self.fig.add_axes([0.775, 0.675, 0.08, 0.03])
-        self.undist_button = Button(undist_button_ax, 'Folder...')
+        undist_button_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
+        self.undist_button = Button(undist_button_ax, 'Browse...')
         self.undist_button.on_clicked(lambda x: self.browse_file('undist'))
-        undist_image_ax = self.fig.add_axes([0.685, 0.675, 0.08, 0.03])
-        self.undist_image_button = Button(undist_image_ax, 'Browse...')
-        self.undist_image_button.on_clicked(lambda x: self.browse_image_in_folder('undist'))
 
 
     def _setup_parameters_section(self):
@@ -164,44 +162,19 @@ class InitialWindow:
         """Open the parameter guide on GitHub."""
         webbrowser.open_new_tab(PARAMETER_GUIDE_URL)
 
-    def browse_image_in_folder(self, type_):
-        """Select an image and use its containing folder."""
-        root = tk.Tk()
-        root.withdraw()
-        try:
-            image_path = filedialog.askopenfilename(
-                parent=root, title='Choose any file in the image folder',
-                filetypes=[('All files', '*'), ('Supported images', '*.tif *.tiff' if type_ == 'img' else '*.tif *.tiff *.jpg *.jpeg')]
-            )
-        finally:
-            root.destroy()
-        if image_path:
-            target = self.img_input if type_ == 'img' else self.undist_input
-            target.set_val(os.path.dirname(image_path))
 
     def browse_file(self, type_):
-        """Handle file and folder selection using tkinter"""
-        root = tk.Tk()
-        root.withdraw()  # Hide the main window
-
+        """Select the orthomosaic file or an image directory."""
         if type_ == 'ortho':
-            file_path = filedialog.askopenfilename(
-                title='Select Orthomosaic',
-                filetypes=[('GeoTIFF files', '*.tif *.tiff')]
-            )
-            if file_path:
-                self.ortho_input.set_val(file_path)
-        elif type_ in ['img', 'undist']:
-            folder_path = filedialog.askdirectory(
-                title=f'Select {"Image" if type_ == "img" else "Undistorted Images"} Folder (files are not shown)'
-            )
-            if folder_path:
-                if type_ == 'img':
-                    self.img_input.set_val(folder_path)
-                else:
-                    self.undist_input.set_val(folder_path)
+            path = filedialog.askopenfilename(title='Select Orthomosaic', filetypes=[('GeoTIFF files', '*.tif *.tiff')])
+            target = self.ortho_input
+        else:
+            target = self.img_input if type_ == 'img' else self.undist_input
+            path = filedialog.askdirectory(title='Select Image Folder' if type_ == 'img' else 'Select Undistorted Images Folder', initialdir=target.text.strip())
+        if path:
+            target.set_val(path)
+            self.fig.canvas.draw_idle()
 
-        self.fig.canvas.draw_idle()
 
     def _setup_start_button(self):
         """Setup the start button"""

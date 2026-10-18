@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0.."
 if /i "%~1"=="--server" goto :server
 if not exist ".venv\Scripts\python.exe" goto :missing_setup
 ".venv\Scripts\python.exe" -c "import flask, yaml, packaging" >nul 2>&1
@@ -20,7 +20,7 @@ echo Starting MatchPlant Dashboard...
 echo Keep this window open while using the dashboard.
 echo Close this window or press Ctrl+C to stop it.
 echo.
-".venv\Scripts\python.exe" -u app.py
+".venv\Scripts\python.exe" -u "_internal\app.py"
 if errorlevel 1 (
     echo.
     echo Dashboard startup failed. Review the error above.
@@ -31,6 +31,6 @@ exit /b 0
 
 :missing_setup
 echo Dashboard setup is missing or incomplete.
-echo Double-click setup.bat first, then run start_dashboard.bat again.
+echo Double-click 1_Setup_Windows.bat first, then run 2_Start_Windows.bat again.
 pause
 exit /b 1

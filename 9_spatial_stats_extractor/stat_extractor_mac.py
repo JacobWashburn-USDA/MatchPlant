@@ -6,6 +6,11 @@ Date Created: March 15, 2025
 Version: 3.0
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+from matchplant_ui.dialogs import FileDialogHandler
+
 import os
 os.environ['TK_SILENCE_DEPRECATION'] = '1'  # Silence deprecation warning
 import sys
@@ -49,41 +54,6 @@ def maximize_window(fig):
     fig.canvas.mpl_connect("draw_event", fit_after_draw)
     fig.canvas.manager.full_screen_toggle()
 
-class FileDialogHandler:
-    """Handler for file dialogs using macOS native dialogs"""
-    @staticmethod
-    def ask_open_filename(title='Select File', filetypes=None):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
-            'activate\n'
-            'set filePath to POSIX path of (choose file with prompt "' + title + '")\n'
-            'end tell\''
-        )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
-    
-    @staticmethod
-    def ask_save_filename(title='Save As', filetypes=None, defaultextension=None):
-        default_name = "output.csv" if defaultextension == ".csv" else "output.txt"
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
-            'activate\n'
-            'set filePath to POSIX path of (choose file name with prompt "' + title + '" default name "' + default_name + '")\n'
-            'end tell\''
-        )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
-        
-    @staticmethod
-    def ask_directory(title='Select Directory'):
-        cmd = (
-            'osascript -e \'tell application "SystemUIServer"\n'
-            'activate\n'
-            'set folderPath to POSIX path of (choose folder with prompt "' + title + '")\n'
-            'end tell\''
-        )
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
 
 def csv_to_geopandas(bounds_df, raster_path=None, manual_crs=None):
     """Convert bounds CSV data to a GeoDataFrame using CRS from:
@@ -581,7 +551,7 @@ class SpatialStatsExtractorGUI:
         self.bounds_input = TextBox(bounds_ax, '', initial='')
         
         bounds_button_ax = self.fig.add_axes([0.26, 0.81, 0.08, 0.03])
-        self.bounds_button = Button(bounds_button_ax, 'Browse')
+        self.bounds_button = Button(bounds_button_ax, 'Browse...')
         self.bounds_button.on_clicked(self.browse_bounds)
         
         # Raster file input
@@ -590,7 +560,7 @@ class SpatialStatsExtractorGUI:
         self.raster_input = TextBox(raster_ax, '', initial='')
         
         raster_button_ax = self.fig.add_axes([0.26, 0.74, 0.08, 0.03])
-        self.raster_button = Button(raster_button_ax, 'Browse')
+        self.raster_button = Button(raster_button_ax, 'Browse...')
         self.raster_button.on_clicked(self.browse_raster)
 
         # CRS input
@@ -695,7 +665,7 @@ class SpatialStatsExtractorGUI:
         self.output_input = TextBox(output_ax, '', initial='')
         
         output_button_ax = self.fig.add_axes([0.26, 0.215, 0.08, 0.03])
-        self.output_button = Button(output_button_ax, 'Browse')
+        self.output_button = Button(output_button_ax, 'Save As...')
         self.output_button.on_clicked(self.browse_output)
         
         # Calculate button

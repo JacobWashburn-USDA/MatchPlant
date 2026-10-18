@@ -6,6 +6,10 @@ Date Created: 31 January 2025
 Version: 1.0
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+
 import os
 import cv2
 import json
@@ -17,7 +21,7 @@ from dataclasses import dataclass
 from matplotlib.widgets import Button, TextBox
 from matplotlib import pyplot as plt
 import tkinter as tk
-from tkinter import filedialog
+from matchplant_ui import dialogs as filedialog
 
 def maximize_window(fig):
     """Maximize supported GUI windows without depending on backend spelling."""
@@ -88,11 +92,8 @@ class InitialWindow:
         self.img_input = TextBox(img_box, '', initial='')
         
         img_button_ax = self.fig.add_axes([0.81, 0.78, 0.08, 0.035])
-        self.img_button = Button(img_button_ax, 'Folder...')
+        self.img_button = Button(img_button_ax, 'Browse...')
         self.img_button.on_clicked(lambda x: self.browse_file('img'))
-        image_button_ax = self.fig.add_axes([0.72, 0.78, 0.08, 0.035])
-        self.image_button = Button(image_button_ax, 'Browse...')
-        self.image_button.on_clicked(self.browse_image_in_folder)
 
         # Annotation folder
         self.ax.text(0.225, 0.795, "Annotation Folder:",
@@ -103,11 +104,8 @@ class InitialWindow:
         self.ann_input = TextBox(ann_box, '', initial='')
         
         ann_button_ax = self.fig.add_axes([0.81, 0.715, 0.08, 0.035])
-        self.ann_button = Button(ann_button_ax, 'Folder...')
+        self.ann_button = Button(ann_button_ax, 'Browse...')
         self.ann_button.on_clicked(lambda x: self.browse_file('ann'))
-        annotation_file_ax = self.fig.add_axes([0.72, 0.715, 0.08, 0.035])
-        self.annotation_file_button = Button(annotation_file_ax, 'Browse...')
-        self.annotation_file_button.on_clicked(self.browse_annotation_in_folder)
 
         # Output folder
         self.ax.text(0.225, 0.705, "Output Folder:", 
@@ -118,7 +116,7 @@ class InitialWindow:
         self.out_input = TextBox(out_box, '', initial='')
         
         out_button_ax = self.fig.add_axes([0.72, 0.645, 0.1, 0.035])
-        self.out_button = Button(out_button_ax, 'Folder...')
+        self.out_button = Button(out_button_ax, 'Browse...')
         self.out_button.on_clicked(lambda x: self.browse_file('out'))
 
     def _setup_split_section(self):
@@ -188,55 +186,19 @@ class InitialWindow:
         size_box = self.fig.add_axes([0.65, 0.205, 0.2, 0.035])
         self.min_size = TextBox(size_box, '', initial='10')
 
-    def browse_image_in_folder(self, _event):
-        """Select an image and use its containing folder."""
-        self.browse_file_in_folder(
-            self.img_input, 'Choose any file in the image folder',
-            [('All files', '*'), ('Supported images', '*.tif *.tiff *.jpg *.jpeg *.png')]
-        )
 
-    def browse_annotation_in_folder(self, _event):
-        """Select an annotation file and use its containing folder."""
-        self.browse_file_in_folder(
-            self.ann_input, 'Choose any file in the annotation folder',
-            [('All files', '*'), ('JSON annotations', '*.json')]
-        )
 
-    def browse_file_in_folder(self, target, title, filetypes):
-        root = tk.Tk()
-        root.withdraw()
-        try:
-            file_path = filedialog.askopenfilename(
-                parent=root, title=title, filetypes=filetypes
-            )
-        finally:
-            root.destroy()
-        if file_path:
-            target.set_val(os.path.dirname(file_path))
-            self.fig.canvas.draw_idle()
 
     def browse_file(self, type_):
-        "Handle image, annotation, and output selection"
-        root = tk.Tk()
-        root.withdraw()
+        """Images, annotation collections, and output all require folders."""
+        targets = {'img': self.img_input, 'ann': self.ann_input, 'out': self.out_input}
+        titles = {'img': 'Select image folder', 'ann': 'Select annotation folder', 'out': 'Select output folder'}
+        target = targets[type_]
+        folder = filedialog.askdirectory(title=titles[type_], initialdir=target.text.strip())
+        if folder:
+            target.set_val(folder)
+            self.fig.canvas.draw_idle()
 
-        if type_ == 'img':
-            folder_path = filedialog.askdirectory(
-                title='Select image folder (files are not shown)'
-            )
-            if folder_path:
-                self.img_input.set_val(folder_path)
-        elif type_ in ['ann', 'out']:
-            folder_path = filedialog.askdirectory(
-                title=f'Select {"Annotation" if type_ == "ann" else "Output"} Folder (files are not shown)'
-            )
-            if folder_path:
-                if type_ == 'ann':
-                    self.ann_input.set_val(folder_path)
-                else:
-                    self.out_input.set_val(folder_path)
-        
-        self.fig.canvas.draw_idle()
     
     def _setup_start_button(self):
         """Setup the start button"""

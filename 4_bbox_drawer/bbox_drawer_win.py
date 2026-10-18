@@ -8,6 +8,10 @@ Date Created: 28 January 2025
 Version: 1.0
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+
 import cv2
 import os
 import json
@@ -16,7 +20,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, TextBox, RadioButtons
 import tkinter as tk
-from tkinter import filedialog
+from matchplant_ui import dialogs as filedialog
 
 def maximize_window(fig):
     """Maximize supported GUI windows without depending on backend spelling."""
@@ -95,37 +99,19 @@ class InitialWindow:
         dir_box = self.fig.add_axes([0.325, 0.745, 0.35, 0.03])
         self.dir_input = TextBox(dir_box, '', initial='')
         
-        dir_button_ax = self.fig.add_axes([0.775, 0.745, 0.08, 0.03])
-        self.dir_button = Button(dir_button_ax, 'Folder...')
+        dir_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
+        self.dir_button = Button(dir_button_ax, 'Browse...')
         self.dir_button.on_clicked(self.browse_directory)
-        image_button_ax = self.fig.add_axes([0.685, 0.745, 0.08, 0.03])
-        self.image_button = Button(image_button_ax, 'Browse...')
-        self.image_button.on_clicked(self.browse_image_in_folder)
 
-    def browse_image_in_folder(self, _event):
-        """Select an image and use its containing folder."""
-        root = tk.Tk()
-        root.withdraw()
-        try:
-            image_path = filedialog.askopenfilename(
-                parent=root, title='Choose any file in the image folder',
-                filetypes=[('All files', '*'), ('Supported images', '*.jpg *.jpeg *.png *.tif *.tiff')]
-            )
-        finally:
-            root.destroy()
-        if image_path:
-            self.image_folder = os.path.dirname(os.path.abspath(image_path))
-            self.dir_input.set_val(self.image_folder)
 
     def browse_directory(self, event):
-        """Handle directory selection"""
-        root = tk.Tk()
-        root.withdraw()  # Hide the main window
-
-        folder_path = filedialog.askdirectory(title='Select image folder (files are not shown)')
-        if folder_path:
-            self.image_folder = os.path.abspath(folder_path)
+        """Choose an image folder using the system picker."""
+        folder = filedialog.askdirectory(title='Select image folder', initialdir=self.dir_input.text.strip())
+        if folder:
+            self.image_folder = os.path.abspath(folder)
             self.dir_input.set_val(self.image_folder)
+            self.fig.canvas.draw_idle()
+
 
     def _setup_format_section(self):
         """Setup format selection"""

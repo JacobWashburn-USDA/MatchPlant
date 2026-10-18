@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 
 if [ ! -x ".venv/bin/python" ]; then
   echo "Setup hasn't been run yet."
-  echo "Double-click setup.command first, then try this again."
+  echo "Double-click 1_Setup_macOS.command first, then try this again."
   echo
   read -n 1 -s -r -p "Press any key to close this window..."
   echo
@@ -14,7 +14,7 @@ if [ ! -x ".venv/bin/python" ]; then
 fi
 
 echo "Starting MatchPlant Dashboard..."
-./.venv/bin/python app.py &
+./.venv/bin/python _internal/app.py &
 SERVER_PID=$!
 
 for _ in $(seq 1 30); do

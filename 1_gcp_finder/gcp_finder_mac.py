@@ -6,6 +6,11 @@ Date Created: 30 January 2025
 Version: 1.1
 """
 
+import sys as _picker_sys
+from pathlib import Path as _PickerPath
+_picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
+from matchplant_ui.dialogs import FileDialogHandler
+
 import os
 import webbrowser
 import cv2
@@ -53,32 +58,6 @@ def maximize_window(fig):
     fig.canvas.mpl_connect("draw_event", fit_after_draw)
     fig.canvas.manager.full_screen_toggle()
 
-class FileDialogHandler:
-    """Mac-specific file dialog handler"""
-    @staticmethod
-    def ask_directory(title='Select Directory'):
-        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
-        script = (
-            'tell application "SystemUIServer"\n'
-            'activate\n'
-            f'set folderPath to POSIX path of (choose folder with prompt "{prompt}")\n'
-            'end tell'
-        )
-        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
-
-    @staticmethod
-    def ask_open_filename(title='Select File', filetypes=None):
-        # Show all files; a selected file can identify its containing folder.
-        prompt = title.replace('\\', '\\\\').replace('"', '\\"')
-        script = (
-            'tell application "SystemUIServer"\n'
-            'activate\n'
-            f'set filePath to POSIX path of (choose file with prompt "{prompt}")\n'
-            'end tell'
-        )
-        result = subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
-        return result.stdout.strip() if result.returncode == 0 else None
 
 # Global Configuration
 DEFAULT_CONFIG = {
@@ -146,12 +125,9 @@ class InitialWindow:
         img_box = self.fig.add_axes([0.325, 0.765, 0.35, 0.03])
         self.img_input = TextBox(img_box, '', initial='')
         
-        img_button_ax = self.fig.add_axes([0.775, 0.765, 0.08, 0.03])
-        self.img_button = Button(img_button_ax, 'Folder...')
+        img_button_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
+        self.img_button = Button(img_button_ax, 'Browse...')
         self.img_button.on_clicked(self.browse_image_folder)
-        browse_ax = self.fig.add_axes([0.685, 0.765, 0.08, 0.03])
-        self.image_browse_button = Button(browse_ax, 'Browse...')
-        self.image_browse_button.on_clicked(self.browse_file_in_image_folder)
 
         # GCP file 
         self.ax.text(0.265, 0.78, "GCP File:",
@@ -162,7 +138,7 @@ class InitialWindow:
         self.gcp_input = TextBox(gcp_box, '', initial='')
         
         gcp_button_ax = self.fig.add_axes([0.685, 0.71, 0.08, 0.03])
-        self.gcp_button = Button(gcp_button_ax, 'File...')
+        self.gcp_button = Button(gcp_button_ax, 'Browse...')
         self.gcp_button.on_clicked(self.browse_gcp_file)
 
     def _setup_camera_section(self):
@@ -227,18 +203,14 @@ class InitialWindow:
         threshold_box = self.fig.add_axes([0.325, 0.285, 0.15, 0.03])
         self.threshold_input = TextBox(threshold_box, '', initial='10')
 
-    def browse_file_in_image_folder(self, _event):
-        """Use a visible file to select its containing image folder."""
-        file_path = self.file_dialog.ask_open_filename(
-            title='Choose any file in the image folder'
-        )
-        if file_path:
-            self.img_input.set_val(os.path.dirname(os.path.abspath(file_path)))
-            self.fig.canvas.draw_idle()
 
     def browse_image_folder(self, event):
         """Handle image folder selection"""
-        folder_path = self.file_dialog.ask_directory(title='Select the folder containing your images')
+        try:
+            folder_path = self.file_dialog.ask_directory(title='Select image folder', initialdir=self.img_input.text.strip())
+        except (OSError, RuntimeError) as error:
+            self.show_error_message(str(error))
+            return
         if folder_path:
             self.img_input.set_val(os.path.abspath(folder_path))
             self.fig.canvas.draw_idle()
