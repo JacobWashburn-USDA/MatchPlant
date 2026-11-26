@@ -1,194 +1,107 @@
-# **GCP (Ground Control Point) Finder Tool**
+# 1 · GCP Finder
 
-A Python utility for identifying and marking Ground Control Points (GCPs) in drone imagery. This tool provides an interactive interface for matching GCP coordinates with their corresponding locations in drone-captured images.
+**Stage 1 · Prepare imagery** · **Type: Desktop app** · [← Back to MatchPlant](../README.md)
 
-### **Note**
+Mark Ground Control Points (GCPs) in your UAV images and build the `gcp_list.txt` file that [OpenDroneMap](https://github.com/OpenDroneMap/ODM) uses to make a more accurate orthomosaic. The tool finds the images that are likely to contain each GCP; you right-click the GCP in each image to mark it.
 
-This tool is handy for drone imagery processing workflows where the orthomosaic software, [OpenDroneMap open-source software](https://github.com/OpenDroneMap/ODM/tree/master), needs the GCP file to increase the precision of the orthomosaic images.
+| | |
+| --- | --- |
+| **Use it when** | You placed GCPs in the field and have their surveyed coordinates. Skip it if you are not using GCPs. |
+| **Input** | A folder of UAV images with GPS in EXIF, and a CSV of GCP coordinates |
+| **Output** | `gcp_list.txt` in the image folder |
+| **Previous step** | [0 GPS Embedder](../0_gps_embeder/README.md) (only if your images lack GPS) |
+| **Next step** | [2 ODM Runner](../2_odm_runner/README.md): put `gcp_list.txt` in the project's `images/` folder |
 
+## Run it from the dashboard
 
-## Using the dashboard
+1. On the dashboard home, select **GCP Finder**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Check the **Operating system** selection (it is set for your computer automatically), then click **Launch**. A GCP Finder window opens.
+4. In the window, fill in the required information:
+   - **Image Folder**: click **Browse...** and choose your image folder.
+   - **GCP File**: click **Browse...** and choose your GCP CSV file.
+   - **Camera sensor** width and height in millimeters (see [camera sensor dimensions](camera_sensor_dimension.md)).
+   - **Distance threshold** in meters (default 10 m).
+5. Click **Click to Start Finding**.
+6. Mark each GCP (see [Marking GCPs](#marking-gcps)) and press **S** to save `gcp_list.txt`.
 
-Open **GCP Finder** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+Keep the dashboard running while you use the window. Messages and errors appear in the dashboard **Output** panel.
 
-The **Image Folder** row has one **Browse...** button that opens the standard system folder picker. Select a folder and confirm; Cancel keeps the previous value. On Windows, the native folder-only dialog may hide individual files. The **GCP File** control opens the system file picker and accepts CSV files.
+![GCP Finder setup window](images/img_1.png)
 
-The dashboard automatically selects `gcp_finder_win.py` on Windows and `gcp_finder_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+*GCP Finder setup window*
 
-## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Interactive GUI Controls](#interactive-gui-controls)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+## Inputs
 
-## Quick Start
+- **Images**: JPG/JPEG/TIF/TIFF files in one folder, with GPS coordinates in EXIF.
+- **GCP file (CSV)** with columns `X` (longitude/easting), `Y` (latitude/northing), `Z` (elevation), and `id`:
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd MatchPlant/1_gcp_finder
+  ```text
+  X,Y,Z,id
+  -123.456,45.789,100.5,1
+  -123.457,45.790,102.3,2
+  ```
+
+### Distance threshold
+
+How far (in meters) from a GCP the tool searches for images. The maximum is 50 m.
+
+- Dense coverage or low flights: 5–10 m (fewer, closer images).
+- Sparse coverage or higher flights: 15–20 m (more images, but the GCP may be harder to see).
+
+## Marking GCPs
+
+1. Select a GCP ID from the radio buttons.
+2. Choose an image from the list.
+3. Right-click the center of the GCP to mark it.
+4. Repeat for the other images and GCPs, then press **S** to save.
+
+| Control | Action |
+| --- | --- |
+| Right-click | Mark the GCP location |
+| Left-click and drag | Pan the image |
+| Scroll wheel | Zoom in/out |
+| **S** | Save marked points to `gcp_list.txt` |
+| **D** | Delete the last point |
+
+![GCP marking window](images/GCP_marking_window.jpg)
+
+*GCP marking window*
+
+## Outputs
+
+`gcp_list.txt` is saved in your image folder, in the format OpenDroneMap expects:
+
+```text
+WGS84 UTM [zone][hemisphere]
+[UTM_X] [UTM_Y] [Elevation] [ImageX] [ImageY] [Filename] [GCP_ID]
 ```
 
-### 2. Install dependencies:
+Copy it into the `images/` folder of your [ODM Runner](../2_odm_runner/README.md) project.
 
-- For Windows:
-  ```bash
-  pip install -r requirements_win.txt
-  ```
+## Run without the dashboard
 
-- For macOS:
-  ```bash
-  pip install -r requirements_mac.txt
-  ```
+From this folder, install the requirements for your system and start the tool:
 
-### 3. Run the script:
+```bash
+# Windows
+pip install -r requirements_win.txt
+python gcp_finder_win.py
 
-- For Windows:
-  ```bash
-  python gcp_finder_win.py
-  ```
+# macOS
+pip install -r requirements_mac.txt
+python gcp_finder_mac.py
+```
 
-- For macOS:
-  ```bash
-  python gcp_finder_mac.py
-  ```
+Keep the repository's [matchplant_ui](../matchplant_ui/README.md) folder beside this module; the Browse buttons use it.
 
-## **Features**
+## Troubleshooting
 
-- Interactive GUI: User-friendly interface for GCP identification
-- Image Navigation: Pan and zoom capabilities for precise point marking
-- Coordinate Transformation: Automatic conversion between WGS84 and UTM coordinates
-- Metadata Extraction: Comprehensive EXIF data parsing from drone imagery
-- Smart Image Finding: Automatically identifies images likely to contain specific GCPs
-- Point Management: Save, delete, and review marked GCP locations
-- Progress Tracking: Visual display of marked points and coordinates
+- **No images listed:** check the image folder, that images have GPS in EXIF, that the GCP coordinates fall inside the flight area, and try a larger distance threshold.
+- **Coordinate errors:** check the GCP CSV columns and that all coordinates use the same system.
+- **Images do not load:** use a supported format and check file permissions.
+- **Windows folder picker shows no files:** this is normal; the folder picker selects folders only.
 
-## **Requirements**
+## License
 
-- Python 3.9+
-- Dependencies:
-  - OpenCV (cv2)
-  - NumPy
-  - Pandas
-  - PIL (Pillow)
-  - Matplotlib
-  - PyProj
-  - Tkinter
-
-## **Input Requirements**
-
-### 1. Required Files
-- Image Files:
-   - Format: JPG/JPEG/TIF/TIFF
-   - Must contain EXIF metadata with GPS coordinates
-   - Located in a single directory
-- GCP File (CSV format):
-   - Required columns:
-     - X: Longitude/Easting
-     - Y: Latitude/Northing
-     - Z: Elevation
-     - id: GCP identifier
-   - GCP File format:
-     ```
-     X,Y,Z,id
-     -123.456,45.789,100.5,1
-     -123.457,45.790,102.3,2
-     ```
-
-### 2. Configuration Setup
-- Sensor Dimensions: For the information, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/camera_sensor_dimension.md)
-   - Camera sensor width (millimeter)
-   - Camera sensor height (millimeter)
-- Distance Threshold Configuration (meter, default = 10 m):
-   - The distance threshold determines how far (in meters) from a GCP the software will search for relevant images
-   - A larger threshold (e.g., 20m) will find more potential images but may include ones where the GCP is less visible
-   - A smaller threshold (e.g., 5m) will be more selective, showing only images taken closer to the GCP
-   - Choose based on your flight pattern:
-      - For flights with dense coverage, use smaller values (5-10m)
-      - For sparser coverage or higher altitude flights, use larger values (15-20m)
-      - Maximum allowed value is 50m
-   - The threshold helps filter out images where the GCP would be too distant or poorly visible
-
-## **Outputs**
-
-- gcp_list.txt:
-   - Format: "UTM_X UTM_Y Elevation ImageX ImageY Filename GCP_ID"
-   - Contains all marked GCP locations
-   - Includes coordinate transformations
-   - Headers specify coordinate system
-   - `gcp_list.txt` format:
-      ```
-      WGS84 UTM [zone][hemisphere]
-      [UTM_X] [UTM_Y] [Elevation] [ImageX] [ImageY] [Filename] [GCP_ID]
-      ```
-   - The program creates `gcp_list.txt` in your input image folder:
-      ```
-      input_image_folder/
-      ├── your_images.jpg
-      ├── gcp_list.txt        # Generated GCP file
-      ```
-
-## **Usage Instructions**
-
-- Launch Application:
-   ```python
-   python gcp_finder_win.py   # or gcp_finder_mac.py for macOS
-   ```
-- Initial Setup:
-   - Select an image folder
-   - Choose GCP data file
-   - Enter camera sensor dimensions: Check sensor dimension 
-   - Set distance threshold 
-   - Click "Click to Start Finding" to begin
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/images/img_1.png?raw=true)
-
-Figure 1. Example of ininitial_setup_window
-- GCP Marking:
-   - Select GCP ID from the radio buttons
-   - Choose a relevant image from the list
-   - Right-click to mark the GCP location
-   - Press 'S' to save points
-   - Press 'D' to delete last point
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/1_gcp_finder/images/GCP_marking_window.jpg?raw=true)
-
-Figure 2. Example of gcp_marking_window
-
-## **Interactive GUI Controls**
-
-- Mouse Controls:
-  - Right Click: Mark GCP location
-  - Left Click + Drag: Pan image
-  - Scroll Wheel: Zoom in/out
-- Keyboard Controls:
-  - 'S': Save marked points
-  - 'D': Delete last point
-
-## **Common Issues and Solutions**
-
-- No Images Listed:
-   - Verify image folder path
-   - Check image EXIF data integrity
-   - Confirm GCP coordinates are within range
-- Coordinate Transformation Errors:
-   - Validate GCP file format
-   - Check coordinate system consistency
-   - Verify UTM zone information
-- Image Loading Failures:
-   - Ensure supported image format
-   - Check file permissions
-   - Verify image file integrity
-
-## **License**
-
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
-
-## File and folder selection
-
-Both desktop variants use the shared [picker rules](../matchplant_ui/README.md). Each folder field has one Browse button using the standard system folder picker. It accepts folders only; Windows may hide individual files in this dialog. File pickers show all file types and check the required format before returning a path. Output CSV controls allow new file names. Cancel leaves the existing input unchanged. Keep the repository-level `matchplant_ui/` folder when copying or distributing these scripts. Native macOS picker behavior still needs testing on a Mac.
+MIT License. See [LICENSE](../LICENSE).

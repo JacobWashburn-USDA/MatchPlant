@@ -1,165 +1,90 @@
-# **GPS Embedding Tool for Drone Imagery**
+# 0 · GPS Embedder
 
-A Python utility for processing drone imagery and embedding GPS coordinates by matching image timestamps with event data. This tool handles UTM (Universal Transverse Mercator) to WGS84 coordinate conversion and EXIF metadata manipulation.
+**Stage 1 · Prepare imagery** · **Type: Form** · [← Back to MatchPlant](../README.md)
 
-### **Note**
-This tool is handy for drone imagery processing workflows where GPS data must be embedded post-flight or when working with systems that record position data separately from image capture.
+Embed GPS coordinates into UAV image EXIF metadata before orthomosaic generation. The tool matches each image's timestamp with a position in an `events.txt` log, converts the UTM coordinates to latitude/longitude (WGS84), and writes them into copies of the images.
 
+| | |
+| --- | --- |
+| **Use it when** | Your UAV system records GPS positions separately from image capture, so the images have no GPS tags. Skip this step if your images already have GPS in their EXIF data. |
+| **Input** | A folder with the JPG images and a tab-delimited `events.txt` |
+| **Output** | `images_with_gps/` (GPS-tagged copies) and `events_with_matches.csv`, inside the same folder |
+| **Next step** | [1 GCP Finder](../1_gcp_finder/README.md) or [2 ODM Runner](../2_odm_runner/README.md) |
 
-## Using the dashboard
+## Run it from the dashboard
 
-Open **GPS Embedder** in the [local dashboard](../dashboard/README.md). Install this module's requirements if prompted. Enter the UTM zone (1–60), select N or S, and use **Browse…** to choose the folder containing the JPG images and the tab-delimited `events.txt`. Click **Run** and follow the live log. The dashboard supplies these inputs as arguments; no separate GUI window opens.
+1. On the dashboard home, select **GPS Embedder**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Enter the **UTM zone** (1–60) of your event coordinates, for example `15` for Columbia, MO, USA.
+4. Choose the **Hemisphere**: `N` for Northern or `S` for Southern.
+5. Click **Browse…** and choose the **Images folder** that contains the JPG images and `events.txt`.
+6. Click **Run** and follow the **Output** panel until it finishes.
+7. Use the new `images_with_gps/` folder as the image input for the next step.
 
-For a terminal run, provide all three arguments together:
+## Inputs
+
+Put the images and `events.txt` in one folder:
+
+```text
+your_input_folder/
+├── events.txt
+├── IMG_0001.jpg
+├── IMG_0002.jpg
+└── ...
+```
+
+- **Images**: JPG/JPEG files with an EXIF timestamp (original camera files, not screenshots or edited copies). Keep file names in capture order.
+- **events.txt**: must be named exactly `events.txt`, tab-delimited, with columns for timestamp (seconds), X (UTM Easting), Y (UTM Northing), and Z (altitude).
+
+![Example events.txt file](images/img_events_txt.png)
+
+*Example of an `events.txt` file*
+
+## Outputs
+
+```text
+your_input_folder/
+├── events.txt
+├── IMG_0001.jpg                  # originals are not changed
+├── events_with_matches.csv       # matched events and timing error for each image
+└── images_with_gps/
+    └── IMG_0001.jpg              # copy with GPS written to EXIF
+```
+
+## Run without the dashboard
+
+From this folder:
 
 ```bash
+pip install -r requirements.txt
 python gps_embed.py --utm-zone 15 --hemisphere N --images-folder "path/to/images"
 ```
 
-Use your dataset's actual zone and hemisphere. Running `python gps_embed.py` without arguments retains the interactive prompts. Partial argument sets are rejected. Outputs are `events_with_matches.csv` and `images_with_gps/` inside the selected folder; GPS-tagged images are written as copies.
+Provide all three arguments together, or run `python gps_embed.py` with no arguments to answer the questions interactively. Use your own zone and hemisphere.
 
-## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+<details>
+<summary>Use it from Python</summary>
 
-## Quick Start
+```python
+from gps_embed import TimestampMatcher
 
-1. Clone the repository:
-```bash
-git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd MatchPlant/0_gps_embeder
+matcher = TimestampMatcher()
+matcher.set_utm_zone(15, 'N')
+image_files = matcher.get_image_files('path/to/images')
+matcher.load_events_file('path/to/events.txt')
+matcher.find_initial_offset(image_files[0])
+matcher.save_matched_events('events.txt', 'events_with_matches.csv')
+matcher.embed_gps_to_images('input_folder', 'images_with_gps')
 ```
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+</details>
 
-3. Run the script:
-```bash
-python gps_embed.py
-```
+## Troubleshooting
 
-## **Features**
+- **No EXIF data:** use the original camera files and check that the camera saves EXIF metadata.
+- **Timestamps do not match:** check the camera clock, the timestamp format in `events.txt`, and that images are in capture order.
+- **Positions look wrong:** confirm the UTM zone and hemisphere for your field, and the X/Y column order in `events.txt`.
 
-- Timestamp Matching: Automatically matches drone images with GPS coordinates based on timestamp data
-- Coordinate Conversion: Converts UTM coordinates to WGS84 (latitude/longitude) format
-- EXIF Processing: Reads and writes GPS data to image EXIF metadata
-- Error Analysis: Provides detailed timing error analysis for matched images
-- Batch Processing: Handles multiple images in a single operation
-- Progress Tracking: Includes progress monitoring for large batches of images
+## License
 
-## **Requirements**
-
-- Python 3.9+
-- Dependencies:
-  - piexif: For EXIF metadata manipulation
-  - PIL (Pillow): For image processing
-  - pyproj: For coordinate system transformations
-  - Other standard Python libraries (csv, os, shutil, datetime)
-
-## **Input Requirements**
-
-### 1. User Inputs
-- UTM Zone Information:
-    - Zone number (1-60)
-    - Hemisphere (N/S)
-    - Example: Zone 15N for Columbia, MO, United States
-- Folder Path:
-    - Base folder containing:
-      - Drone images (.jpg/.jpeg)
-      - events.txt file with coordinate data
-        
-### 2. File Requirements
-- Image Files:
-    - Format: JPG/JPEG
-    - Must contain EXIF timestamp data
-    - Should be named in a way that maintains chronological order
-- Events File (events.txt):
-    - Must be named exactly “events.txt”
-    - Tab-delimited format
-    - Required columns:
-      - Timestamp (in seconds)
-      - X (UTM Easting)
-      - Y (UTM Northing)
-      - Z (Altitude)
-      - File must be placed in the same folder as images
-     
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/0_gps_embeder/images/img_events_txt.png)
-
-Figure 1. Example of events.txt file
-      
-## **Outputs**
-
-- Program automatically creates:
-  - “events_with_matches.csv”: Contains matching results
-    - CSV file with matched events and timing analysis
-  - “images_with_gps” folder: Contains processed images
-    - Copy of original images with embedded GPS coordinates
-
-- Output structure:
-  ```
-  your_input_folder/
-  ├── events.txt
-  ├── your_images.jpg
-  ├── events_with_matches.csv   # Generated matching results
-  └── images_with_gps/          # Generated folder with GPS-tagged images
-      └── your_images.jpg       # Copies of images with GPS data
-  ```
-
-## **Usage Instructions**
-
-- Run the script:
-   ```bash
-   python gps_embed.py
-   ```
-
-- Follow the interactive prompts:
-   ```bash
-   Enter UTM zone number (1-60): 15
-   Enter hemisphere (N/S): N
-   Enter the path to your images folder: /path/to/your/drone/images
-   ```
-
-- Programmatic Usage
-  ```python
-  from gps_embed import TimestampMatcher
-  
-  # Initialize the matcher
-  matcher = TimestampMatcher()
-  
-  # Set UTM zone
-  matcher.set_utm_zone(15, 'N')
-  
-  # Process images
-  image_files = matcher.get_image_files('path/to/images')
-  matcher.load_events_file('path/to/events.txt')
-  matcher.find_initial_offset(image_files[0])
-  
-  # Generate output
-  matcher.save_matched_events('events.txt', 'events_with_matches.csv')
-  matcher.embed_gps_to_images('input_folder', 'images_with_gps')
-  ```
-
-## **Common Issues and Solutions**
-
-- No EXIF Data:
-   - Ensure images are not copies or screenshots
-   - Verify the camera is saving EXIF metadata
-- Timestamp Matching Errors:
-   - Check camera clock synchronization
-   - Verify events.txt timestamps are in the correct format
-   - Ensure images are in chronological order
-- UTM Conversion Issues:
-   - Confirm the correct UTM zone for your location
-   - Verify coordinate format in events.txt
-     
-## **License**
-
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
+MIT License. See [LICENSE](../LICENSE).

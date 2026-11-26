@@ -1,118 +1,86 @@
-# Object Detection Testing Tool
+# 7 · Object Detection Tester
 
-This module evaluates a trained Faster R-CNN checkpoint on a fixed COCO-format test set. It is intended to run once per trained model and save machine-readable summaries for reporting or downstream projection.
+**Stage 3 · Train and test** · **Type: Form** · [← Back to MatchPlant](../README.md)
 
+Evaluate a trained checkpoint on the held-out test split and report detection metrics. It also saves the model's predictions, which [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md) places on the orthomosaic.
 
-## Using the dashboard
+| | |
+| --- | --- |
+| **Input** | `data/test` and `annotations/test.json` from [5 Image Splitter](../5_img_splitter/README.md), and a checkpoint from [6-1](../6-1_obj_det_trainer/README.md) or [6-2](../6-2_obj_det_trans_learner/README.md) |
+| **Output** | Metrics (JSON/CSV), `coco_predictions.json`, and plots |
+| **Previous step** | [6-1 Object Detection Trainer](../6-1_obj_det_trainer/README.md) or [6-2 Transfer Learning](../6-2_obj_det_trans_learner/README.md) |
+| **Next step** | [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md): use `coco_predictions.json` |
 
-Open **Object Detection Tester** in the [local dashboard](../dashboard/README.md). Install requirements if prompted. Browse for the held-out test images folder, its COCO annotations, and the model checkpoint. Select a results folder or type a new output path. Click **Run** and follow the live log.
+## Run it from the dashboard
 
-Default paths are `data/test`, `annotations/test.json`, `checkpoints/best_model.pt`, and `paper_results`, relative to this module's folder. A checkpoint from Module 6.1 usually lives elsewhere; browse to the actual file rather than assuming its relative path is shared between modules.
+1. On the dashboard home, select **Object Detection Tester**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Click **Browse…** to choose:
+   - **Data dir**: the test images folder (`data/test`)
+   - **Annotation file**: the test annotations (`annotations/test.json`)
+   - **Checkpoint**: `best_model.pt` (6-1) or `best_model_transfer.pt` (6-2). Browse to the actual file; it is usually in the training module's folder.
+   - **Results dir**: where to save results, for example `runs/my_training_run/test_results` (a new folder is created)
+4. Click **Run** and follow the **Output** panel.
+5. Check the results, then use `coco_predictions.json` in [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md).
 
-The tester accepts compatible checkpoints from **Module 6.1 or Module 6.2**, detects v1/v2 architectures and known MatchPlant anchor layouts, and honors `model_config` saved by transfer training. Keep both sibling modules beside Module 7. It rejects incompatible weights. Plots use a display-independent backend, output folders can be created recursively, and the confusion plot aggregates all test images. Size-based counts match each ground-truth object at most once.
-
-## Features
-
-- Loads a trained checkpoint from Module 6.1 or 6.2
-- Evaluates on a fixed held-out test set
-- Computes COCO metrics:
-  - `mAP_50_95` = COCO mAP at IoU 0.50:0.95
-  - `AP_50` = AP at IoU 0.50
-- Computes precision, recall, and F1 at IoU 0.5
-- Saves prediction output in COCO-style format
-- Saves JSON and CSV summaries
-
-## Requirements
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Core dependencies include PyTorch, torchvision, Pillow, NumPy, matplotlib, and pycocotools.
-
-## Input Structure
-
-Expected default structure:
-
-```text
-project_root/
-  test.py
-  data/
-    test/
-  annotations/
-    test.json
-  checkpoints/
-    best_model.pt
-```
-
-The trained checkpoint normally comes from `6-1_obj_det_trainer`.
-
-## Quick Start
-
-From this module folder:
-
-```bash
-python test.py
-```
-
-This uses:
-
-```text
-data/test
-annotations/test.json
-checkpoints/best_model.pt
-paper_results/
-```
-
-## Recommended Run
-
-```bash
-python test.py   --data-dir data/test   --annotation-file annotations/test.json   --checkpoint runs/my_training_run/checkpoints/best_model.pt   --results-dir runs/my_training_run/test_results
-```
-
-To run on a specific GPU:
-
-```bash
-CUDA_VISIBLE_DEVICES=0 python test.py   --data-dir data/test   --annotation-file annotations/test.json   --checkpoint runs/my_training_run/checkpoints/best_model.pt   --results-dir runs/my_training_run/test_results
-```
+Relative paths are read from this module's folder.
 
 ## Outputs
 
 ```text
 results_dir/
-  coco_predictions.json
-  paper_metrics.json
-  test_summary.json
-  test_summary.csv
-  confidence_distribution.png
-  confusion_matrix.png
+├── test_summary.json            # main metrics
+├── test_summary.csv             # same metrics as a table
+├── paper_metrics.json
+├── coco_predictions.json        # predictions → 8 Image-to-Ortho Projector
+├── confidence_distribution.png
+└── confusion_matrix.png
 ```
 
-The most useful files for reporting are:
+Metrics reported:
 
-```text
-test_summary.json
-test_summary.csv
-coco_predictions.json
+- `mAP_50_95`: COCO mAP at IoU 0.50:0.95
+- `AP_50`: AP at IoU 0.50
+- Precision, recall, and F1 at IoU 0.5
+
+## Run without the dashboard
+
+Keep the full MatchPlant folder: this module uses code from `../6-1_obj_det_trainer/train.py` (and reads settings saved by 6-2).
+
+```bash
+pip install -r requirements.txt
+python test.py \
+  --data-dir data/test \
+  --annotation-file annotations/test.json \
+  --checkpoint ../6-1_obj_det_trainer/runs/my_training_run/checkpoints/best_model.pt \
+  --results-dir ../6-1_obj_det_trainer/runs/my_training_run/test_results
 ```
 
-## Notes
+Without arguments, `python test.py` uses `data/test`, `annotations/test.json`, `checkpoints/best_model.pt`, and `paper_results/`. On a multi-GPU system, add `CUDA_VISIBLE_DEVICES=0` before the command to pick a GPU.
 
-- Repeating `test.py` on the same checkpoint and same test set is not a substitute for independent training runs.
-- For run-to-run model variability, train multiple checkpoints with different seeds in `6-1_obj_det_trainer`, then evaluate each checkpoint once with this module.
-- `test.py` imports shared model/dataset utilities from `../6-1_obj_det_trainer/train.py`, so keep the training and testing modules in the repository structure.
+## Tips
 
-## License
+- Test each trained model once on the same fixed test set.
+- Running the test again on the same checkpoint does not measure model variability. To measure it, train several models with different seeds in [6-1](../6-1_obj_det_trainer/README.md) and test each one.
 
-This project is licensed under the MIT License. See the repository `LICENSE` file.
+## Troubleshooting
 
-## Developer checks
+- **Checkpoint not compatible:** the tester supports 6-1 and 6-2 checkpoints and detects v1/v2 models and MatchPlant anchor layouts automatically. Other checkpoints are rejected.
+- **Checkpoint not found:** browse to the file instead of typing a path relative to another module.
+- **Annotation errors:** use the test images and `test.json` from the same Image Splitter output.
 
-```sh
+<details>
+<summary>For developers</summary>
+
+```bash
 python -m unittest discover -s tests
 python tests/smoke_training_handoff.py
 ```
 
-The smoke check trains a small CPU batch in Module 6.1, fine-tunes its checkpoint in Module 6.2, and runs the Module 7 command to produce metrics, predictions, and plots using temporary synthetic data. It verifies execution rather than model accuracy.
+The smoke check trains a small CPU model in 6-1, fine-tunes it in 6-2, and tests it here on temporary synthetic data. It checks that the steps run, not model accuracy.
+
+</details>
+
+## License
+
+MIT License. See [LICENSE](../LICENSE).

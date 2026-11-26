@@ -1,176 +1,96 @@
-# **Bounding Box Annotation Tool**
+# 4 · BBox Drawer
 
-This Python utility creates annotated image datasets for object detection models. It provides an interactive interface for drawing bounding boxes around objects of interest and supports COCO (.json file) and YOLO (.txt file) annotation formats with Windows and macOS platform implementations.
+**Stage 2 · Build the dataset** · **Type: Desktop app** · [← Back to MatchPlant](../README.md)
 
-### **Note**
+Draw bounding boxes around objects (for example, individual plants) by hand to create training labels. Set up to five categories and choose COCO (`.json`) or YOLO (`.txt`) output.
 
-This tool is essential for deep learning workflows that require creating annotated training datasets. It provides an intuitive interface for drawing bounding boxes, managing multiple categories, and exporting annotations in standard formats, making the dataset creation process more efficient and organized.
+| | |
+| --- | --- |
+| **Input** | A folder of images, usually `selected_undistorted_images_<timestamp>/` from [3 Minimum Image Finder](../3_min_img_finder/README.md) |
+| **Output** | `img_box/` (images with boxes and their annotation files) and `mask_box/` (one cropped image per box), next to the image folder |
+| **Previous step** | [3 Minimum Image Finder](../3_min_img_finder/README.md) |
+| **Next step** | [5 Image Splitter](../5_img_splitter/README.md): use `img_box/` as the annotation folder (COCO format) |
 
+## Run it from the dashboard
 
-## Using the dashboard
+1. On the dashboard home, select **BBox Drawer**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Check the **Operating system** selection, then click **Launch**. A Boundary Box Drawing Tool window opens.
+4. Fill in the required information:
+   - **Image Folder**: click **Browse...** and choose your image folder.
+   - **Output Format**: COCO or YOLO. Choose **COCO** to continue with Image Splitter and model training.
+   - **Number of Categories (1-5)**: enter a number and click **Update**.
+   - **Category names**: for example `maize`.
+5. Click **Click to Start Drawing**.
+6. Draw a box around each object (see [Drawing boxes](#drawing-boxes)), then press **Enter** for the next image.
 
-Open **BBox Drawer** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+Keep the dashboard running while you use the window. Messages and errors appear in the dashboard **Output** panel.
 
-The dashboard automatically selects `bbox_drawer_win.py` on Windows and `bbox_drawer_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+![BBox Drawer setup window](images/img_1.png)
 
-Windows file dialogs use `tkinter`, included in a standard Python installation. macOS dialogs use the system `osascript` command. Neither requires a pip package named `tk` or `subprocess.run`. If tkinter is absent from a custom Python build, select an interpreter that includes it.
+*Setup window*
 
-## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+## Drawing boxes
 
-## Quick Start
+| Control | Action |
+| --- | --- |
+| Right-click and drag | Draw a box |
+| **1**–**5** | Switch category |
+| **D** | Delete the last box |
+| **T** | Show or hide the on-screen instructions |
+| **Enter** | Save this image's boxes and go to the next image |
+| **Esc** | Save this image's boxes and stop |
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd MatchPlant/4_bbox_drawer
+Each category has its own color. Labels are saved when you press Enter or Esc.
+
+![Drawing boxes](images/img_2.png)
+
+*Drawing window*
+
+## Inputs
+
+- A folder of JPG/JPEG, PNG, or TIF/TIFF images.
+
+## Outputs
+
+Created in the folder that contains your image folder:
+
+```text
+├── selected_undistorted_images_.../   # your input images
+├── img_box/                           # → Image Splitter "Annotation Folder"
+│   ├── image1.jpg                     # image with boxes drawn
+│   ├── image1_annotations.json        # (or .txt for YOLO)
+│   └── ...
+└── mask_box/                          # one cropped image and label per box
+    ├── image1_1.jpg
+    ├── image1_1.json
+    └── ...
 ```
 
-### 2. Install dependencies:
+See [annotation formats](annotation_format.md) for the COCO and YOLO file structures.
 
-- For Windows:
-  ```bash
-  pip install -r requirements_win.txt
-  ```
+## Run without the dashboard
 
-- For macOS:
-  ```bash
-  pip install -r requirements_mac.txt
-  ```
+From this folder, install the requirements for your system and start the tool:
 
-### 3. Run the script:
+```bash
+# Windows
+pip install -r requirements_win.txt
+python bbox_drawer_win.py
 
-- For Windows:
-  ```bash
-  python bbox_drawer_win.py
-  ```
+# macOS
+pip install -r requirements_mac.txt
+python bbox_drawer_mac.py
+```
 
-- For macOS:
-  ```bash
-  python bbox_drawer_mac.py
-  ```
+Keep the repository's [matchplant_ui](../matchplant_ui/README.md) folder beside this module; the Browse button uses it. Windows dialogs use Python's built-in `tkinter`; if a custom Python build lacks it, choose a Python that includes it.
 
-## **Features**
+## Troubleshooting
 
-- Multi-Category Support: Define up to 5 different annotation categories
-- Format Flexibility: Export annotations in COCO or YOLO format
-- Interactive Drawing: Real-time visualization of bounding boxes
-- Category Management: Quick category switching with color coding
-- Mask Generation: Automatic creation of masked images
-- Progress Tracking: Save and resume annotation sessions
-- Maintain Output: Organize structure of outputs
+- **Boxes are not drawn:** use the right mouse button and click the image window first so it has focus.
+- **Wrong category:** press the number key for the category before drawing; check the color.
+- **Nothing saved:** press Enter or Esc to save, and check that you can write to the folder.
 
-## **Requirements**
+## License
 
-- Python 3.9+
-- Dependencies:
-  - OpenCV (cv2)
-  - NumPy
-  - Matplotlib
-  - Tkinter (Windows)
-  - PyObjC (macOS)
-
-## **Input Requirements**
-
-### 1. Required Files
-- Image folder path:
-  - The image input folder is created by [3_min_img_finder](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) - the "selected_undistorted_images" folder
-  - Supported formats:
-    - JPG/JPEG
-    - PNG
-    - TIF/TIFF
-- Input structure:
-  ```
-  project_root/
-  ├── images/          # Your input image folder
-  │   ├── image1.jpg
-  │   ├── image2.jpg
-  │   └── ...
-  ```
-
-### 2. Configuration Setup
-- Initial Configuration:
-   - Annotation format selection (COCO/YOLO): For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/4_bbox_drawer/annotation_format.md)
-     - COCO - JSON file format
-     - YOLO - TXT file format
-- Annotation Parameters:
-   - Category definition (1-5 categories, default: 1) 
-   - Category names (default: maize)
-
-## **Outputs**
-
-### Annotation Results:
-- mask_box folder
-    - Masked images for each annotation
-    - Annotation files of each masked in the chosen format
-- img_box folder
-    - Images with annotation
-    - Annotation files of each image in the chosen format
-- Output structure:
-  ```
-  project_root/
-  ├── mask_box/                         # Individual masked images and annotations
-  │   ├── image1_1.jpg
-  │   ├── image1_1.json/txt
-  │   └── ...
-  └── img_box/                          # Images with visualized annotations and annotations
-      ├── image1.jpg
-      ├── image1_annotations.json/txt
-      └── ...
-  ```
-
-## **Usage Instructions**
-
-- Launch Application:
-  ```python
-  python bbox_drawer_win.py  # or bbox_drawer_mac.py for macOS
-  ```
-- Initial Setup:
-   - Select your image folder
-   - Choose annotation format (COCO/YOLO)
-   - Define categories
-   - Click "Click to Start Drawing" to begin annotation
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/4_bbox_drawer/images/img_1.png?raw=true)
-
-Figure 1. Example of ininitial_setup_window
-- Drawing Boxes:
-   - Right-click and drag to draw boxes
-   - Use number keys (1-5) to switch categories
-   - Press 'D' to delete the last box
-   - Press 'Enter' to move to the next image
-   - Press 'ESC' to exit
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/4_bbox_drawer/images/img_2.png?raw=true)
-
-Figure 2. Example of bbox_drawer_window
-
-## **Common Issues and Solutions**
-
-- Drawing Issues:
-   - Use right-click for drawing
-   - Ensure proper window focus
-   - Check the mouse cursor position
-- Category Management:
-   - Use number keys for switching
-   - Verify category selection
-   - Check category color coding
-- File Management:
-   - Verify image format compatibility
-   - Check write permissions
-   - Monitor disk space
-
-## **License**
-
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
-
-## File and folder selection
-
-Both desktop variants use the shared [picker rules](../matchplant_ui/README.md). Each folder field has one Browse button using the standard system folder picker. It accepts folders only; Windows may hide individual files in this dialog. File pickers show all file types and check the required format before returning a path. Output CSV controls allow new file names. Cancel leaves the existing input unchanged. Keep the repository-level `matchplant_ui/` folder when copying or distributing these scripts. Native macOS picker behavior still needs testing on a Mac.
+MIT License. See [LICENSE](../LICENSE).

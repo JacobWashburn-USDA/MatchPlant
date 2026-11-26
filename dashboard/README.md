@@ -8,6 +8,8 @@ A local web front end for the [MatchPlant](https://github.com/JacobWashburn-USDA
 included in this repository as the `dashboard/` folder.
 Landing page: **[matchplant-dashboard.github.io](https://matchplant-dashboard.github.io)**.
 
+[← Back to MatchPlant](../README.md) · ▶ [Watch the dashboard walkthrough (2 min 26 sec)](https://matchplant-dashboard.github.io/media/dashboard-walkthrough.mp4)
+
 - Lists all 11 pipeline modules across four stages (steps 0-9; the two step-6 training routes are alternatives), with a pipeline-flow card for jumping straight to any module
 - Launch a module's native GUI, or run its CLI/script with real arguments
 - Live log output streamed to the browser

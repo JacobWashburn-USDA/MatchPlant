@@ -1,207 +1,111 @@
-# **Image Splitter Tool**
+# 5 · Image Splitter
 
-This Python utility splits large images and their corresponding COCO format annotations into smaller tiles for training object detection models. It provides a graphical interface for configuring splitting parameters and supports Windows and macOS platforms.
+**Stage 2 · Build the dataset** · **Type: Desktop app** · [← Back to MatchPlant](../README.md)
 
-### **Note**
+Tile large images and their COCO annotations into smaller tiles, and split them into training, validation, and test sets with matching annotations. Boxes are adjusted to each tile, and objects cut by a tile edge are kept or dropped based on your settings.
 
-This tool is essential for preparing large-scale imagery datasets for deep-learning model training. It handles the complexities of splitting images and their annotations while maintaining proper object relationships and coordinates. The tool is handy for aerial photography and other large-format images.
+| | |
+| --- | --- |
+| **Input** | An image folder and a folder of COCO annotation files (`*_annotations.json`) |
+| **Output** | `data/train`, `data/val`, `data/test` tiles and `annotations/train.json`, `val.json`, `test.json` |
+| **Previous step** | [3 Minimum Image Finder](../3_min_img_finder/README.md) (images) and [4 BBox Drawer](../4_bbox_drawer/README.md) (annotations in `img_box/`) |
+| **Next step** | [6-1 Object Detection Trainer](../6-1_obj_det_trainer/README.md) or [6-2 Transfer Learning](../6-2_obj_det_trans_learner/README.md) |
 
+Using the MatchPlant [dataset on Zenodo](../README.md#download-dataset)? Start here with its UAV images and annotation files.
 
-## Using the dashboard
+## Run it from the dashboard
 
-Open **Image Splitter** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+1. On the dashboard home, select **Image Splitter**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Check the **Operating system** selection, then click **Launch**. An Image Annotation Configuration window opens.
+4. Under **Path Configuration**, click **Browse...** for each folder:
+   - **Image Folder**: your images (for example `selected_undistorted_images_.../`).
+   - **Annotation Folder**: the folder of COCO `*_annotations.json` files (for example `img_box/`).
+   - **Output Folder**: where the dataset will be written.
+5. Set the **Dataset Split Configuration** and **Tile Configuration** (defaults below).
+6. Click **Click to Start Processing** and review the results summary.
 
-The dashboard automatically selects `img_splitter_win.py` on Windows and `img_spliter_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+Keep the dashboard running while you use the window. Messages and errors appear in the dashboard **Output** panel.
 
-Windows file dialogs use Python’s built-in `tkinter`; macOS dialogs use `osascript`. The module does not require the unrelated pip package `tk` or a Cocoa bridge. A custom Python build without tkinter needs an interpreter that includes it for Windows dialogs.
+![Image Splitter setup window](images/img1.png)
 
-## Table of Contents
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Input Requirements](#input-requirements)
-- [Outputs](#outputs)
-- [Usage Instructions](#usage-instructions)
-- [Common Issues and Solutions](#common-issues-and-solutions)
-- [License](#license)
+*Setup window*
 
-## Quick Start
+## Inputs
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd MatchPlant/5_img_splitter
+```text
+images/                          # Image Folder (TIF/TIFF, JPG/JPEG, PNG)
+├── image1.tif
+└── ...
+annotations/                     # Annotation Folder (COCO JSON)
+├── image1_annotations.json
+└── ...
 ```
 
-### 2. Install dependencies:
+## Settings
 
-- For Windows:
-  ```bash
-  pip install -r requirements_win.txt
-  ```
+**Dataset split** (the three values must add up to 1.0):
 
-- For macOS:
-  ```bash
-  pip install -r requirements_mac.txt
-  ```
+| Setting | Default |
+| --- | --- |
+| Train Split | 0.7 |
+| Validation Split | 0.15 |
+| Test Split | 0.15 |
 
-### 3. Run the script:
+**Tiles:**
 
-- For Windows:
-  ```bash
-  python img_splitter_win.py
-  ```
+| Setting | Default | Notes |
+| --- | --- | --- |
+| Target Tile Size | 1024 px | Images are divided into a grid of about this size; smaller images stay unchanged. 512–2048 is typical. |
+| Overlap Pixels | 100 px | Overlap between neighboring tiles, so objects at edges are not lost. About 10–20% of the tile size. |
+| Minimum IoU | 0.3 | How much of a cut object must be inside a tile to keep it. Higher keeps only more complete objects (0–1). |
+| Minimum Size | 10 px | Drops box fragments smaller than this width or height. 5–20 is typical. |
 
-- For macOS:
-  ```bash
-  python img_spliter_mac.py
-  ```
+## Outputs
 
-## **Features**
+```text
+output_folder/
+├── data/
+│   ├── train/    image1_r1c1.tif, ...
+│   ├── val/
+│   └── test/
+└── annotations/
+    ├── train.json
+    ├── val.json
+    └── test.json
+```
 
-- Configurable Tile Size: Define target tile dimensions
-- Overlap Control: Set pixel overlap between adjacent tiles
-- Adjust Coordinates: Set bounding box location to match tile coordinate
-- Record Tile history: Maintain annotation relationship
-- Dataset Splitting: Automatic train/validation/test set creation
-- COCO Format Support: Maintains COCO annotation format
-- Interactive Interface: GUI for parameter configuration
-- Progress Tracking: Visual feedback during processing
-- Results Summary: Detailed statistics after processing
+Tile names end with their row and column (`_r1c1`), which [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md) uses to place detections back on the original image.
 
-## **Requirements**
+These folders are the inputs for training (`data/train`, `data/val` + `annotations/train.json`, `val.json`) and testing (`data/test` + `annotations/test.json`).
 
-- Python 3.9+
-- Dependencies:
-  - OpenCV (cv2)
-  - NumPy
-  - Matplotlib
-  - Tkinter (Windows)
-  - PyObjC (macOS)
+![Image Splitter results window](images/img2.png)
 
-## **Input Requirements**
+*Results summary*
 
-### 1. Required Files
-- Image folder path
-  - The image input folder is created by [3_min_img_finder](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/3_min_img_finder) method - the "selected_undistorted_images" folder
-  - supported formats:
-    - TIF/TIFF
-    - JPG/JPEG
-    - PNG
-- Annotation folder path
-  - The annotation input folder is created by [4_bbox_drawer](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/4_bbox_drawer) method - the "img_box" folder
-  - Annotation file - COCO format in JSON files
-- Input structure:
-  ```
-  project_root/
-  ├── images/                     # Your input image folder
-  │   ├── image1.tif
-  │   ├── image2.tif
-  │   └── ...
-  └── annotations/               # Your input annotation folder
-      ├── image1_annotations.json
-      ├── image2_annotations.json
-      └── ...
-  ```
-- Output folder path
-  
-### 2. Configuration Setup
-- Dataset Split Configuration: Dataset split ratios must be 1.0!
-   - Train split ratio (default: 0.7)
-   - Validation split ratio (default: 0.15)
-   - Test split ratio (default: 0.15)
-- Tile Configuration:
-   - Target tile size (default: 1024 pixels)
-      - The desired dimension for output tiles
-      - Larger images are divided into a grid of this approximate size
-      - If an image is smaller than the target size, it remains unchanged
-      - Recommended range: 512-2048 pixels, depending on your model's requirements
-   - Overlap pixels (default: 100 pixels)
-      - Number of pixels that adjacent tiles overlap
-      - Helps prevent objects from being cut off at tile boundaries
-      - Larger overlap helps with object detection at tile edges
-      - Recommended range: 10-20% of target tile size
-   - Minimum IoU threshold (default: 0.3)
-      - Minimum Intersection over Union required to keep a split object
-      - Controls how much of an object must be within a tile to be included
-      - Higher values (e.g., 0.5) ensure more complete objects
-      - Lower values (e.g., 0.1) retain more partial objects
-      - Range: 0.0-1.0 (0 keeps all intersections, 1 requires complete objects)
-   - Minimum object size (default: 10 pixels)
-      - Minimum size (width or height) required for split objects
-      - Prevents tiny object fragments from being included
-      - Objects smaller than this are filtered out after splitting
-      - Recommended range: 5-20 pixels, depending on your model's requirements
+## Run without the dashboard
 
-## **Outputs**
+From this folder, install the requirements for your system and start the tool:
 
-- Split Results:
-   - Tiled images organized by dataset split
-   - Updated COCO annotations for each split
-   - Processing statistics
-- Output structure:
-  ```
-  output_dir/
-  ├── data/                      # Split image tiles
-  │   ├── train/
-  │   │   ├── image1_r1c1.tif
-  │   │   └── ...
-  │   ├── val/
-  │   │   ├── image1_r1c1.tif
-  │   │   └── ...
-  │   └── test/
-  │       ├── image1_r1c1.tif
-  │       └── ...
-  └── annotations/              # Split annotations
-      ├── train.json
-      ├── val.json
-      └── test.json
-  ```
+```bash
+# Windows
+pip install -r requirements_win.txt
+python img_splitter_win.py
 
-## **Usage Instructions**
+# macOS
+pip install -r requirements_mac.txt
+python img_spliter_mac.py
+```
 
-- Launch Application:
-  ```python
-  python img_splitter_win.py  # or img_spliter_mac.py for macOS
-  ```
-- Initial Setup:
-   - Select an input image folder
-   - Select an input annotation folder
-   - Choose output directory
-   - Configure split ratios
-   - Set tile parameters
-   - Click "Click to Start Processing" to begin
-     
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/5_img_splitter/images/img1.png?raw=true)
+Keep the repository's [matchplant_ui](../matchplant_ui/README.md) folder beside this module; the Browse buttons use it.
 
-Figure 1. Example of ininitial_setup_window
-- Processing Result:
-   - Wait for processing to complete
-   - Review results summary
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/5_img_splitter/images/img2.png?raw=true)
+## Troubleshooting
 
-Figure 2. Example of processing_result_window
+- **Out of memory:** use a smaller tile size, fewer images, or close other programs.
+- **Missing annotations:** check that each image has a matching `<image name>_annotations.json` in COCO format.
+- **Too few objects in tiles:** lower Minimum IoU or Minimum Size, or increase Overlap Pixels.
+- **Split ratios rejected:** make sure Train + Validation + Test = 1.0.
 
-## **Common Issues and Solutions**
+## License
 
-- Memory Issues:
-   - Reduce tile size for large images
-   - Process fewer images at once
-   - Close other applications
-- Annotation Handling:
-   - Verify COCO format compliance
-   - Check annotation-image correspondence
-   - Monitor IoU thresholds
-- File Management:
-   - Verify image format compatibility
-   - Check write permissions
-   - Monitor disk space
-
-## **License**
-
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
-
-## File and folder selection
-
-Both desktop variants use the shared [picker rules](../matchplant_ui/README.md). Each folder field has one Browse button using the standard system folder picker. It accepts folders only; Windows may hide individual files in this dialog. File pickers show all file types and check the required format before returning a path. Output CSV controls allow new file names. Cancel leaves the existing input unchanged. Keep the repository-level `matchplant_ui/` folder when copying or distributing these scripts. Native macOS picker behavior still needs testing on a Mac.
+MIT License. See [LICENSE](../LICENSE).

@@ -1,174 +1,101 @@
-# **Minimum Image Finder Tool**
+# 3 · Minimum Image Finder
 
-This is a Python utility for creating optimal drone image datasets for object detection models. It helps reduce dataset redundancy by selecting the minimum number of images needed to cover a target area, making object detection training more efficient.
+**Stage 2 · Build the dataset** · **Type: Desktop app** · [← Back to MatchPlant](../README.md)
 
-### **Note**
+Select the smallest set of UAV images that still covers all plants of interest, to minimize labeling effort. You set overlap limits; the tool compares each image's footprint with the orthomosaic and picks images until the field is covered.
 
-This tool is handy for deep learning workflows that require creating efficient drone imagery training datasets. It helps eliminate redundant images while ensuring complete coverage of the area of interest, making object detection training more efficient and reducing computational requirements.
+| | |
+| --- | --- |
+| **Input** | From [2 ODM Runner](../2_odm_runner/README.md): the orthomosaic, the orthorectified image folder, and the undistorted image folder |
+| **Output** | `selected_undistorted_images_<timestamp>/`, a CSV list of selected images, and a coverage plot |
+| **Previous step** | [2 ODM Runner](../2_odm_runner/README.md) |
+| **Next step** | [4 BBox Drawer](../4_bbox_drawer/README.md): label the selected images |
 
+## Run it from the dashboard
 
-## Using the dashboard
+1. On the dashboard home, select **Minimum Image Finder**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Check the **Operating system** selection, then click **Launch**. A Minimum Images Finder window opens.
+4. Under **Path Configuration**, click **Browse...** for each field:
+   - **Orthomosaic**: `odm_orthophoto/odm_orthophoto.tif`
+   - **Orthorectified Image Folder**: `orthorectified/`
+   - **Undistorted Image Folder**: `opensfm/undistorted/images/`
+5. Under **Optimization Parameters**, keep the defaults or adjust them (click **Parameter guide** for help).
+6. Click **Click to Start Finding**.
+7. Review the coverage map, then click **Save Results**.
 
-Open **Minimum Image Finder** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+Keep the dashboard running while you use the window. Messages and errors appear in the dashboard **Output** panel.
 
-The dashboard automatically selects `min_img_finder_win.py` on Windows and `min_img_finder_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+![Minimum Image Finder setup window](images/img_1.png)
 
-## Table of Contents
-- [**Minimum Image Finder Tool**](#minimum-image-finder-tool)
-    - [**Note**](#note)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Start](#quick-start)
-    - [1. Clone the repository:](#1-clone-the-repository)
-    - [2. Install dependencies:](#2-install-dependencies)
-    - [3. Run the script:](#3-run-the-script)
-  - [**Features**](#features)
-  - [**Requirements**](#requirements)
-  - [**Input Requirements**](#input-requirements)
-    - [1. Required Files:](#1-required-files)
-    - [2. Configuration Setup:](#2-configuration-setup)
-  - [**Outputs**](#outputs)
-  - [**Usage Instructions**](#usage-instructions)
-  - [**Common Issues and Solutions**](#common-issues-and-solutions)
-  - [**License**](#license)
+*Setup window*
 
-## Quick Start
+## Inputs
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/JacobWashburn-USDA/MatchPlant.git
-cd MatchPlant/3_min_img_finder
+All inputs come from the ODM project folder made by [2 ODM Runner](../2_odm_runner/README.md):
+
+```text
+your_drone_project/
+├── odm_orthophoto/
+│   └── odm_orthophoto.tif        # Orthomosaic
+├── opensfm/
+│   └── undistorted/
+│       └── images/               # Undistorted Image Folder
+└── orthorectified/               # Orthorectified Image Folder
 ```
 
-### 2. Install dependencies:
+The orthorectified (GeoTIFF) images are used to measure coverage; the matching undistorted images are copied into the final dataset.
 
-- For Windows:
-  ```bash
-  pip install -r requirements_win.txt
-  ```
+## Optimization parameters
 
-- For macOS:
-  ```bash
-  pip install -r requirements_mac.txt
-  ```
+| Parameter | Default | What it controls |
+| --- | --- | --- |
+| Flight Line Width (%) | 15 | Spacing between selected images |
+| Horizontal Min / Max Overlap (%) | 1 / 15 | Overlap between neighboring images along a flight line |
+| Vertical Min / Max Overlap (%) | 1 / 15 | Overlap between flight lines |
+| Uncovered Threshold (%) | 10 | Acceptable uncovered area |
 
-### 3. Run the script:
+See the [parameter guide](configuration_parameters_guide.md) for details and examples.
 
-- For Windows:
-  ```bash
-  python min_img_finder_win.py
-  ```
+- **Gaps in coverage:** decrease flight line width, increase the overlap values, or lower the uncovered threshold.
+- **Too many images:** increase flight line width, decrease maximum overlap, or raise the uncovered threshold.
 
-- For macOS:
-  ```bash
-  python min_img_finder_mac.py
-  ```
+## Outputs
 
-## **Features**
+Saved next to your image folders, with a timestamp in each name:
 
-- Dataset Optimization: Minimize redundancy in your training data
-- Coverage Guarantee: Ensure all areas are represented in the dataset
-- Smart Selection: Automatically identify unique viewpoints
-- Overlap Control: Customize image overlap to balance redundancy and coverage
-- Result Management: Export optimized dataset with coverage visualization
+```text
+├── selected_undistorted_images_YYYYMMDD_HHMMSS/   # your dataset → BBox Drawer
+├── selected_images_list_YYYYMMDD_HHMMSS.csv       # selected images and coverage
+└── coverage_plot_YYYYMMDD_HHMMSS.png              # coverage map
+```
 
-## **Requirements**
+![Minimum Image Finder result window](images/img_2.png)
 
-- Python 3.9+
-- Dependencies:
-  - NumPy
-  - Pandas
-  - Rasterio
-  - Matplotlib
-  - Shapely
-  - Tkinter
+*Result window with the coverage map*
 
-## **Input Requirements**
+## Run without the dashboard
 
-### 1. Required Files:
-- Orthomosaic path:
-   - Format: GeoTIFF (.tif)
-   - Used as a reference for coverage analysis
-- Image Folders path:
-   - Orthorectified images (GeoTIFF format) - for spatial analysis
-   - Original undistorted images for the final dataset
-- Input Structure: All input is from the [2_odm_runner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/2_odm_runner)
-  ```
-  project_root/
-  ├── images/                     
-  ├── odm_dem/                   
-  ├── odm_orthophoto/
-  │   └── odm_orthophoto.tif    # Orthomosaic
-  ├── opensfm/                   
-  │   └── undistorted/         
-  │       └── images/           # Undistorted image folder
-  └── orthorectified/           # Orthorectified image folder
-  ```
+From this folder, install the requirements for your system and start the tool:
 
-### 2. Configuration Setup:
-   
-- Optimization Parameters: For more details, please click [here](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/configuration_parameters_guide.md)
-   - Flight line width (%) - controls spacing between selected images
-   - Horizontal minimum/maximum overlap (%) - ensures adequate coverage
-   - Vertical minimum/maximum overlap (%) - manages redundancy between flight lines
-   - Uncovered area threshold (%) - sets acceptable coverage gaps
+```bash
+# Windows
+pip install -r requirements_win.txt
+python min_img_finder_win.py
 
-## **Outputs**
+# macOS
+pip install -r requirements_mac.txt
+python min_img_finder_mac.py
+```
 
-- Optimized Dataset:
-   - Selected_undistorted_images folder - Minimum number of images
-   - Selected_images_list file - Coverage report (.csv)
-   - Coverage_plot image - Visual coverage map (png)
-- Output structure:
-  ```
-  output_folder/
-  ├── selected_undistorted_images_YYYYMMDD_HHMMSS/  # Your optimized dataset
-  │   └── selected_images...
-  ├── selected_images_list_YYYYMMDD_HHMMSS.csv      # Selection metadata
-  └── coverage_plot_YYYYMMDD_HHMMSS.png             # Coverage visualization
-  ```
+Keep the repository's [matchplant_ui](../matchplant_ui/README.md) folder beside this module; the Browse buttons use it.
 
-## **Usage Instructions**
+## Troubleshooting
 
-- Launch Application:
-   ```python
-   python min_img_finder_win.py  # or min_img_finder_mac.py for macOS
-   ```
-- Initial Setup:
-   - Select your reference orthomosaic
-   - Choose your input image folders
-   - Configure optimization parameters based on your needs
-   - Click "Click to Start Finding" to begin optimization
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/images/img_1.png?raw=true)
+- **Coverage looks wrong:** check that the orthorectified and undistorted folders come from the same ODM project and that images are georeferenced.
+- **Slow or out of memory:** close other programs or use a smaller area.
+- **Windows folder picker shows no files:** this is normal; the folder picker selects folders only.
 
-Figure 1. Example of ininitial_setup_window
-- Dataset Creation:
-   - Review coverage to ensure all areas of interest are included
-   - Save your optimized dataset
-  
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/3_min_img_finder/images/img_2.png?raw=true)
+## License
 
-Figure 2. Example of min_img_window
-
-## **Common Issues and Solutions**
-
-- Missing Coverage:
-   - Decrease the flight line width
-   - Increase overlap parameters
-   - Lower the uncovered area threshold
-- Too Many Images:
-   - Increase flight line width
-   - Decrease maximum overlap
-   - Increase uncovered area threshold
-- Processing Issues:
-   - Ensure consistent image georeferencing
-   - Verify image format compatibility
-   - Check available system memory
-
-## **License**
-
-This project is licensed under the MIT License. For details, see the [LICENSE](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/LICENSE) file.
-
-## File and folder selection
-
-Both desktop variants use the shared [picker rules](../matchplant_ui/README.md). Each folder field has one Browse button using the standard system folder picker. It accepts folders only; Windows may hide individual files in this dialog. File pickers show all file types and check the required format before returning a path. Output CSV controls allow new file names. Cancel leaves the existing input unchanged. Keep the repository-level `matchplant_ui/` folder when copying or distributing these scripts. Native macOS picker behavior still needs testing on a Mac.
+MIT License. See [LICENSE](../LICENSE).

@@ -3,197 +3,150 @@
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg)
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows-lightgrey.svg)
 ![Deep Learning](https://img.shields.io/badge/Deep%20Learning-Faster%20R--CNN-orange.svg)
 ![UAV](https://img.shields.io/badge/UAV-Drone%20Imagery-skyblue.svg)
-![Agriculture](https://img.shields.io/badge/Agriculture-Precision%20Agriculture-green.svg)
 ![Research](https://img.shields.io/badge/Research-USDA--ARS-navy.svg)
 
-An Open-Source Pipeline for UAV (Unmanned Aerial Vehicle)-Based Object Detection and Data Extraction
+**From drone imagery to plant-level data.**
 
-## Quick Start
+MatchPlant is an open-source pipeline for automated detection of individual objects in UAV (Unmanned Aerial Vehicle)-derived imagery. It detects individual plants in UAV images and locates the results on an orthomosaic. Run all 11 tools on your own computer from one local dashboard, with no coding.
 
-Prefer clicking over the command line? Start at
-[matchplant-dashboard.github.io](https://matchplant-dashboard.github.io) to run MatchPlant through a
-local dashboard, no terminal commands needed. See [Getting Started](#getting-started) below for
-details, or to use MatchPlant from the command line instead.
+- Interactive tools for preparing and annotating UAV imagery
+- Faster R-CNN detection trained on high-resolution, undistorted UAV images
+- Projects detections back onto the orthomosaic to extract digital plant traits
 
-## Local dashboard
+**Website:** [matchplant-dashboard.github.io](https://matchplant-dashboard.github.io) · **Paper:** [Smart Agricultural Technology (2026)](https://doi.org/10.1016/j.atech.2026.102421) · **Dataset:** [Zenodo](https://zenodo.org/records/14856123)
 
-The dashboard is included in this download; start with [dashboard setup and usage](dashboard/README.md). Its badges describe **Desktop app**, **Form**, **Training**, and **Docker** workflows. It provides file/folder Browse buttons, field help, live logs, and separate module environments. Modules 6.1 and 6.2 are alternative training routes.
+## Watch a Dashboard Example
 
-Inside `dashboard/`, Windows users open `1_Setup_Windows.bat` then `2_Start_Windows.bat`; macOS users open `1_Setup_macOS.command` then `2_Start_macOS.command`. The supporting files are grouped in `_internal/`. The setup launchers check for Python and guide you to a download if it is missing. If macOS blocks `1_Setup_macOS.command` before it starts, follow the [macOS installation help](https://matchplant-dashboard.github.io/#get-started).
+See how to use the dashboard before installing (2 min 26 sec): the dashboard home, then step-by-step runs of GCP Finder, BBox Drawer, Object Detection Trainer, and Spatial Stats Extractor.
 
-ODM now uses a Python runner that calls Docker directly. Transfer Learning has a settings form backed by YAML and directly reuses Module 6.1 dataset/evaluation helpers; see its [setup and checkpoint requirements](6-2_obj_det_trans_learner/README.md#quick-start). Shared changes are available to both desktop platforms; Windows GUI fixes do not change the separate macOS scripts, and native macOS workflows still need testing.
+[![MatchPlant Dashboard walkthrough](images/matchplant_dashboard_walkthrough_thumbnail.png)](https://matchplant-dashboard.github.io/media/dashboard-walkthrough.mp4)
 
-The five desktop GUI modules share the `matchplant_ui/` picker package. Keep that folder with the pipeline: folder fields use the standard system picker and accept folders only, and file inputs retain their required CSV/raster types. See [picker input rules](matchplant_ui/README.md).
-
-## Authors
-
-- Worasit Sangjan
-- Piyush Pandey
-- Norman B. Best
-- Jacob D. Washburn
-  
-*USDA-ARS, Plant Genetics Research Unit, Columbia, MO, United States*
+▶ **[Play the dashboard walkthrough (MP4)](https://matchplant-dashboard.github.io/media/dashboard-walkthrough.mp4)**
 
 ## Table of Contents
-- [MatchPlant](#matchplant)
-  - [Quick Start](#quick-start)
-  - [Authors](#authors)
-  - [Table of Contents](#table-of-contents)
-  - [Overview](#overview)
-  - [Key Features](#key-features)
-  - [Repository Structure](#repository-structure)
-  - [Pipeline Workflow](#pipeline-workflow)
-  - [Requirements](#requirements)
-  - [Getting Started](#getting-started)
-  - [Download Dataset](#download-dataset)
-  - [Citation](#citation)
-  - [Contact](#contact)
-  - [Acknowledgments](#acknowledgments)
-  - [License](#license)
+- [Watch a Dashboard Example](#watch-a-dashboard-example)
+- [Run MatchPlant Locally](#run-matchplant-locally)
+- [Using the Dashboard](#using-the-dashboard)
+- [The Pipeline](#the-pipeline)
+- [Requirements](#requirements)
+- [Command-Line Use](#command-line-use)
+- [Download Dataset](#download-dataset)
+- [Citation](#citation)
+- [Authors](#authors)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+- [License](#license)
 
-## Overview
+## Run MatchPlant Locally
 
-MatchPlant is an open-source pipeline designed for the automated detection of individual objects using UAV-derived imagery. The pipeline combines interactive tools for preparing UAV imagery with automated deep-learning methods and data extraction capabilities. For the case study, it is used for individual maize detection. By leveraging the Faster R-CNN object detection model trained on high-resolution, undistorted UAV images. MatchPlant also provides utilization modules to incorporate the detected bounding boxes and extract digital plant traits from an orthomosaic.
+Download once, then launch from your computer. The dashboard opens in your browser; all processing and the desktop tools run on your own machine.
 
-## Key Features
+1. **[Download MatchPlant ZIP](https://github.com/JacobWashburn-USDA/MatchPlant/archive/refs/heads/main.zip)** (or `git clone https://github.com/JacobWashburn-USDA/MatchPlant.git`).
+2. Unzip it and open the **[dashboard](dashboard/)** folder. Keep its contents together.
+3. Double-click the files for your system:
 
-- **Modular Design**: Flexible framework adaptable to various agricultural applications
-- **Automated Object Detection**: Uses Faster R-CNN for reliable individual plant detection
-- **High-Precision Processing**: Trains on high-resolution, undistorted UAV images to avoid orthomosaic artifacts
-- **Geospatial Transformation**: Accurately projects detected plant coordinates onto orthomosaic
-- **User-Friendly Tools**: User-friendly GUI tools for data preparation and manual annotation
-- **Data Extraction & Analysis**: Enables spatial analysis and phenotypic trait extraction
+| System | Once: setup | Every time: start |
+| --- | --- | --- |
+| macOS | `1_Setup_macOS.command` | `2_Start_macOS.command` |
+| Windows | `1_Setup_Windows.bat` | `2_Start_Windows.bat` |
 
-## Repository Structure
+Start opens the dashboard automatically at http://127.0.0.1:5050. Keep the MatchPlant Dashboard server window open while working; closing it stops the dashboard.
 
-This repository is organized into the following modules, each containing specific components of the pipeline:
+**If setup cannot find Python 3.9+:** follow the choices in the setup window (**P** for Python downloads, **A** for Anaconda, **E** to enter the path of an existing Python), then run the same setup file again.
 
-1. **Data Preprocessing**: Prepare and optimize UAV imagery
-   - GPS data embedding tool
-   - GCP file creation tool
-   - Orthomosaic generation using OpenDroneMap
+<details>
+<summary><b>macOS: "Not Opened" warning</b></summary>
 
-2. **Data Preparation**: Label and organize training, validation, and testing data
-   - Optimal UAV image dataset creation tool
-   - Interactive labeling tool
-   - Data tiling and splitting tool
+If macOS cannot verify `1_Setup_macOS.command` or `2_Start_macOS.command`, that file has not run. First confirm that your download came from the official [MatchPlant repository](https://github.com/JacobWashburn-USDA/MatchPlant). Then:
 
-3. **Model Development**: Train and test detection models, including the transfer learning model
-   - Faster R-CNN training and validation
-   - Model testing
-   - Transfer learning utility
+1. Click **Done** in the warning.
+2. Open **System Settings → Privacy & Security** and scroll to **Security**.
+3. Click **Open Anyway** for the blocked file, then confirm **Open**.
 
-4. **Utilization**: Project location and create a layer to extract object features
-   - Detection projection tool
-   - Shapefile generation tool
+If **Open Anyway** is missing, double-click the blocked file again and return to Privacy & Security. You may need to do this once for `1_Setup_macOS.command` and once for `2_Start_macOS.command`. See [Apple's instructions](https://support.apple.com/en-us/102445).
 
-Each module contains its detailed README with specific installation instructions and usage guidelines.
+</details>
 
-## Pipeline Workflow
+For terminal setup, developer details, and troubleshooting, see [dashboard/README.md](dashboard/README.md).
 
-![img](https://github.com/JacobWashburn-USDA/Ortho_to_image/blob/main/images/img.png)
+## Using the Dashboard
 
-Figure 1: Diagram of the MathPlant modular open-source pipeline
+1. **Choose the step you need.** Select a module card on the dashboard home. The pipeline flow shows how the 11 modules connect; you can start at a later step if you already have its inputs.
+2. **Read the instructions.** Each module page links to its README, source code, and requirements file. Check which inputs it needs and where it saves results.
+3. **Install requirements, if needed.** If the page reports missing packages, click **Install requirements**. The dashboard creates a separate Python environment for that module and selects it automatically.
+4. **Provide inputs and run.** For a form or training module, pick files and folders with **Browse…**, review the settings, and click **Run**. For a desktop app, click **Launch** and work in the window that opens. The **Output** panel shows live messages; **Stop** cancels a run.
+5. **Check the results, then choose the next module.** Select the previous step's saved files as the next module's inputs. The dashboard does not pass results between modules automatically or run the whole pipeline at once.
+
+You do not need to run every module. Skip a step when you already have the inputs for the next one.
+
+**Module types** (shown as a tag on each module card):
+
+| Type | What it means |
+| --- | --- |
+| **Desktop app** | Opens a separate desktop window on this computer. |
+| **Form** | Enter inputs on the page, then run and follow the live log. |
+| **Training** | Train or fine-tune a model using a settings form and live log. Transfer Learning also offers advanced YAML settings. |
+| **Docker** | Processes a project through Docker, launched by Python. Requires Docker Desktop running. |
+
+## The Pipeline
+
+Four stages from image to insight. Use the modules as needed: 11 tools across four stages, where the two training routes at step 6 are alternatives.
+
+| Stage | Module | Type | What it does |
+| --- | --- | --- | --- |
+| **1. Prepare imagery** | [0 GPS Embedder](0_gps_embeder/) | Form | Embed GPS coordinates into UAV image EXIF metadata before orthomosaic generation. |
+| | [1 GCP Finder](1_gcp_finder/) | Desktop app | Right-click the ground control point (GCP) in each image to mark it, then save a `gcp_list.txt` for orthomosaic generation. |
+| | [2 ODM Runner](2_odm_runner/) | Docker | Run OpenDroneMap on a project folder to generate the orthomosaic and DSM. |
+| **2. Build the dataset** | [3 Minimum Image Finder](3_min_img_finder/) | Desktop app | Set overlap limits; the tool picks the smallest set of images that still covers the field, to minimize labeling effort. |
+| | [4 BBox Drawer](4_bbox_drawer/) | Desktop app | Set up to five categories and an output format (COCO or YOLO), then draw bounding boxes by hand. |
+| | [5 Image Splitter](5_img_splitter/) | Desktop app | Tile large images and split them into training, validation, and test sets with matching annotations. |
+| **3. Train and test** | [6-1 Object Detection Trainer](6-1_obj_det_trainer/) | Training | Train a Faster R-CNN model on the tiled COCO datasets from Image Splitter. |
+| | [6-2 Transfer Learning](6-2_obj_det_trans_learner/) | Training | *Or* fine-tune a pretrained Faster R-CNN checkpoint on a new dataset. |
+| | [7 Object Detection Tester](7_obj_det_tester/) | Form | Evaluate a trained checkpoint on a held-out test split and report detection metrics. |
+| **4. Locate and analyze** | [8 Image-to-Ortho Projector](8_img_to_ortho/) | Form | Project detected bounding boxes back onto the orthomosaic, producing `projected_boxes.csv`. |
+| | [9 Spatial Stats Extractor](9_spatial_stats_extractor/) | Desktop app | Choose the detections file and a raster such as a canopy height model, pick statistics, and export per-plant results as a CSV and a shapefile. |
+
+Modules tagged **Desktop app** open a window for the steps that need human input. Each module folder has its own README with inputs, outputs, and standalone usage. The shared [matchplant_ui](matchplant_ui/README.md) folder provides the file and folder pickers used by the desktop tools and the dashboard; keep it beside the module folders.
+
+<details>
+<summary><b>Workflow diagram from the paper</b></summary>
+
+![MatchPlant pipeline workflow](images/img.png)
+
+Figure 1: Diagram of the MatchPlant modular open-source pipeline (Sangjan et al., 2026). Some script names have changed since publication; the table above lists the current modules.
 
 ###### 1-GPS: Global Position System, 2-UAV: Unmanned Aerial Vehicle, 3-GCP: Ground Control Point, 4-GUI: Graphical User Interface, 5-COCO: Common Objects in Context, 6-YOLO: You Only Look Once, 7-Faster R-CNN: Faster Region-based Convolutional Neural Network
 
+</details>
+
 ## Requirements
 
+- macOS or Windows (the dashboard setup also prints instructions for Linux)
 - Python 3.9+
-- OpenDroneMap (ODM)
-- Additional requirements listed in module-specific documentation
+- Docker Desktop, only for [2 ODM Runner](2_odm_runner/)
+- A GPU is recommended for training (modules 6-1 and 6-2)
+- Module packages are listed in each module's `requirements*.txt`; the dashboard installs them into a separate environment per module
 
-## Getting Started
+Processing time, memory, and disk space depend on your dataset and settings.
 
-There are two ways to use MatchPlant, both included when you download this repository:
+## Command-Line Use
 
-1. **Through the dashboard (recommended).** Start at
-   [matchplant-dashboard.github.io](https://matchplant-dashboard.github.io), which walks you through
-   getting it running from the **[dashboard/](dashboard/)** folder already included in this repository,
-   a local web app that lists every module, launches the GUI tools with one click, and runs the CLI
-   tools (training, testing, projecting) from a form with a live log. See
-   [dashboard/README.md](dashboard/README.md) for full details.
-2. **Module by module, from the command line.** Choose the appropriate module for your task,
-   follow its installation instructions, and refer to its README for detailed usage guidelines.
-
-## Object Detection Quick Commands
-
-After preparing tiled COCO datasets with `5_img_splitter`, train and test Faster R-CNN with modules `6-1_obj_det_trainer` and `7_obj_det_tester`.
-
-Train a model:
-
-```bash
-cd 6-1_obj_det_trainer
-python train.py \
-  --output_dir runs/my_training_run \
-  --train-data-dir data/train \
-  --val-data-dir data/val \
-  --train-annotation-file annotations/train.json \
-  --val-annotation-file annotations/val.json
-```
-
-Evaluate a trained checkpoint:
-
-```bash
-cd ../7_obj_det_tester
-python test.py \
-  --data-dir data/test \
-  --annotation-file annotations/test.json \
-  --checkpoint ../6-1_obj_det_trainer/runs/my_training_run/checkpoints/best_model.pt \
-  --results-dir ../6-1_obj_det_trainer/runs/my_training_run/test_results
-```
-
-For cloud/HPC systems, use `CUDA_VISIBLE_DEVICES=<gpu_id>` to assign one training job to one GPU. Optional arguments such as `--seed`, `--num-workers`, `--batch-size`, and `--val-frequency` are documented in each module README.
-
-Project detections to the orthomosaic:
-
-```bash
-cd ../8_img_to_ortho
-python project_boxes.py \
-  --dataset-path /path/to/odm_project \
-  --predictions-json ../6-1_obj_det_trainer/runs/my_training_run/test_results/coco_predictions.json \
-  --annotation-json ../annotations/test.json \
-  --output-dir orthorectified2 \
-  --num-threads 4
-```
-
-The Module 8 output `projected_boxes.csv` is designed for the downstream spatial statistics module.
+Every module can also run without the dashboard, for example on a workstation, cloud, or HPC system. Choose the module for your task, install its requirements, and follow its README. Command examples for training, testing, and projection are in [6-1 Object Detection Trainer](6-1_obj_det_trainer/README.md), [7 Object Detection Tester](7_obj_det_tester/README.md), and [8 Image-to-Ortho Projector](8_img_to_ortho/README.md).
 
 ## Download Dataset
 
-To use the MatchPlant pipeline with our prepared dataset, download from Zenodo:
+Our maize case-study data is on [Zenodo](https://zenodo.org/records/14856123):
 
-**Zenodo Repository**: https://zenodo.org/records/14856123
+| File | Contents |
+| --- | --- |
+| [UAV images.zip](https://zenodo.org/records/14856123/files/UAV%20images.zip?download=1) | Undistorted UAV images (OpenDroneMap) from the 2021 growing season |
+| [Annotation file.zip](https://zenodo.org/records/14856123/files/Annotation%20file.zip?download=1) | COCO bounding-box annotations for individual maize plants |
+| [Pre-trained model_Faster R-CNN.pt](https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt?download=1) | Faster R-CNN checkpoint for [6-2 Transfer Learning](6-2_obj_det_trans_learner/) |
 
-**Dataset Contents:**
-- **UAV images**: Undistorted images created by OpenDroneMap software from high-resolution RGB images collected during the 2021 growing season
-- **Annotation file**: COCO format bounding box annotations (.json files) for individual maize detection
-- **Pre-trained model**: Faster R-CNN model trained on the UAV images for individual maize detection (use in [6-2_obj_det_trans_learner](https://github.com/JacobWashburn-USDA/MatchPlant/tree/main/6-2_obj_det_trans_learner))
-
-**Download Options:**
-
-1. **Complete Dataset Download**
-   ```bash
-   # Using wget
-   wget https://zenodo.org/records/14856123/files/UAV%20images.zip
-   wget https://zenodo.org/records/14856123/files/Annotation%20file.zip
-   wget https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt
-   
-   # Using curl
-   curl -O https://zenodo.org/records/14856123/files/UAV%20images.zip
-   curl -O https://zenodo.org/records/14856123/files/Annotation%20file.zip
-   curl -O https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt
-   ```
-2. **Individual File Downloads**
-   - **UAV images** (ZIP): [Download UAV images.zip](https://zenodo.org/records/14856123/files/UAV%20images.zip?download=1)
-   - **Annotation file** (ZIP): [Download Annotation file.zip](https://zenodo.org/records/14856123/files/Annotation%20file.zip?download=1)
-   - **Pre-trained model**: [Download Pre-trained model_Faster R-CNN.pt](https://zenodo.org/records/14856123/files/Pre-trained%20model_Faster%20R-CNN.pt?download=1)
-  
-**Getting Started with the Dataset:**
-
-After downloading the dataset (UAV images and Annotation file), please start with the module [5_img_splitter](https://github.com/JacobWashburn-USDA/Ortho_to_image/tree/main/5_img_splitter) to use our pipeline.
+With the images and annotations, start at [5 Image Splitter](5_img_splitter/).
 
 ## Citation
 
@@ -215,6 +168,17 @@ for UAV-based single-plant detection and data extraction [Data set]. Zenodo. htt
 ```
 
 [![DOI](https://img.shields.io/badge/Zenodo-published-blue.svg)](https://doi.org/10.5281/zenodo.14856123)
+
+## Authors
+
+- Worasit Sangjan
+- Piyush Pandey
+- Norman B. Best
+- Jacob D. Washburn
+
+*USDA-ARS, Plant Genetics Research Unit, Columbia, MO, United States*
+
+Dashboard developed by [Worasit Sangjan](https://worasitsangjan.github.io/).
 
 ## Contact
 

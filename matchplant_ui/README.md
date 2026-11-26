@@ -1,24 +1,36 @@
-# Shared file and folder pickers
+# matchplant_ui · Shared file and folder pickers
 
-Used by the Windows and macOS GUI variants of modules 1, 3, 4, 5 and 9, and by the dashboard Browse endpoints. Keep this folder at the repository root beside the module folders.
+[← Back to MatchPlant](../README.md)
 
-Each folder row has one Browse button opening the standard system folder picker. Windows uses Tk's native directory dialog; macOS uses the native folder-only Open panel. There is no custom folder browsing window. Windows may hide individual files in its folder-only dialog; folder contents are therefore not guaranteed to be visible. Cancellation returns no path and keeps the module's previous input unchanged.
+This folder provides the **Browse...** buttons used by the desktop tools (modules [1](../1_gcp_finder/README.md), [3](../3_min_img_finder/README.md), [4](../4_bbox_drawer/README.md), [5](../5_img_splitter/README.md), and [9](../9_spatial_stats_extractor/README.md)) and by the [dashboard](../dashboard/README.md). You do not run it directly. Keep it at the top of the MatchPlant folder, beside the module folders.
 
-File pickers show all file types. A required-type check rejects an unsupported selection before returning a path to the module. Cancelling leaves the module's previous input unchanged. Output file selection supports a new filename and retains CSV defaults and overwrite protection.
+## How the pickers behave
 
-| Module | Input/output | Required selection |
+- **Folder fields** open your system's standard folder picker and accept folders only. On Windows, files inside folders may be hidden in this dialog; that is normal.
+- **File fields** show all file types, then check that you picked the required type (for example CSV or TIF).
+- **Save As...** chooses an output file name; the file does not need to exist yet.
+- **Cancel** keeps the previous value.
+- In the dashboard, **Browse…** chooses a location on the computer running the dashboard; nothing is uploaded.
+
+## What each tool asks for
+
+| Module | Field | Select |
 | --- | --- | --- |
-| GCP Finder | Images | Folder |
-| GCP Finder | GCP coordinates | Existing CSV file |
+| GCP Finder | Image Folder | Folder |
+| GCP Finder | GCP File | Existing CSV file |
 | Minimum Image Finder | Orthomosaic | Existing TIF/TIFF file |
-| Minimum Image Finder | Rectified and undistorted images | Two separate folders |
-| BBox Drawer | Images | Folder |
-| Image Splitter | Images, annotations, output | Three separate folders; annotations are a folder of JSON files |
-| Spatial Stats Extractor | Bounds | Existing CSV file |
-| Spatial Stats Extractor | Raster | Existing TIF/TIFF/IMG file |
-| Spatial Stats Extractor | Output | CSV filename; file may not exist yet |
-| Dashboard | Folder/file Browse controls | Directory or existing file, respectively; module forms perform further validation |
+| Minimum Image Finder | Orthorectified / Undistorted Image Folder | Two separate folders |
+| BBox Drawer | Image Folder | Folder |
+| Image Splitter | Image / Annotation / Output Folder | Three separate folders; annotations are a folder of JSON files |
+| Spatial Stats Extractor | CSV File | Existing CSV file |
+| Spatial Stats Extractor | Raster File | Existing TIF/TIFF/IMG file |
+| Spatial Stats Extractor | Save Output File | CSV file name (may be new) |
+| Dashboard | Browse… buttons | A folder or an existing file; each form checks the values further |
 
-Run policy and wiring checks with `python -m unittest discover -s matchplant_ui/tests` from the repository root. Native macOS execution still needs testing on a Mac; Windows cannot verify AppKit panel appearance or desktop permissions.
+## For developers
 
-Button labels are consistent: **Browse...** chooses an input file or a folder; **Save As...** chooses an output filename. Buttons that actually write results retain their Save/Export action names.
+From the repository root:
+
+```bash
+python -m unittest discover -s matchplant_ui/tests
+```
