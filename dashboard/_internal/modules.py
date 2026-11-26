@@ -280,7 +280,7 @@ MODULES = [
         "stage": "4. Utilization",
         "title": "Spatial Stats Extractor",
         "dir": "9_spatial_stats_extractor",
-        "description": "Interactive tool to extract per-plant spatial statistics and shapefiles from projected detections.",
+        "description": "Interactive tool to extract per-plant spatial statistics from projected detections and a raster such as a CHM, saved as a CSV and a shapefile.",
         "kind": "gui",
         "script": {"mac": "stat_extractor_mac.py", "win": "stat_extractor_win.py"},
         "fields": [],

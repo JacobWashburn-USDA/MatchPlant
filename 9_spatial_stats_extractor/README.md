@@ -1,186 +1,91 @@
-# **Spatial Statistics Extractor Tool**
+# 9 · Spatial Stats Extractor
 
-A Python utility for extracting spatial statistics from raster data using CSV bounding boxes with transformation parameters. This tool provides an interactive interface for analyzing raster data within specified regions and calculating various statistical metrics.
+**Stage 4 · Locate and analyze** · **Type: Desktop app** · [← Back to MatchPlant](../README.md)
 
-### **Note**
+Extract per-plant statistics from a raster, such as plant height from a canopy height model (CHM) or NDVI from a vegetation index map. Choose the detections file and a raster, preview the boxes on the map, pick statistics, and export the results as a CSV table and a shapefile for GIS software.
 
-This tool is essential for analyzing spatial data in precision agriculture, environmental monitoring, and remote sensing workflows. It efficiently extracts statistical information from defined regions of interest in geospatial raster data, supporting better decision-making and data analysis.
+| | |
+| --- | --- |
+| **Input** | `projected_boxes.csv` from [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md), and a georeferenced raster (GeoTIFF) |
+| **Output** | A CSV with one row per box, and a shapefile (`.shp`) of the boxes with the same statistics |
+| **Previous step** | [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md) |
 
+## Run it from the dashboard
 
-## Using the dashboard
+1. On the dashboard home, select **Spatial Stats Extractor**.
+2. If the page reports missing packages, click **Install requirements** and wait for it to finish.
+3. Check the **Operating system** selection, then click **Launch**. A Spatial Statistics Extractor window opens.
+4. Under **Input Configuration**:
+   - **CSV File**: click **Browse...** and choose `projected_boxes.csv`.
+   - **Raster File**: click **Browse...** and choose your raster, for example a CHM `.tif`.
+   - **CRS EPSG Code**: leave empty to use the raster's coordinate system.
+5. Click **Click to Update Preview** to check that the boxes sit on the plants (one box per plant).
+6. Under **Output Configuration**, tick the **Statistics to Calculate** and set the percentile **Value** if needed.
+7. Click **Save As...** to choose the output CSV name, then **Click to Calculate Statistics and Save File**. The shapefile is saved next to the CSV with the same name.
 
-Open **Spatial Stats Extractor** in the [local dashboard](../dashboard/README.md). If packages are missing, click **Install requirements** and wait for completion. Check the Operating system selection, then click **Launch**. This opens a separate desktop window on the same computer; select files/folders and use the tool's controls there. Keep the dashboard running while using it.
+Keep the dashboard running while you use the window. Messages and errors appear in the dashboard **Output** panel.
 
-The dashboard automatically selects `stat_extractor_win.py` on Windows and `stat_extractor_mac.py` on macOS. Windows window maximization now handles Tkinter and Qt windows by their actual type, avoiding the former backend-name capitalization crash. The macOS script uses separate window handling and was not changed by that Windows fix. Native macOS operation still requires testing on a Mac.
+![Spatial Stats Extractor window after a run](images/img_1.png)
 
-## Table of Contents
-- [**Spatial Statistics Extractor Tool**](#spatial-statistics-extractor-tool)
-    - [**Note**](#note)
-  - [Table of Contents](#table-of-contents)
-  - [Quick Start](#quick-start)
-    - [1. Clone the repository:](#1-clone-the-repository)
-    - [2. Install dependencies:](#2-install-dependencies)
-    - [3. Run the script:](#3-run-the-script)
-  - [**Features**](#features)
-  - [**Requirements**](#requirements)
-  - [**Input Requirements**](#input-requirements)
-    - [1. Required Files](#1-required-files)
-    - [2. Configuration Setup](#2-configuration-setup)
-  - [**Outputs**](#outputs)
-  - [**Usage Instructions**](#usage-instructions)
-  - [**Interactive GUI Controls**](#interactive-gui-controls)
-  - [**Common Issues and Solutions**](#common-issues-and-solutions)
-  - [**License**](#license)
+*The window after a run: inputs and statistics on the left, detected boxes (red) over the orthomosaic on the right, and the saved CSV and shapefile in the status line*
 
-## Quick Start
+## Inputs
 
-### 1. Clone the repository:
-```bash
-git clone https://github.com/username/repo-name.git
-cd repo-name/spatial_statistics_extractor
+- **CSV file**: `projected_boxes.csv` from [8 Image-to-Ortho Projector](../8_img_to_ortho/README.md). Columns 1–6 hold each box's affine transform and column 10 its pixel size `"(0, 0), (w, h)"` (see [Module 8 output](../8_img_to_ortho/README.md#outputs)).
+- **Raster file**: GeoTIFF (`.tif`/`.tiff`) or another Rasterio-supported format with a coordinate system, for example:
+  - a canopy height model (CHM) for plant height
+  - a vegetation index map (for example NDVI)
+  - the orthomosaic from [2 ODM Runner](../2_odm_runner/README.md)
+- **CRS EPSG code** (optional): only if the boxes use a different coordinate system than the raster.
+
+## Statistics
+
+Minimum, maximum, mean, median, standard deviation, sum, count, and a percentile (default 90th).
+
+Only valid pixels inside each box are used: pixels equal to the raster's **nodata** value (for example -9999) and empty (NaN) pixels are skipped, and `count` is the number of valid pixels. A box with no valid pixels gets `count` 0 and blank statistics. If your raster marks empty areas with a number but has no nodata value set, set it first (for example in QGIS) so those pixels are not counted.
+
+## Outputs
+
+For an output named `plant_height.csv`:
+
+```text
+├── plant_height.csv                          # statistics table
+└── plant_height.shp (+ .shx, .dbf, .prj, .cpg)  # one polygon per box, same statistics
 ```
 
-### 2. Install dependencies:
-
-- For macOS:
-  ```bash
-  pip install -r requirements_mac.txt
-  ```
-
-- For Windows:
-  ```bash
-  pip install -r requirements_win.txt
-  ```
-
-### 3. Run the script:
-
-- For macOS:
-  ```bash
-  python stat_extractor_mac.py
-  ```
-
-- For Windows:
-  ```bash
-  python stat_extractor_win.py
-  ```
-
-## **Features**
-
-- Interactive GUI: User interface for statistical analysis
-- Raster Visualization: Preview raster data and bounding boxes
-- Multiple Statistics: Calculate min, max, mean, median, standard deviation, sum, count, and percentiles
-- Coordinate System Support: Handle different coordinate reference systems
-- Multi-threaded Processing: Efficient calculation for large datasets
-- Progress Tracking: Visual progress indicators during calculations
-- CSV Output: Export results in organized CSV format
-
-## **Requirements**
-
-- Python 3.9+
-- Dependencies:
-  - NumPy
-  - Pandas
-  - GeoPandas
-  - Rasterio
-  - Matplotlib
-  - Shapely
-  - PyProj
-
-## **Input Requirements**
-
-### 1. Required Files
-- Raster File:
-   - Format: GeoTIFF (.tif/.tiff) or other raster formats supported by Rasterio
-   - Must contain geospatial reference information (CRS)
-- CSV Bounds File:
-   - Contains transformation parameters for bounding boxes
-   - This file will come from the output of module 8 of the processing pipeline
-   - Format requires 11 columns with the following structure:
-     - Columns 0-5: Affine transformation parameters
-     - Columns 6-8: Additional parameters
-     - Column 9: String containing pixel dimensions for the bounding box
-     - Column 10: file name
-   - Example of CSV bounds file structure:
-
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 0.1153 | -0.0012 | 605805.5060 | 0.0012 | 0.1153 | 3766997.0630 | 0.0000 | 0.0000 | 0.0000 | "(0, 0), (952, 705)" | s_190529_135201_0_R01_3 |
-| 0.1153 | -0.0019 | 605805.9583 | 0.0019 | 0.1153 | 3766881.9673 | 0.0000 | 0.0000 | 0.0000 | "(0, 0), (952, 701)" | s_190529_135201_0_R02_3 |
-| 0.1153 | -0.0005 | 605805.1830 | 0.0005 | 0.1153 | 3767112.6523 | 0.0000 | 0.0000 | 0.0000 | "(0, 0), (952, 704)" | s_190529_135201_0_R00_3 |
-
-### 2. Configuration Setup
-- CRS Configuration:
-   - Optional EPSG code input
-   - Automatic CRS detection from raster if not specified
-- Statistics Selection:
-   - Choose which statistics to calculate (min, max, mean, etc.)
-   - Customizable percentile values
-
-## **Outputs**
-
-- CSV File:
-   - Contains calculated statistics for each bounding box
-   - Column order: box_id, ul_x, ul_y, lr_x, lr_y, followed by statistical values
-   - Example output format:
+**CSV:** one row per box: `box_id`, the box corners (`ul_x`, `ul_y`, `lr_x`, `lr_y`), then one column per statistic.
 
 | box_id | ul_x | ul_y | lr_x | lr_y | min | max | mean | median | std | sum | count | percentile_90 |
-|--------|------|------|------|------|-----|-----|------|--------|-----|------|-------|--------------|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 605805.5060 | 3766997.0630 | 605914.8966 | 3766879.7401 | 0.0156 | 0.1938 | 0.0837 | 0.0812 | 0.0421 | 6124.83 | 73182 | 0.1412 |
 | 2 | 605805.9583 | 3766881.9673 | 605915.8652 | 3766764.8903 | 0.0203 | 0.2104 | 0.0924 | 0.0897 | 0.0458 | 6182.13 | 66912 | 0.1535 |
-| 3 | 605805.1830 | 3767112.6523 | 605914.9826 | 3766995.1083 | 0.0187 | 0.1867 | 0.0798 | 0.0774 | 0.0399 | 5352.98 | 67069 | 0.1352 |
 
-## **Usage Instructions**
+**Shapefile:** each box as a polygon with the same fields, ready to open in QGIS or ArcGIS. It uses the EPSG code you entered, or the raster's coordinate system. Shapefile field names are limited to 10 characters, so the percentile column is named `p90` (for the 90th percentile). Keep all the files with the same name together. An existing shapefile with the same name is replaced.
 
-- Launch Application:
-   ```python
-   python stat_extractor_mac.py  # or stat_extractor_win.py for Windows
-   ```
-- Initial Setup:
-   - Click "Browse" to select your CSV bounds file
-   - Click "Browse" to select your raster file
-   - Optionally enter a CRS EPSG code if not using the raster's CRS
-   - Click "Click to Update Preview" to visualize data
+## Run without the dashboard
 
-![image](https://github.com/JacobWashburn-USDA/MatchPlant/blob/main/9_spatial_stats_extractor/image/img.png?raw=true)
+From this folder, install the requirements for your system and start the tool:
 
-Figure 1. Example of setup and preview window
-  
-- Statistics Configuration:
-   - Check the statistics you want to calculate
-   - Set percentile value if using the percentile statistic
-   - Select output location
-   - Click "Click to Calculate Statistics and Save File" to process
-  
-## **Interactive GUI Controls**
+```bash
+# Windows
+pip install -r requirements_win.txt
+python stat_extractor_win.py
 
-- Preview Panel:
-  - Displays raster data with bounding box overlays
-  - Automatically scales for large rasters
-- Statistics Selection:
-  - Checkboxes for each available statistic
-  - Percentile value input (defaults to 90th percentile)
-- Progress Tracking:
-  - Progress bar shows calculation status
-  - Status messages provide feedback
+# macOS
+pip install -r requirements_mac.txt
+python stat_extractor_mac.py
+```
 
-## **Common Issues and Solutions**
+Keep the repository's [matchplant_ui](../matchplant_ui/README.md) folder beside this module; the Browse buttons use it.
 
-- Preview Display Issues:
-   - Ensure both raster and CSV files are loaded
-   - Verify CRS compatibility between the raster and the bounding boxes
-   - For large rasters, the preview is automatically downsampled
-- Statistics Calculation Errors:
-   - Check that at least one statistic is selected
-   - Ensure percentile values are between 0 and 100
-   - Verify enough memory is available for large datasets
-- Output File Issues:
-   - Ensure you have write permissions for the selected directory
-   - Verify the file is not open in another application
+## Troubleshooting
 
-## **License**
+- **Boxes do not appear or are in the wrong place:** check that the raster and boxes use the same coordinate system, or enter the boxes' EPSG code.
+- **Preview is coarse:** large rasters are downsampled automatically for the preview.
+- **Calculation errors:** select at least one statistic and use a percentile between 0 and 100.
+- **Cannot save:** close the output file if it is open in another program and check folder permissions.
+- **"Shapefile not saved" in the status line:** the CSV was still saved. Check the message, and install requirements again from the dashboard (the shapefile needs `pyogrio`).
 
-This project is licensed under the MIT License. For details, see the LICENSE file.
+## License
 
-## File and folder selection
-
-Both desktop variants use the shared [picker rules](../matchplant_ui/README.md). Each folder field has one Browse button using the standard system folder picker. It accepts folders only; Windows may hide individual files in this dialog. File pickers show all file types and check the required format before returning a path. Output CSV controls allow new file names. Cancel leaves the existing input unchanged. Keep the repository-level `matchplant_ui/` folder when copying or distributing these scripts. Native macOS picker behavior still needs testing on a Mac.
+MIT License. See [LICENSE](../LICENSE).

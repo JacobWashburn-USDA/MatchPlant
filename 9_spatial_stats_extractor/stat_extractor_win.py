@@ -11,6 +11,7 @@ from pathlib import Path as _PickerPath
 _picker_sys.path.insert(0, str(_PickerPath(__file__).resolve().parents[1]))
 
 import os
+import re
 import sys
 import numpy as np
 import pandas as pd
@@ -33,6 +34,71 @@ def maximize_window(fig):
         window.state("zoomed")
     elif window is not None and callable(getattr(window, "showMaximized", None)):
         window.showMaximized()
+
+def box_size_pixels(value):
+    """Return (width, height) from Module 8's column 10, e.g. "(0, 0), (85, 120)"."""
+    numbers = re.findall(r"-?\d+", str(value))
+    if len(numbers) < 2:
+        raise ValueError(f"Cannot read box size from {value!r}; expected \"(0, 0), (width, height)\".")
+    return int(numbers[-2]), int(numbers[-1])
+
+
+def read_bounds_csv(path):
+    """Read a bounds CSV from Module 8 (no header) or an older file with a 0,1,2,... header.
+
+    Columns are named '0', '1', ... so column 9 ("(0, 0), (w, h)") is available as row['9'].
+    """
+    df = pd.read_csv(path, header=None, dtype=str)
+    if df.shape[1] < 10:
+        raise ValueError(f"Expected at least 10 columns in {os.path.basename(path)}, found {df.shape[1]}.")
+    # Drop a legacy header row such as 0,1,2,...,10 (its column 9 has no "(w, h)" pair)
+    if len(df) and "(" not in str(df.iloc[0, 9]):
+        df = df.iloc[1:].reset_index(drop=True)
+    df.columns = [str(i) for i in range(df.shape[1])]
+    for col in df.columns[:9]:
+        df[col] = pd.to_numeric(df[col])
+    return df
+
+
+def shapefile_field_name(column, used):
+    """Shapefile (DBF) field names: letters, digits, underscore, at most 10 characters."""
+    name = str(column)
+    if name.startswith('percentile_'):
+        value = name[len('percentile_'):]
+        if value.endswith('.0'):
+            value = value[:-2]
+        name = 'p' + value
+    name = re.sub(r'[^A-Za-z0-9_]', '_', name)[:10] or 'field'
+    base, n = name, 1
+    while name.lower() in used:
+        suffix = f'_{n}'
+        name = base[:10 - len(suffix)] + suffix
+        n += 1
+    used.add(name.lower())
+    return name
+
+
+def save_stats_shapefile(results_df, shapefile_path, crs):
+    """Save one polygon per box, with its statistics as attributes, to a shapefile."""
+    geometries = [box(min(r.ul_x, r.lr_x), min(r.ul_y, r.lr_y), max(r.ul_x, r.lr_x), max(r.ul_y, r.lr_y))
+                  for r in results_df.itertuples()]
+    used = set()
+    attributes = results_df.rename(columns={c: shapefile_field_name(c, used) for c in results_df.columns})
+    for col in attributes.columns:
+        attributes[col] = pd.to_numeric(attributes[col])
+    gdf = gpd.GeoDataFrame(attributes, geometry=geometries, crs=crs)
+    gdf.to_file(shapefile_path, driver='ESRI Shapefile')
+    return shapefile_path
+
+
+def resolve_crs(manual_crs, fallback_crs):
+    """Use the EPSG code typed by the user if given, otherwise the raster's CRS."""
+    if manual_crs and str(manual_crs).strip():
+        from pyproj.crs import CRS
+        value = str(manual_crs).strip()
+        return CRS.from_user_input(int(value) if value.isdigit() else value)
+    return fallback_crs
+
 
 def csv_to_geopandas(bounds_df, raster_path=None, manual_crs=None):
     """Convert bounds CSV data to a GeoDataFrame using CRS from:
@@ -74,13 +140,10 @@ def csv_to_geopandas(bounds_df, raster_path=None, manual_crs=None):
         transform = rasterio.transform.Affine(*row[0:6].values)
         transformer = rasterio.transform.AffineTransformer(transform)
             
-        # Get upper left corner
-        ul = transformer.xy(0, 0)     
-        # Parse column 9
-        lr_y = int(row['9'].split(',')[-1][1:-1])
-        lr_x = int(row['9'].split(',')[1][1:])
-        lr_pixels = [lr_x, lr_y]
-        lr = transformer.xy(*lr_pixels)
+        # Box corners: column 9 holds the box size as "(0, 0), (width, height)"
+        width, height = box_size_pixels(row['9'])
+        ul = transformer.xy(0, 0, offset='ul')
+        lr = transformer.xy(height, width, offset='ul')
             
         # Create box
         box_lim = [ul[0], ul[1], lr[0], lr[1]]
@@ -346,6 +409,9 @@ class ZonalStatsWorker(threading.Thread):
         self.result = None
         self.error = None
         self.percentile_value = 90  # Default value
+        self.manual_crs = None  # EPSG code typed in the GUI, if any
+        self.shapefile_path = None
+        self.shapefile_error = None
             
     def cancel(self):
         self.cancel_event.set()
@@ -355,7 +421,7 @@ class ZonalStatsWorker(threading.Thread):
         self.progress = 5
         
         # Load bounds file
-        bounds_df = pd.read_csv(self.bounds_file)
+        bounds_df = read_bounds_csv(self.bounds_file)
         if self.cancel_event.is_set():
             return
         self.progress = 15
@@ -363,6 +429,8 @@ class ZonalStatsWorker(threading.Thread):
         # Load raster
         with rasterio.open(self.raster_file) as src:
             raster_data = src.read(1)
+            raster_crs = src.crs
+            nodata = src.nodata  # e.g. -9999; these pixels are left out of the statistics
             if self.cancel_event.is_set():
                 return
             
@@ -382,13 +450,18 @@ class ZonalStatsWorker(threading.Thread):
                 ul_row, ul_col = box_pixels[0], box_pixels[1]
                 lr_row, lr_col = box_pixels[2], box_pixels[3]
                 
-                # Ensure the indices are in bounds and correctly ordered
-                min_row, max_row = min(ul_row, lr_row), max(ul_row, lr_row)
-                min_col, max_col = min(ul_col, lr_col), max(ul_col, lr_col)
+                # Order the pixel edges, keep them inside the raster, and use at least one pixel
+                n_rows, n_cols = raster_data.shape
+                min_row = min(max(min(ul_row, lr_row), 0), n_rows - 1)
+                min_col = min(max(min(ul_col, lr_col), 0), n_cols - 1)
+                max_row = min(max(max(ul_row, lr_row), min_row + 1), n_rows)
+                max_col = min(max(max(ul_col, lr_col), min_col + 1), n_cols)
                 
-                # Get pixel values within the box
-                pixel_values = raster_data[min_row:max_row+1, min_col:max_col+1]
+                # Get pixel values within the box (end edges are exclusive)
+                pixel_values = raster_data[min_row:max_row, min_col:max_col]
                 pixel_values = pixel_values[~np.isnan(pixel_values)]
+                if nodata is not None and not np.isnan(nodata):
+                    pixel_values = pixel_values[pixel_values != nodata]
                 
                 # Calculate statistics
                 stats = {}
@@ -441,6 +514,15 @@ class ZonalStatsWorker(threading.Thread):
         if self.cancel_event.is_set():
             return
         results_df.to_csv(self.output_file, index=False)
+
+        # Save the same results as a shapefile (one polygon per box) next to the CSV
+        if len(results_df):
+            shapefile_path = os.path.splitext(self.output_file)[0] + '.shp'
+            try:
+                crs = resolve_crs(self.manual_crs, raster_crs)
+                self.shapefile_path = save_stats_shapefile(results_df, shapefile_path, crs)
+            except Exception as exc:
+                self.shapefile_error = f"Shapefile not saved: {exc}"
         
         # Ensure progress reaches 100% before completion
         self.progress = 100
@@ -462,21 +544,18 @@ class ZonalStatsWorker(threading.Thread):
             bounds1 = box_df.iloc[box_row_index]
             transform1 = rasterio.transform.Affine(*bounds1[0:6].values)
             transformer1 = rasterio.transform.AffineTransformer(transform1)
-            ul = transformer1.xy(0, 0)
-            
-            # Fixed access to column 9 in CSV
-            col9_str = str(bounds1.iloc[9] if isinstance(bounds1.index, pd.RangeIndex) else bounds1['9'])
-            lr_y = int(col9_str.split(',')[-1][1:-1])
-            lr_x = int(col9_str.split(',')[1][1:])
-            lr_pixels = [lr_x, lr_y]
-            lr = transformer1.xy(*lr_pixels)
+            # Box corners: column 9 holds the box size as "(0, 0), (width, height)"
+            width, height = box_size_pixels(bounds1.iloc[9])
+            ul = transformer1.xy(0, 0, offset='ul')
+            lr = transformer1.xy(height, width, offset='ul')
             
             box_lim = [*ul, *lr]
             
-            ul_pixels = ortho_dataset.index(*ul)
-            lr_pixels = ortho_dataset.index(*lr)
-            
-            box_lim_pixels = [*ul_pixels, *lr_pixels]
+            # Box edges in raster pixel coordinates, rounded to the nearest pixel boundary
+            inverse = ~ortho_dataset.transform
+            ul_col, ul_row = inverse * ul
+            lr_col, lr_row = inverse * lr
+            box_lim_pixels = [int(round(ul_row)), int(round(ul_col)), int(round(lr_row)), int(round(lr_col))]
             box_lim_list.append(box_lim)
             box_lim_pixel_list.append(box_lim_pixels)
                 
@@ -716,7 +795,7 @@ class SpatialStatsExtractorGUI:
             self.show_status(f"Loading {os.path.basename(file_path)}...")
             
             # Load CSV
-            self.bounds_df = pd.read_csv(file_path)           
+            self.bounds_df = read_bounds_csv(file_path)           
             # Show status
             self.show_status(f"Loaded {os.path.basename(file_path)}: {len(self.bounds_df)} bounding boxes")
             # Enable preview button if raster is also loaded
@@ -870,6 +949,7 @@ class SpatialStatsExtractorGUI:
         
         # Add percentile value to worker
         self.worker.percentile_value = percentile_value
+        self.worker.manual_crs = self.crs_input.text.strip() if hasattr(self, 'crs_input') else None
         
         # Start a timer to update the progress
         self.timer = self.fig.canvas.new_timer(interval=100)
@@ -917,7 +997,13 @@ class SpatialStatsExtractorGUI:
         
         # Update status
         stats_count = len(self.results_df) if self.results_df is not None else 0
-        self.show_status(f"Calculation complete! {stats_count} results saved to {os.path.basename(self.output_path)}")
+        saved = os.path.basename(self.output_path)
+        if worker.shapefile_path:
+            saved += f" and {os.path.basename(worker.shapefile_path)}"
+        message = f"Calculation complete! {stats_count} results saved to {saved}"
+        if worker.shapefile_error:
+            message += f". {worker.shapefile_error}"
+        self.show_status(message)
         
         # Re-enable calculate button
         self.calc_button.set_active(True)
