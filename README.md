@@ -22,9 +22,8 @@ MatchPlant is an open-source pipeline for automated detection of individual obje
 
 See how to use the dashboard before installing (2 min 26 sec): the dashboard home, then step-by-step runs of GCP Finder, BBox Drawer, Object Detection Trainer, and Spatial Stats Extractor.
 
-[![MatchPlant Dashboard walkthrough](images/matchplant_dashboard_walkthrough_thumbnail.png)](https://matchplant-dashboard.github.io/media/dashboard-walkthrough.mp4)
+https://github.com/user-attachments/assets/2ac78aba-fecc-4513-a117-bcfe0adc1274
 
-▶ **[Play the dashboard walkthrough (MP4)](https://matchplant-dashboard.github.io/media/dashboard-walkthrough.mp4)**
 
 ## Table of Contents
 - [Watch a Dashboard Example](#watch-a-dashboard-example)
